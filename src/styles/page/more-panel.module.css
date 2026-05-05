@@ -1,0 +1,66 @@
+.panelShell {
+  width: 13.125rem;
+}
+
+.morePanel {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.panelLink {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: center;
+  padding: 0.6rem 0.9rem;
+  border-radius: 1rem;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.panelLink:hover {
+  background: rgb(229 229 229 / 0.55);
+}
+
+.panelIcon {
+  width: 0.9375rem;
+  height: 0.9375rem;
+  color: #3f3f46;
+  font-weight: 900;
+}
+
+.panelLinkText {
+  display: grid;
+  min-width: 0;
+  gap: 0.15rem;
+}
+
+.panelLinkTitle {
+  color: #262626;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.panelLinkDescription {
+  color: rgb(115 115 115 / 0.86);
+  font-size: 11px;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+:global(.dark) .panelLink:hover {
+  background: rgb(255 255 255 / 0.12);
+}
+
+:global(.dark) .panelIcon {
+  color: #fff;
+}
+
+:global(.dark) .panelLinkTitle {
+  color: #fff;
+}
+
+:global(.dark) .panelLinkDescription {
+  color: rgb(212 212 216 / 0.7);
+}

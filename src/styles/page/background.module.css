@@ -1,0 +1,23 @@
+.siteBg {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgb(250 250 250) 0%, rgb(250 250 250) 100%);
+}
+
+:global(.dark) .siteBg {
+  background: linear-gradient(180deg, rgb(10 10 10) 0%, rgb(10 10 10) 100%);
+}
+
+.siteBg > :not(header) {
+  position: relative;
+}
+
+.siteBg > header {
+  z-index: 200;
+}
+
+.siteBg > main,
+.siteBg > footer {
+  z-index: 1;
+}

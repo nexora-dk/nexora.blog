@@ -1,0 +1,151 @@
+.footer {
+  padding: 2.5rem 1.25rem 1.5rem;
+}
+
+.shell {
+  max-width: 870px;
+  margin-inline: auto;
+  padding: 1.05rem 1.25rem;
+  border: 1px solid rgb(255 255 255 / 0.24);
+  border-radius: 1.75rem;
+  background: rgb(255 255 255 / 0.18);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.28),
+    0 16px 42px rgb(15 23 42 / 0.07);
+  backdrop-filter: blur(34px) saturate(150%);
+}
+
+.top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.brandGroup {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.brand {
+  width: fit-content;
+  color: #171717;
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  transition: color 150ms ease, filter 150ms ease;
+}
+
+.brand:hover {
+  color: #111827;
+  filter: drop-shadow(0 0 8px rgb(17 24 39 / 0.12));
+}
+
+.description {
+  color: rgb(82 82 82 / 0.72);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.link {
+  padding: 0.38rem 0.72rem;
+  border-radius: 9999px;
+  background: rgb(229 229 229 / 0.58);
+  color: rgb(64 64 64 / 0.82);
+  font-size: 0.78rem;
+  line-height: 1.2;
+  transition: background 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+.link:hover {
+  background: rgb(212 212 212 / 0.78);
+  color: #171717;
+  transform: translateY(-1px);
+}
+
+.divider {
+  height: 1px;
+  margin: 1rem 0 0.85rem;
+  background: rgb(229 229 229 / 0.78);
+}
+
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: rgb(115 115 115 / 0.72);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.status::before {
+  display: inline-block;
+  width: 0.42rem;
+  height: 0.42rem;
+  margin-right: 0.35rem;
+  border-radius: 9999px;
+  background: #22c55e;
+  content: "";
+  vertical-align: 0.05rem;
+}
+
+:global(.dark) .shell {
+  border-color: rgb(255 255 255 / 0.1);
+  background: rgb(10 10 10 / 0.2);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.12),
+    0 16px 42px rgb(0 0 0 / 0.28);
+}
+
+:global(.dark) .brand {
+  color: #fff;
+}
+
+:global(.dark) .brand:hover {
+  color: #fff;
+  filter: drop-shadow(0 0 8px rgb(250 250 250 / 0.2));
+}
+
+:global(.dark) .description,
+:global(.dark) .bottom {
+  color: rgb(212 212 216 / 0.68);
+}
+
+:global(.dark) .link {
+  background: rgb(255 255 255 / 0.1);
+  color: rgb(244 244 245 / 0.78);
+}
+
+:global(.dark) .link:hover {
+  background: rgb(255 255 255 / 0.16);
+  color: #fff;
+}
+
+:global(.dark) .divider {
+  background: rgb(255 255 255 / 0.12);
+}
+
+@media (width < 48rem) {
+  .footer {
+    padding-inline: 1rem;
+  }
+
+  .top,
+  .bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .links {
+    justify-content: flex-start;
+  }
+}

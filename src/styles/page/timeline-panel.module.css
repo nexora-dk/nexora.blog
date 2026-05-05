@@ -1,0 +1,149 @@
+.panelShell {
+  width: 22.5rem;
+}
+
+.timelinePanel {
+  display: grid;
+  padding: 0.5rem 1rem 0.2rem;
+  overflow: hidden;
+}
+
+.timelineTabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.timelineTab {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0.35rem;
+  border-radius: 0.8rem;
+  color: #262626;
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1;
+  transition: color 150ms ease;
+}
+
+.timelineTab::before {
+  position: absolute;
+  inset: -0.5rem -0.15rem -0.05rem;
+  z-index: -1;
+  border-radius: 0.85rem;
+  content: "";
+  transition: background 150ms ease;
+}
+
+.timelineTab:hover {
+  color: #171717;
+}
+
+.timelineTab:hover::before {
+  background: rgb(229 229 229 / 0.55);
+}
+
+.timelineTabIcon {
+  width: 0.88rem;
+  height: 0.88rem;
+  color: #18181b;
+}
+
+.panelDivider {
+  height: 1px;
+  margin: 0.2rem 0 0.65rem;
+  background: rgb(229 229 229 / 0.8);
+}
+
+.timelineBody {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.panelHeader {
+  color: rgb(115 115 115 / 0.72);
+  font-size: 0.78rem;
+  line-height: 1;
+}
+
+.activityList {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.activityLink {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.8rem;
+  margin-inline: -0.65rem;
+  padding: 0.42rem 0.65rem;
+  border-radius: 0.75rem;
+  color: #262626;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.activityLink:hover {
+  background: rgb(229 229 229 / 0.55);
+  color: #111827;
+}
+
+.activityText {
+  display: grid;
+  gap: 0.28rem;
+  min-width: 0;
+}
+
+.activityTitle {
+  overflow: hidden;
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.22;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.activityDate {
+  color: rgb(115 115 115 / 0.72);
+  font-size: 0.78rem;
+  line-height: 1.15;
+}
+
+.activityType {
+  color: rgb(115 115 115 / 0.72);
+  font-size: 0.78rem;
+  line-height: 1.15;
+}
+
+:global(.dark) .timelineTab,
+:global(.dark) .activityLink {
+  color: rgb(244 244 245 / 0.86);
+}
+
+:global(.dark) .timelineTab:hover,
+:global(.dark) .activityLink:hover {
+  color: #fff;
+}
+
+:global(.dark) .activityLink:hover,
+:global(.dark) .timelineTab:hover::before {
+  background: rgb(255 255 255 / 0.12);
+}
+
+:global(.dark) .timelineTabIcon {
+  color: #fff;
+}
+
+:global(.dark) .panelDivider {
+  background: rgb(255 255 255 / 0.12);
+}
+
+:global(.dark) .panelHeader,
+:global(.dark) .activityDate,
+:global(.dark) .activityType {
+  color: rgb(212 212 216 / 0.7);
+}

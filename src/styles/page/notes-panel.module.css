@@ -1,0 +1,142 @@
+.panelShell {
+  width: 30rem;
+}
+
+.notesPanel {
+  display: grid;
+}
+
+.panelBody {
+  display: grid;
+  grid-template-columns: 10rem minmax(0, 1fr);
+  min-height: 15rem;
+}
+
+.categoriesColumn {
+  display: grid;
+  align-content: start;
+  gap: 0.65rem;
+  padding: 0.55rem 1.25rem 0.5rem 0.6rem;
+  border-right: 1px solid rgb(229 229 229 / 0.78);
+}
+
+.postsColumn {
+  display: grid;
+  align-content: start;
+  gap: 0.65rem;
+  padding: 0.55rem 0.8rem 0.5rem 1.75rem;
+}
+
+.panelHeader {
+  color: rgb(115 115 115 / 0.72);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  padding-left: 0.3rem;
+}
+
+.categoryList {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.categoryLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 0.45rem 0.34rem;
+  border-radius: 0.48rem;
+  color: #404040;
+  font-size: .8125rem;
+  line-height: 1.2;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.categoryLink:hover {
+  background: rgb(229 229 229 / 0.55);
+  color: #171717;
+}
+
+.categoryLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  white-space: nowrap;
+}
+
+.postList {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.postLink {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.45rem 0.42rem;
+  border-radius: 0.9rem;
+  color: #262626;
+  line-height: 1;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.postLink:hover {
+  background: rgb(229 229 229 / 0.55);
+  color: #111827;
+}
+
+.postTitle {
+  font-size: .875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.postDate {
+  color: rgb(115 115 115 / 0.72);
+  font-size: 0.8rem;
+}
+
+.panelFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 -0.6rem -0.6rem;
+  padding: 0.85rem 1.55rem 0.45rem;
+  border-top: 1px solid rgb(229 229 229 / 0.8);
+  color: rgb(115 115 115 / 0.72);
+  font-size: 0.78rem;
+  line-height: 1.2;
+}
+
+.panelFooter a:hover {
+  color: #171717;
+}
+
+:global(.dark) .categoriesColumn {
+  border-right-color: rgb(255 255 255 / 0.12);
+}
+
+:global(.dark) .panelHeader,
+:global(.dark) .postDate,
+:global(.dark) .panelFooter {
+  color: rgb(212 212 216 / 0.7);
+}
+
+:global(.dark) .categoryLink,
+:global(.dark) .postLink {
+  color: rgb(244 244 245 / 0.86);
+}
+
+:global(.dark) .categoryLink:hover,
+:global(.dark) .postLink:hover {
+  background: rgb(255 255 255 / 0.12);
+  color: #fff;
+}
+
+:global(.dark) .panelFooter a:hover {
+  color: #fff;
+}
+
+:global(.dark) .panelFooter {
+  border-top-color: rgb(255 255 255 / 0.12);
+}

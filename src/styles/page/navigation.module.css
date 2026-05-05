@@ -1,0 +1,177 @@
+.nav {
+  position: relative;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  gap: 1.25rem;
+  padding-block: 1rem 4rem;
+  margin-block: -1rem -4rem;
+  color: rgb(115 115 115 / 0.85);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+}
+
+@media (width >= 48rem) {
+  .nav {
+    display: flex;
+  }
+}
+
+.list {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:global(.dark) .nav {
+  color: rgb(163 163 163 / 0.85);
+}
+
+.item {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* ================== 一级菜单悬浮特效 ================== */
+.link {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.45rem;
+  margin: -0.25rem -0.45rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  transition: color 150ms ease, filter 150ms ease, font-weight 150ms ease;
+}
+
+.link:hover {
+  color: #111827;
+  filter: drop-shadow(0 0 8px rgb(17 24 39 / 0.12));
+  font-weight: 600;
+}
+
+:global(.dark) .link:hover {
+  color: #fff;
+  filter: drop-shadow(0 0 8px rgb(250 250 250 / 0.22));
+}
+
+.viewport {
+  position: absolute;
+  top: 2.35rem;
+  z-index: 100;
+  padding: 0.6rem;
+  border: 1px solid rgb(255 255 255 / 0.7);
+  border-radius: 1.75rem;
+  background: rgb(255 255 255 / 0.96);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.72),
+    0 16px 40px rgb(15 23 42 / 0.12);
+  transition: width 320ms cubic-bezier(0.16, 1, 0.3, 1), height 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(24px) saturate(150%);
+}
+
+:global(.dark) .viewport {
+  border-color: rgb(255 255 255 / 0.12);
+  background: rgb(24 24 27 / 0.94);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.16),
+    0 16px 40px rgb(0 0 0 / 0.28);
+}
+
+.panel {
+  padding: 0;
+}
+
+.panel[data-motion="from-start"] {
+  animation: panelFromLeft 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.panel[data-motion="from-end"] {
+  animation: panelFromRight 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.panel[data-motion="to-start"] {
+  animation: panelToLeft 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.panel[data-motion="to-end"] {
+  animation: panelToRight 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes panelFromLeft {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes panelFromRight {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes panelToLeft {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes panelToRight {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.defaultPanelShell {
+  width: 13.125rem;
+}
+
+.panelLinkPlain {
+  display: block;
+  padding: 0.65rem 0.75rem;
+  border-radius: 1rem;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.panelLinkPlain:hover {
+  background: rgb(229 229 229 / 0.55);
+}
+
+:global(.dark) .panelLinkPlain:hover {
+  background: rgb(255 255 255 / 0.12);
+}
+
+.panelLinkTitle {
+  color: #262626;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+:global(.dark) .panelLinkTitle {
+  color: #fff;
+}
+
