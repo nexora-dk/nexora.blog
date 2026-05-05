@@ -94,7 +94,7 @@ export function GalleryLightbox({ photos }: { photos: GalleryPhoto[] }) {
               <MapPin className="size-4" />
               {activePhoto.location}
               <span className="text-white/35">/</span>
-              {activeIndex + 1} / {photos.length}
+              {(activeIndex ?? 0) + 1} / {photos.length}
             </div>
           </div>
           </div>,
