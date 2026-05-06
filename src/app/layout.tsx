@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { PageTransition } from "@/components/layout/page-transition";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { ScrollProgressButton } from "@/components/layout/scroll-progress-button";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { siteConfig } from "@/lib/site";
@@ -33,9 +35,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeProvider>
           <div className={`${styles.siteBg} min-h-screen text-neutral-950 dark:text-neutral-50`}>
             <SiteHeader />
-            <main className="mx-auto min-h-[calc(100vh-9rem)] max-w-[870px] px-5">{children}</main>
+            <main className="mx-auto min-h-[calc(100vh-9rem)] max-w-[870px] px-5">
+              <PageTransition>{children}</PageTransition>
+            </main>
             <SiteFooter />
           </div>
+          <ScrollProgressButton />
         </ThemeProvider>
       </body>
     </html>

@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: "Nexora's",
+  name: "Nexora's Space",
   description: "一个爱捣鼓的前端",
   nav: [
     {

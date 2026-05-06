@@ -92,7 +92,7 @@ export function WritingContent({ selectedCategory, selectedPage }: WritingConten
                 </div>
               </div>
               <div>
-                <h2 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-neutral-50">{activeCategoryLabel}</h2>
+                <h2 className="font-[family-name:var(--font-dingtalk)] text-2xl font-semibold tracking-tight text-zinc-900 dark:text-neutral-50">{activeCategoryLabel}</h2>
                 <p className="mt-2 text-sm text-zinc-400 dark:text-neutral-500">{startYear ? `始于 ${startYear} 年 · ` : ""}按时间整理这一类文章、笔记和实验记录。</p>
                 <div className="mt-5 h-px w-14 bg-gradient-to-r from-sky-300 via-violet-300 to-transparent dark:from-sky-300/70 dark:via-violet-300/70" />
               </div>

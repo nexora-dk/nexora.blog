@@ -60,7 +60,7 @@ export function NotesContent({ selectedColumn }: NotesContentProps) {
                   <span className="text-xl" aria-hidden="true">
                     {columnIcons[activeColumn]}
                   </span>
-                  <h2 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-neutral-50">{activeColumnMeta.label}</h2>
+                  <h2 className="font-[family-name:var(--font-dingtalk)] text-2xl font-semibold tracking-tight text-zinc-900 dark:text-neutral-50">{activeColumnMeta.label}</h2>
                 </div>
                 <p className="mt-2 text-sm text-zinc-400 dark:text-neutral-500">{startYear ? `始于 ${startYear} 年 · ` : ""}{activeColumnMeta.description}</p>
                 <div className="mt-5 h-px w-14 bg-gradient-to-r from-emerald-300 via-sky-300 to-transparent dark:from-emerald-300/70 dark:via-sky-300/70" />

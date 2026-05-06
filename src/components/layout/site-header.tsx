@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { SiteNav } from "@/components/layout/site-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -11,12 +11,16 @@ const HIDE_SCROLL_Y = 150;
 
 export function SiteHeader() {
   const [isHidden, setIsHidden] = useState(false);
+  const lastScrollYRef = useRef(0);
 
   useEffect(() => {
     function handleScroll() {
       const scrollY = window.scrollY || document.documentElement.scrollTop;
+      const lastScrollY = lastScrollYRef.current;
+      const isScrollingDown = scrollY > lastScrollY;
 
-      setIsHidden(scrollY > HIDE_SCROLL_Y);
+      setIsHidden(isScrollingDown && scrollY > HIDE_SCROLL_Y);
+      lastScrollYRef.current = scrollY;
     }
 
     handleScroll();
@@ -26,7 +30,7 @@ export function SiteHeader() {
   }, []);
 
   return (
-    <header className={`fixed inset-x-0 top-3 z-100 px-5 ${isHidden ? "hidden" : "block"}`}>
+    <header className={`fixed inset-x-0 top-3 z-100 px-5 transition-all duration-500 ease-out ${isHidden ? "-translate-y-24 opacity-0" : "translate-y-0 opacity-100"}`}>
       <div className={styles.shell}>
         <Link href="/" className={styles.brand}>
           {siteConfig.name}
