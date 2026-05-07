@@ -1,7 +1,7 @@
 .siteBg {
   position: relative;
   isolation: isolate;
-  overflow: hidden;
+  overflow-x: clip;
   background: linear-gradient(180deg, rgb(250 250 250) 0%, rgb(250 250 250) 100%);
 }
 

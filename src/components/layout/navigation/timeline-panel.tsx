@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Heart, NotebookPen, PenTool } from "lucide-react";
-import { getDateParts, getTimelineItems } from "@/components/pages/timeline/timeline-data";
 import styles from "@/styles/page/timeline-panel.module.css";
 
 const timelineLinks = [
@@ -9,7 +8,12 @@ const timelineLinks = [
   { title: "回忆", href: "/timeline?type=memory", icon: Heart },
 ];
 
-const recentActivities = getTimelineItems().slice(0, 4);
+const recentActivities = [
+  { title: "AI 时代的重构方式：从 RFC 到五个 Plan", date: "3月9日", href: "/writing/ai-rfc-plan", typeLabel: "文稿" },
+  { title: "把博客首页重做成一张安静的书桌", date: "1月18日", href: "/writing/quiet-desk-homepage", typeLabel: "文稿" },
+  { title: "26y: 健康、AI行业变化与自我反思", date: "4月23日", href: "/notes/26y", typeLabel: "手记" },
+  { title: "单调里的褶皱", date: "4月9日", href: "/notes/folds", typeLabel: "手记" },
+];
 
 export function TimelinePanel() {
   return (
@@ -33,10 +37,10 @@ export function TimelinePanel() {
         <div className={styles.panelHeader}>近期动态</div>
         <div className={styles.activityList}>
           {recentActivities.map((activity) => (
-            <Link key={`${activity.type}-${activity.href}`} href={activity.href} className={styles.activityLink}>
+            <Link key={activity.href} href={activity.href} className={styles.activityLink}>
               <span className={styles.activityText}>
                 <span className={styles.activityTitle}>{activity.title}</span>
-                <span className={styles.activityDate}>{getDateParts(activity.date).shortDate}</span>
+                <span className={styles.activityDate}>{activity.date}</span>
               </span>
               <span className={styles.activityType}>{activity.typeLabel}</span>
             </Link>
