@@ -88,7 +88,7 @@ function Hero() {
           <h1 className="flex flex-col flex-wrap font-[family-name:var(--font-dingtalk)] text-xl  sm:text-3xl">
             <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <span>我是</span>
-              <Image src="/images/signature/signature.svg" alt="Nexora" width={142} height={52} priority className="h-[23px] w-auto sm:h-[34px]" />
+              <Image src="/images/signature/signature.svg" alt="Nexora" width={142} height={52} priority className="h-[21px] w-auto dark:invert sm:h-[31px]" />
               <span>，一个爱捣鼓的前端</span>
             </span>
             <span className="flex flex-wrap gap-1 leading-[30px] sm:leading-[40px]">
