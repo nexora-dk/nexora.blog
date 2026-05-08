@@ -82,7 +82,7 @@ function Hero() {
   }
 
   return (
-    <section className="my-37 space-y-2">
+    <section className="pt-37 mb-37 space-y-2">
       <div className="flex justify-between gap-6">
         <div className="flex flex-col gap-2">
           <h1 className="flex flex-col flex-wrap font-[family-name:var(--font-dingtalk)] text-xl  sm:text-3xl">
