@@ -85,7 +85,12 @@ function renderPanel(type: PanelType, href?: string, title?: string) {
 export function SiteNav() {
   const router = useRouter();
   const [viewportX, setViewportX] = useState("50%");
+  const [openPanel, setOpenPanel] = useState("");
   const navStyle = { "--navigation-menu-viewport-x": viewportX } as CSSProperties;
+
+  function closePanel() {
+    setOpenPanel("");
+  }
 
   function updateViewportX(element: HTMLElement) {
     const navRect = element.closest("nav")?.getBoundingClientRect();
@@ -99,7 +104,7 @@ export function SiteNav() {
   }
 
   return (
-    <NavigationMenu className={styles.nav} viewportClassName={styles.viewport} style={navStyle}>
+    <NavigationMenu value={openPanel} onValueChange={setOpenPanel} className={styles.nav} viewportClassName={styles.viewport} style={navStyle}>
       <NavigationMenuList className={styles.list}>
         {siteConfig.nav.map((item) => (
           <NavigationMenuItem key={item.title} className={styles.item}>
@@ -108,7 +113,7 @@ export function SiteNav() {
                 <NavigationMenuTrigger className={styles.link} onClick={() => "href" in item && router.push(item.href)} onPointerEnter={(event) => updateViewportX(event.currentTarget)} onFocus={(event) => updateViewportX(event.currentTarget)}>
                   {item.title}
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className={getPanelClassName(item.panel.type)}>{renderPanel(item.panel.type, "href" in item ? item.href : undefined, item.title)}</NavigationMenuContent>
+                <NavigationMenuContent className={getPanelClassName(item.panel.type)} onClick={closePanel}>{renderPanel(item.panel.type, "href" in item ? item.href : undefined, item.title)}</NavigationMenuContent>
               </>
             ) : (
               <NavigationMenuLink asChild>

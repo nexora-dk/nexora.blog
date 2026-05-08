@@ -1,21 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { ArticleTocItem } from "./writing-data";
+import { RotateCw } from "lucide-react";
+import type { NoteTocItem } from "./notes-data";
 
-type ArticleTocProps = {
-  items: ArticleTocItem[];
+type NoteTocProps = {
+  items: NoteTocItem[];
 };
 
-export function ArticleToc({ items }: ArticleTocProps) {
+export function NoteToc({ items }: NoteTocProps) {
   const [activeId, setActiveId] = useState(items[0]?.id);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     if (items.length === 0) {
       return;
     }
 
-    function updateActiveId() {
+    function updateTocState() {
       const nextActiveId = items.reduce((currentId, item) => {
         const element = document.getElementById(item.id);
 
@@ -25,17 +27,30 @@ export function ArticleToc({ items }: ArticleTocProps) {
 
         return element.getBoundingClientRect().top <= 128 ? item.id : currentId;
       }, items[0].id);
+      const paperElement = document.getElementById("note-paper");
+
+      if (!paperElement) {
+        setActiveId(nextActiveId);
+        setProgress(0);
+        return;
+      }
+
+      const readingOffset = 128;
+      const paperTop = paperElement.getBoundingClientRect().top + window.scrollY;
+      const readableHeight = Math.max(1, paperElement.offsetHeight - readingOffset);
+      const nextProgress = Math.min(100, Math.max(0, ((window.scrollY + readingOffset - paperTop) / readableHeight) * 100));
 
       setActiveId(nextActiveId);
+      setProgress(Math.round(nextProgress));
     }
 
-    updateActiveId();
-    window.addEventListener("scroll", updateActiveId, { passive: true });
-    window.addEventListener("resize", updateActiveId);
+    updateTocState();
+    window.addEventListener("scroll", updateTocState, { passive: true });
+    window.addEventListener("resize", updateTocState);
 
     return () => {
-      window.removeEventListener("scroll", updateActiveId);
-      window.removeEventListener("resize", updateActiveId);
+      window.removeEventListener("scroll", updateTocState);
+      window.removeEventListener("resize", updateTocState);
     };
   }, [items]);
 
@@ -44,8 +59,8 @@ export function ArticleToc({ items }: ArticleTocProps) {
   }
 
   return (
-    <aside className="sticky top-32 ml-12 hidden w-52 self-start xl:block 2xl:ml-16">
-      <nav className="border-l border-zinc-200/80 pl-4 font-[ui-sans-serif,system-ui,sans-serif] text-xs dark:border-white/10" aria-label="文章目录">
+    <aside className="sticky top-32 w-52 self-start">
+      <nav className="border-l border-zinc-200/80 pl-4 font-[ui-sans-serif,system-ui,sans-serif] text-xs dark:border-white/10" aria-label="手记目录">
         <div className="mb-2 flex items-center gap-2 text-[10px] font-medium tracking-[0.18em] text-zinc-300 dark:text-neutral-600">
           <span className="h-px w-4 bg-zinc-200 dark:bg-white/10" />
           目录
@@ -61,6 +76,14 @@ export function ArticleToc({ items }: ArticleTocProps) {
               </a>
             );
           })}
+        </div>
+
+        <div className="mt-5 border-t border-zinc-200/80 pt-4 text-zinc-500 dark:border-white/10 dark:text-neutral-400">
+          <div className="mb-4 h-px bg-zinc-100 dark:bg-white/[0.06]" />
+          <div className="flex items-center gap-2 text-sm font-medium tabular-nums">
+            <RotateCw className="size-3.5 text-[#18181b] dark:text-[#f4f4f5]" />
+            <span>{progress}%</span>
+          </div>
         </div>
       </nav>
     </aside>

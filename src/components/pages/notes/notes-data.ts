@@ -1,3 +1,7 @@
+import fs from "node:fs";
+import path from "node:path";
+import matter from "gray-matter";
+
 export type NoteColumn = "travel" | "recent" | "memory" | "summary" | "emo";
 
 export type NoteColumnMeta = {
@@ -19,6 +23,36 @@ export type NoteItem = {
   publishedAt: string;
   views: string;
   likes: string;
+  readingTime: string;
+};
+
+export type NoteTocItem = {
+  id: string;
+  title: string;
+  level: 2 | 3;
+};
+
+export type NoteDetail = NoteItem & {
+  slug: string;
+  content: string;
+  toc: NoteTocItem[];
+  insight: string;
+};
+
+type NoteFrontmatter = {
+  title?: unknown;
+  description?: unknown;
+  date?: unknown;
+  column?: unknown;
+  columnLabel?: unknown;
+  mood?: unknown;
+  location?: unknown;
+  tags?: unknown;
+  publishedAt?: unknown;
+  views?: unknown;
+  likes?: unknown;
+  readingTime?: unknown;
+  insight?: unknown;
 };
 
 export const noteColumns: NoteColumnMeta[] = [
@@ -29,86 +63,164 @@ export const noteColumns: NoteColumnMeta[] = [
   { label: "深夜 emo", value: "emo", description: "低落、敏感和一些不那么明亮的时刻。" },
 ];
 
-export const noteItems: NoteItem[] = [
-  {
-    title: "26y: 健康、AI行业变化与自我反思",
-    description: "把二十六岁这一年的身体状态、行业变化和自我节奏放在一起复盘。",
-    href: "/notes/26y",
-    date: "11天前",
-    column: "summary",
-    columnLabel: "阶段性总结",
-    mood: "清醒",
-    tags: ["复盘", "健康", "AI"],
-    publishedAt: "2026年4月23日",
-    views: "1.1k",
-    likes: "72",
-  },
-  {
-    title: "单调里的褶皱",
-    description: "有些日子看起来没有波澜，但仔细翻开，也会藏着细小的褶皱。",
-    href: "/notes/folds",
-    date: "25天前",
-    column: "emo",
-    columnLabel: "深夜 emo",
-    mood: "低频",
-    tags: ["日常", "情绪", "自省"],
-    publishedAt: "2026年4月9日",
-    views: "836",
-    likes: "58",
-  },
-  {
-    title: "键盘上的春节",
-    description: "春节的热闹隔着屏幕传来，而我在键盘前记录另一种年味。",
-    href: "/notes/spring-festival",
-    date: "2026年3月1日星期日",
-    column: "memory",
-    columnLabel: "朝花夕拾",
-    location: "家里",
-    tags: ["春节", "回忆", "生活"],
-    publishedAt: "2026年3月1日",
-    views: "694",
-    likes: "47",
-  },
-  {
-    title: "年味渐淡的春节记忆",
-    description: "小时候觉得漫长的春节，后来慢慢变成几张照片和一顿团圆饭。",
-    href: "/notes/new-year-memory",
-    date: "2026年2月16日星期一",
-    column: "memory",
-    columnLabel: "朝花夕拾",
-    mood: "怀旧",
-    tags: ["春节", "童年", "记忆"],
-    publishedAt: "2026年2月16日",
-    views: "612",
-    likes: "39",
-  },
-  {
-    title: "午后散步和一杯冰美式",
-    description: "短暂离开屏幕，沿着街边走一圈，回来时脑子也跟着松了一点。",
-    href: "/notes/afternoon-walk",
-    date: "2026年1月12日星期一",
-    column: "recent",
-    columnLabel: "近况",
-    location: "街角咖啡店",
-    tags: ["近况", "散步", "咖啡"],
-    publishedAt: "2026年1月12日",
-    views: "485",
-    likes: "31",
-  },
-  {
-    title: "一次没有计划的短途出走",
-    description: "没有做攻略，也没有赶景点，只是换个城市让自己慢下来。",
-    href: "/notes/short-trip",
-    date: "2025年12月7日星期日",
-    column: "travel",
-    columnLabel: "游记",
-    location: "海边",
-    tags: ["旅行", "城市", "放空"],
-    publishedAt: "2025年12月7日",
-    views: "530",
-    likes: "35",
-  },
-];
+const notesDirectory = path.join(process.cwd(), "data", "notes");
+
+function isString(value: unknown): value is string {
+  return typeof value === "string";
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every(isString);
+}
+
+function getRequiredString(frontmatter: NoteFrontmatter, key: keyof NoteFrontmatter, slug: string) {
+  const value = frontmatter[key];
+
+  if (!isString(value)) {
+    throw new Error(`Missing or invalid ${String(key)} in data/notes/${slug}.md`);
+  }
+
+  return value;
+}
+
+function getOptionalString(frontmatter: NoteFrontmatter, key: keyof NoteFrontmatter, fallback: string) {
+  const value = frontmatter[key];
+  return isString(value) ? value : fallback;
+}
+
+function getOptionalNoteMeta(frontmatter: NoteFrontmatter, key: "mood" | "location") {
+  const value = frontmatter[key];
+  return isString(value) && value ? value : undefined;
+}
+
+function getPlainTextExcerpt(content: string) {
+  const paragraph = content
+    .split("\n")
+    .map((line) => line.trim())
+    .find((line) => line && !line.startsWith("#") && !line.startsWith("```") && !line.startsWith("-") && !/^\d+\./.test(line));
+
+  if (!paragraph) {
+    return "";
+  }
+
+  return paragraph.replace(/[*_`>#]/g, "").slice(0, 96);
+}
+
+function getNoteTags(frontmatter: NoteFrontmatter) {
+  return isStringArray(frontmatter.tags) ? frontmatter.tags : [];
+}
+
+function getNoteSlug(fileName: string) {
+  return fileName.replace(/\.md$/, "");
+}
+
+function slugifyHeading(title: string) {
+  return title
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s-]/gu, "")
+    .replace(/\s+/g, "-");
+}
+
+function getNoteToc(content: string): NoteTocItem[] {
+  return content
+    .split("\n")
+    .map((line) => {
+      const match = line.match(/^(#{2,3})\s+(.+)$/);
+
+      if (!match) {
+        return null;
+      }
+
+      const [, marks, title] = match;
+
+      return {
+        id: slugifyHeading(title),
+        title,
+        level: marks.length as 2 | 3,
+      };
+    })
+    .filter((item): item is NoteTocItem => item !== null);
+}
+
+function getDateTime(date: string) {
+  const match = date.match(/^(\d{4})年(\d{1,2})月(\d{1,2})日/);
+
+  if (!match) {
+    return 0;
+  }
+
+  const [, year, month, day] = match;
+  return new Date(Number(year), Number(month) - 1, Number(day)).getTime();
+}
+
+function readNoteFile(fileName: string): NoteDetail {
+  const slug = getNoteSlug(fileName);
+  const filePath = path.join(notesDirectory, fileName);
+  const file = fs.readFileSync(filePath, "utf8");
+  const { data, content } = matter(file);
+  const frontmatter = data as NoteFrontmatter;
+  const column = getOptionalString(frontmatter, "column", "recent");
+
+  if (!isNoteColumn(column)) {
+    throw new Error(`Invalid column in data/notes/${slug}.md`);
+  }
+
+  const description = getOptionalString(frontmatter, "description", getPlainTextExcerpt(content));
+
+  return {
+    title: getRequiredString(frontmatter, "title", slug),
+    slug,
+    description,
+    href: `/notes/${slug}`,
+    date: getOptionalString(frontmatter, "date", "未发布"),
+    column,
+    columnLabel: getOptionalString(frontmatter, "columnLabel", noteColumns.find((item) => item.value === column)?.label ?? "近况"),
+    mood: getOptionalNoteMeta(frontmatter, "mood"),
+    location: getOptionalNoteMeta(frontmatter, "location"),
+    tags: getNoteTags(frontmatter),
+    publishedAt: getOptionalString(frontmatter, "publishedAt", getOptionalString(frontmatter, "date", "未发布")),
+    views: getOptionalString(frontmatter, "views", "0"),
+    likes: getOptionalString(frontmatter, "likes", "0"),
+    readingTime: getOptionalString(frontmatter, "readingTime", "5 分钟"),
+    insight: getOptionalString(frontmatter, "insight", description),
+    content: content.trim(),
+    toc: getNoteToc(content),
+  };
+}
+
+function getNoteDetails() {
+  return fs
+    .readdirSync(notesDirectory)
+    .filter((fileName) => fileName.endsWith(".md"))
+    .map(readNoteFile);
+}
+
+export const noteDetails: NoteDetail[] = getNoteDetails().sort((first, second) => getDateTime(second.publishedAt) - getDateTime(first.publishedAt));
+
+export const noteItems: NoteItem[] = noteDetails.map((note) => ({
+  title: note.title,
+  description: note.description,
+  href: note.href,
+  date: note.date,
+  column: note.column,
+  columnLabel: note.columnLabel,
+  mood: note.mood,
+  location: note.location,
+  tags: note.tags,
+  publishedAt: note.publishedAt,
+  views: note.views,
+  likes: note.likes,
+  readingTime: note.readingTime,
+}));
+
+export function getNoteBySlug(slug: string) {
+  return noteDetails.find((note) => note.slug === slug);
+}
+
+export function getNoteStaticParams() {
+  return noteDetails.map((note) => ({ slug: note.slug }));
+}
 
 export function isNoteColumn(column: string | undefined): column is NoteColumn {
   return noteColumns.some((item) => item.value === column);

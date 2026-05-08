@@ -21,6 +21,7 @@ export type ArticleItem = {
   readingTime: string;
   views: string;
   likes: string;
+  modifiedTime: string;
 };
 
 export type ArticleTocItem = {
@@ -45,6 +46,7 @@ type ArticleFrontmatter = {
   readingTime?: unknown;
   views?: unknown;
   likes?: unknown;
+  modifiedTime?: unknown;
 };
 
 export const writingCategories: WritingCategory[] = [
@@ -169,6 +171,7 @@ function readArticleFile(fileName: string): ArticleDetail {
     readingTime: getOptionalString(frontmatter, "readingTime", "5 分钟"),
     views: getOptionalString(frontmatter, "views", "0"),
     likes: getOptionalString(frontmatter, "likes", "0"),
+    modifiedTime: getOptionalString(frontmatter, "modifiedTime", getOptionalString(frontmatter, "date", "未发布")),
     content: content.trim(),
     toc: getArticleToc(content),
   };
@@ -206,6 +209,7 @@ export const articleItems: ArticleItem[] = articleDetails.map((article) => ({
   readingTime: article.readingTime,
   views: article.views,
   likes: article.likes,
+  modifiedTime: article.modifiedTime,
 }));
 
 export function getArticleBySlug(slug: string) {

@@ -17,9 +17,9 @@ export function TimelineHero({ activeType, itemCount, yearCount, initialTimeProg
     <header className="space-y-8 border-b border-zinc-200/65 pb-10 dark:border-white/10">
       <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_14rem] md:items-end">
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.28em] text-sky-500 dark:text-sky-300/80">Timeline</p>
-          <h1 className="mt-3 font-[family-name:var(--font-dingtalk)] text-4xl font-semibold tracking-tight text-zinc-950 dark:text-neutral-50 md:text-5xl">{heroTitle}</h1>
-          <p className="mt-5 max-w-2xl text-sm leading-7 text-zinc-500 dark:text-neutral-400">{heroDescription}</p>
+          <p className="text-[13px] font-medium uppercase tracking-[0.28em] text-zinc-500 dark:text-neutral-400">Timeline</p>
+          <h1 className="mt-3 font-serif text-4xl font-semibold leading-tight tracking-normal text-zinc-950 dark:text-neutral-50 sm:text-5xl">{heroTitle}</h1>
+          <p className="mt-5 max-w-2xl text-[15px] leading-7 text-zinc-500 dark:text-neutral-400">{heroDescription}</p>
           <div className="mt-6 h-px w-24 bg-gradient-to-r from-emerald-300 via-sky-300 to-transparent dark:from-emerald-300/70 dark:via-sky-300/70" />
         </div>
 

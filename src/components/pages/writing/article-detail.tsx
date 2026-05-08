@@ -3,6 +3,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { CalendarDays, Eye, Heart, Timer } from "lucide-react";
 import { ArticleCodeBlock } from "./article-code-block";
 import { ArticleComments } from "./article-comments";
+import { ArticleLikeButton } from "./article-like-button";
 import { ArticleToc } from "./article-toc";
 import type { ArticleDetail } from "./writing-data";
 
@@ -80,13 +81,9 @@ const mdxComponents = {
     </h3>
   ),
   p: (props: React.ComponentPropsWithoutRef<"p">) => <p className={`font-[ui-sans-serif,system-ui,sans-serif] text-[15px] font-normal leading-[1.75] ${articleTextColor}`} {...props} />,
-  ul: (props: React.ComponentPropsWithoutRef<"ul">) => <ul className={`space-y-1.5 pl-1 font-[ui-sans-serif,system-ui,sans-serif] text-[15px] font-normal leading-[1.75] ${articleTextColor}`} {...props} />,
-  li: (props: React.ComponentPropsWithoutRef<"li">) => (
-    <li className="flex gap-3">
-      <span className="mt-3 size-1.5 shrink-0 rounded-full bg-zinc-300 dark:bg-neutral-600" />
-      <span {...props} />
-    </li>
-  ),
+  ul: (props: React.ComponentPropsWithoutRef<"ul">) => <ul className={`list-disc space-y-1.5 pl-5 font-[ui-sans-serif,system-ui,sans-serif] text-[15px] font-normal leading-[1.75] marker:text-zinc-300 dark:marker:text-neutral-600 ${articleTextColor}`} {...props} />,
+  ol: (props: React.ComponentPropsWithoutRef<"ol">) => <ol className={`list-decimal space-y-1.5 pl-5 font-[ui-sans-serif,system-ui,sans-serif] text-[15px] font-normal leading-[1.75] marker:text-zinc-400 dark:marker:text-neutral-500 ${articleTextColor}`} {...props} />,
+  li: (props: React.ComponentPropsWithoutRef<"li">) => <li className="pl-1 [&>figure]:my-4 [&>p]:my-0" {...props} />,
   blockquote: (props: React.ComponentPropsWithoutRef<"blockquote">) => <blockquote className={`border-l-2 border-zinc-300 pl-5 font-[ui-sans-serif,system-ui,sans-serif] text-[15px] font-normal leading-[1.75] ${articleMutedColor} dark:border-neutral-700`} {...props} />,
   a: (props: React.ComponentPropsWithoutRef<"a">) => <a className="font-medium text-zinc-950 underline decoration-zinc-300 underline-offset-4 transition hover:decoration-zinc-950 dark:text-neutral-50 dark:decoration-neutral-600 dark:hover:decoration-neutral-50" {...props} />,
   code: (props: React.ComponentPropsWithoutRef<"code">) => <code className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-[0.88em] text-zinc-800 dark:bg-white/10 dark:text-neutral-100" {...props} />,
@@ -96,7 +93,7 @@ export function ArticleDetail({ article }: ArticleDetailProps) {
   return (
     <article className="relative -mx-5 space-y-10 px-5 pt-2 lg:-mx-28 lg:px-28 xl:-mx-72 xl:px-72">
       <header className="space-y-7 py-1 text-center">
-        <h1 className={`mx-auto max-w-[58rem] font-[ui-sans-serif,system-ui,sans-serif] text-3xl font-semibold leading-tight tracking-normal md:text-[2.75rem] xl:whitespace-nowrap ${articleTextColor}`}>{article.title}</h1>
+        <h1 className={`mx-auto max-w-[58rem] text-balance font-[ui-sans-serif,system-ui,sans-serif] text-3xl font-semibold leading-tight tracking-normal md:text-[2.6rem] ${articleTextColor}`}>{article.title}</h1>
 
         <dl className="mx-auto flex max-w-[44rem] flex-wrap items-center justify-center gap-x-8 gap-y-2 font-[ui-sans-serif,system-ui,sans-serif] text-sm font-medium">
           <div className={`inline-flex items-center gap-1.5 ${articleTextColor}`}>
@@ -126,13 +123,18 @@ export function ArticleDetail({ article }: ArticleDetailProps) {
         <div className="min-w-0 space-y-[17.5px]">
           <MDXRemote source={article.content} components={mdxComponents} />
 
+          <div className="mt-12 border-t border-zinc-200/70 pt-8 dark:border-white/10">
+            <div className="flex flex-col items-center gap-3 text-center">
+              <p className="text-xs font-medium tracking-[0.18em] text-zinc-400 uppercase dark:text-neutral-500">喜欢这篇文稿吗</p>
+              <ArticleLikeButton articleSlug={article.slug} initialLikes={article.likes} />
+            </div>
+          </div>
+
           <footer className="grid gap-3 border-t border-zinc-200/70 pt-6 text-sm text-zinc-500 dark:border-white/10 dark:text-neutral-400 md:grid-cols-2">
             <Link href="/writing" className="transition hover:text-zinc-950 dark:hover:text-neutral-50">
               返回全部文稿
             </Link>
-            <Link href={`/writing?category=${article.category}`} className="transition hover:text-zinc-950 dark:hover:text-neutral-50 md:text-right">
-              查看「{article.categoryLabel}」分类
-            </Link>
+            <span className="md:text-right">最后修改于 {formatArticleDate(article.modifiedTime)}</span>
           </footer>
         </div>
 

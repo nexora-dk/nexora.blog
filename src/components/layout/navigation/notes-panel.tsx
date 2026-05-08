@@ -38,7 +38,7 @@ export function NotesPanel() {
           <div className={styles.panelHeader}>近期手记</div>
           <div className={styles.postList}>
             {recentNotes.map((note) => (
-              <Link key={note.title} href={note.href} className={styles.postLink}>
+              <Link key={note.href} href={note.href} className={styles.postLink}>
                 <span className={styles.postTitle}>{note.title}</span>
                 <span className={styles.postDate}>{note.date}</span>
               </Link>
