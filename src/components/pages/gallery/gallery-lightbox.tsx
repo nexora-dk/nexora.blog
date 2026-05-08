@@ -1,16 +1,11 @@
 "use client";
 
-import Image, { type StaticImageData } from "next/image";
+import Image from "next/image";
 import { ArrowLeft, ChevronLeft, ChevronRight, MapPin, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-type GalleryPhoto = {
-  image: StaticImageData;
-  alt: string;
-  title: string;
-  location: string;
-};
+import type { GalleryPhoto } from "./gallery-data";
 
 function PhotoOverlay({ title, location }: { title: string; location: string }) {
   return (

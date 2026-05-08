@@ -7,8 +7,8 @@ const notes = ["请先在你的友链中添加本站", "确保你的网站可以
 
 const siteInfo = {
   name: "nexora",
-  link: "https://",
-  avatar: "https://",
+  link: "https://nexora.blog/",
+  avatar: "https://nexora.blog/images/avatar/avatar.jpg",
   description: "不努力就只能旁听别人的好消息",
 };
 

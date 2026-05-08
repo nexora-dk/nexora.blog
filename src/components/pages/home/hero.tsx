@@ -10,11 +10,11 @@ const TEXTS = [
     className: "bg-gradient-to-r from-[#0077ff] to-[#00e7df] bg-clip-text text-center text-transparent",
   },
   {
-    text: "让人惊艳的电影",
+    text: "随性记录的手记",
     className: "bg-gradient-to-r from-[#7f00de] to-[#ff007f] bg-clip-text text-center text-transparent",
   },
   {
-    text: "引人深思的好书",
+    text: "私藏已久的好物",
     className: "bg-gradient-to-r from-[#ffc900] to-[#ff1835] bg-clip-text text-transparent",
   },
   {
@@ -86,8 +86,10 @@ function Hero() {
       <div className="flex justify-between gap-6">
         <div className="flex flex-col gap-2">
           <h1 className="flex flex-col flex-wrap font-[family-name:var(--font-dingtalk)] text-xl  sm:text-3xl">
-            <span>
-              我是 <span className="font-['STXingkai',cursive] text-xl italic font-medium sm:text-5xl dark:text-slate-200">Nexora</span> ，一个爱捣鼓的前端
+            <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span>我是</span>
+              <Image src="/images/signature/signature.svg" alt="Nexora" width={142} height={52} priority className="h-[23px] w-auto sm:h-[34px]" />
+              <span>，一个爱捣鼓的前端</span>
             </span>
             <span className="flex flex-wrap gap-1 leading-[30px] sm:leading-[40px]">
               <span className="pt-4 ">在这里分享</span>
