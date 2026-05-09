@@ -1,15 +1,20 @@
 import { CalendarDays } from "lucide-react";
 import type { ProjectItem } from "./projects-data";
 
+// ProjectCardProps 约束项目卡片只接收一个 ProjectItem 数据对象。
 type ProjectCardProps = {
   project: ProjectItem;
 };
 
+// ProjectCard 负责展示单个项目的头图视觉、开发时间、简介和标签列表。
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
     <article className="group flex min-h-72 flex-col overflow-hidden rounded-[1.75rem] border border-neutral-200/55 bg-white/65 p-4 shadow-[0_1px_18px_rgba(0,0,0,0.035)] backdrop-blur transition hover:-translate-y-1 hover:border-neutral-300/70 hover:bg-white/80 dark:border-white/10 dark:bg-[#101010]/82 dark:shadow-[0_18px_48px_rgba(0,0,0,0.46),inset_0_1px_0_rgba(255,255,255,0.075)] dark:hover:border-white/16 dark:hover:bg-[#151515]/88">
+      {/* 顶部视觉区使用渐变背景模拟项目封面，并包含标题和时间信息。 */}
       <div className="relative min-h-48 overflow-hidden rounded-[1.35rem] bg-gradient-to-br from-pink-100 via-orange-100 to-sky-200 p-6 dark:from-pink-500/20 dark:via-orange-400/10 dark:to-sky-400/20">
+        {/* 绝对定位的叠加层增强封面光影，不承载交互或文本。 */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.85),transparent_30%),linear-gradient(to_top,rgba(0,0,0,0.2),transparent_60%)] dark:bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.16),transparent_30%),linear-gradient(to_top,rgba(0,0,0,0.38),transparent_65%)]" />
+        {/* relative 内容层覆盖在装饰背景之上，底部对齐项目标题和开发时间。 */}
         <div className="relative flex min-h-36 flex-col justify-end">
           <h3 className="text-2xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50">{project.title}</h3>
           <div className="mt-3 inline-flex w-fit items-center gap-2 rounded-full bg-white/70 px-3 py-1.5 text-xs font-medium text-neutral-500 backdrop-blur dark:bg-neutral-950/45 dark:text-neutral-400">
@@ -19,9 +24,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
       </div>
 
+      {/* 下方正文区占满剩余高度，包含项目描述和技术标签。 */}
       <div className="flex flex-1 flex-col px-1 pt-5">
         <p className="line-clamp-3 text-sm leading-6 text-neutral-500 dark:text-neutral-400">{project.description}</p>
 
+        {/* 标签列表由 project.tags 循环生成，支持自动换行。 */}
         <div className="mt-5 flex flex-wrap gap-2">
           {project.tags.map((tag) => (
             <span key={tag} className="rounded-full border border-neutral-200/70 px-2.5 py-1 text-xs text-neutral-500 dark:border-white/10 dark:text-neutral-400">

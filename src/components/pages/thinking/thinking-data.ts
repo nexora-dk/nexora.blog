@@ -1,10 +1,16 @@
+// ThinkingItem 描述一条碎碎念动态所需的数据字段。
 export type ThinkingItem = {
+  // content 是动态正文，会保留换行并展示在气泡中。
   content: string;
+  // publishedAt 是发布日期，始终展示在作者名旁边。
   publishedAt: string;
+  // time 是可选的具体时间，存在时才渲染。
   time?: string;
+  // mood 是可选的心情或状态标签，存在时才渲染。
   mood?: string;
 };
 
+// thinkingItems 是 Thinking 页面静态动态列表，由 ThinkingContent 遍历渲染。
 export const thinkingItems: ThinkingItem[] = [
   {
     content: "有些想法不一定要立刻写成文章。先把它放在这里，像在桌角压住一张便签，等它自己慢慢长出形状。",

@@ -1,19 +1,23 @@
+/* 时间线导航面板外壳宽度：适配顶部三个筛选入口和动态列表。 */
 .panelShell {
   width: 22.5rem;
 }
 
+/* 时间线面板根容器：纵向排列筛选标签、分割线和动态列表。 */
 .timelinePanel {
   display: grid;
   padding: 0.5rem 1rem 0.2rem;
   overflow: hidden;
 }
 
+/* 时间线类型标签区域：三等分布局。 */
 .timelineTabs {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.55rem;
 }
 
+/* 单个时间线类型标签。 */
 .timelineTab {
   position: relative;
   isolation: isolate;
@@ -30,6 +34,7 @@
   transition: color 150ms ease;
 }
 
+/* 标签 hover 背景伪元素：扩大背景范围但不影响布局尺寸。 */
 .timelineTab::before {
   position: absolute;
   inset: -0.5rem -0.15rem -0.05rem;
@@ -39,42 +44,50 @@
   transition: background 150ms ease;
 }
 
+/* 标签 hover 文字颜色。 */
 .timelineTab:hover {
   color: #171717;
 }
 
+/* 标签 hover 背景。 */
 .timelineTab:hover::before {
   background: rgb(229 229 229 / 0.55);
 }
 
+/* 时间线类型图标。 */
 .timelineTabIcon {
   width: 0.88rem;
   height: 0.88rem;
   color: #18181b;
 }
 
+/* 筛选标签和近期动态之间的分隔线。 */
 .panelDivider {
   height: 1px;
   margin: 0.2rem 0 0.65rem;
   background: rgb(229 229 229 / 0.8);
 }
 
+/* 近期动态主体区域。 */
 .timelineBody {
   display: grid;
   gap: 0.5rem;
 }
 
+/* 面板分组标题。 */
 .panelHeader {
   color: rgb(115 115 115 / 0.72);
   font-size: 0.78rem;
   line-height: 1;
 }
 
+/* 近期动态列表。 */
 .activityList {
   display: grid;
   gap: 0.25rem;
 }
 
+/* 单条动态链接：左侧标题日期，右侧类型标签。 */
 .activityLink {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -87,17 +100,20 @@
   transition: background 150ms ease, color 150ms ease;
 }
 
+/* 单条动态 hover 状态。 */
 .activityLink:hover {
   background: rgb(229 229 229 / 0.55);
   color: #111827;
 }
 
+/* 动态左侧文本容器：标题和日期上下排列。 */
 .activityText {
   display: grid;
   gap: 0.28rem;
   min-width: 0;
 }
 
+/* 动态标题：单行省略，避免撑开面板。 */
 .activityTitle {
   overflow: hidden;
   font-size: 0.86rem;
@@ -107,41 +123,49 @@
   white-space: nowrap;
 }
 
+/* 动态日期。 */
 .activityDate {
   color: rgb(115 115 115 / 0.72);
   font-size: 0.78rem;
   line-height: 1.15;
 }
 
+/* 动态类型标签，例如文稿或手记。 */
 .activityType {
   color: rgb(115 115 115 / 0.72);
   font-size: 0.78rem;
   line-height: 1.15;
 }
 
+/* 暗色模式下标签和动态链接默认文字色。 */
 :global(.dark) .timelineTab,
 :global(.dark) .activityLink {
   color: rgb(244 244 245 / 0.86);
 }
 
+/* 暗色模式下标签和动态 hover 文字色。 */
 :global(.dark) .timelineTab:hover,
 :global(.dark) .activityLink:hover {
   color: #fff;
 }
 
+/* 暗色模式下动态和标签 hover 背景。 */
 :global(.dark) .activityLink:hover,
 :global(.dark) .timelineTab:hover::before {
   background: rgb(255 255 255 / 0.12);
 }
 
+/* 暗色模式下时间线图标颜色。 */
 :global(.dark) .timelineTabIcon {
   color: #fff;
 }
 
+/* 暗色模式下分隔线颜色。 */
 :global(.dark) .panelDivider {
   background: rgb(255 255 255 / 0.12);
 }
 
+/* 暗色模式下弱化信息文字。 */
 :global(.dark) .panelHeader,
 :global(.dark) .activityDate,
 :global(.dark) .activityType {

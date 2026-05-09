@@ -1,8 +1,11 @@
+// MDX 组件映射集中定义文章详情正文中各类 Markdown 标签的渲染方式。
 import { ArticleCodeBlock } from "./article-code-block";
 
+// 正文主文本颜色在标题、段落和元信息组件之间复用。
 export const articleTextColor = "text-zinc-900/90 dark:text-neutral-100/90";
 const articleMutedColor = "text-zinc-600/90 dark:text-neutral-300/90";
 
+// 生成标题锚点 id，必须与 writing-data 中目录生成逻辑保持一致。
 function slugifyHeading(title: string) {
   return title
     .trim()
@@ -11,6 +14,7 @@ function slugifyHeading(title: string) {
     .replace(/\s+/g, "-");
 }
 
+// 从 React children 中递归提取纯文本，供标题 id 和代码块内容使用。
 function getTextContent(children: React.ReactNode): string {
   if (typeof children === "string" || typeof children === "number") {
     return String(children);
@@ -23,11 +27,14 @@ function getTextContent(children: React.ReactNode): string {
   return "";
 }
 
+// 从 code 标签 className 中提取语言名，例如 language-ts 得到 ts。
 function getCodeLanguage(className?: string) {
   return className?.match(/language-(\w+)/)?.[1];
 }
 
+// articleMdxComponents 传给 MDXRemote，用于替换默认 Markdown 标签输出。
 export const articleMdxComponents = {
+  // pre 包裹代码块；识别内部 code 子节点后交给自定义代码块组件渲染。
   pre: (props: React.ComponentPropsWithoutRef<"pre">) => {
     const child = props.children;
 
@@ -40,6 +47,7 @@ export const articleMdxComponents = {
 
     return <pre {...props} />;
   },
+  // h1/h2/h3 都写入可跳转 id，并设置滚动定位间距，支撑目录锚点体验。
   h1: ({ children, ...props }: React.ComponentPropsWithoutRef<"h1">) => (
     <h1 id={slugifyHeading(getTextContent(children))} className={`scroll-mt-28 pt-8 text-[1.875rem] font-semibold leading-tight tracking-normal ${articleTextColor}`} {...props}>
       {children}
@@ -55,6 +63,7 @@ export const articleMdxComponents = {
       {children}
     </h3>
   ),
+  // 段落、列表、引用、链接和行内代码分别覆盖排版、颜色和交互细节。
   p: (props: React.ComponentPropsWithoutRef<"p">) => <p className={`font-[ui-sans-serif,system-ui,sans-serif] text-[15px] font-normal leading-[1.75] ${articleTextColor}`} {...props} />,
   ul: (props: React.ComponentPropsWithoutRef<"ul">) => <ul className={`list-disc space-y-1.5 pl-5 font-[ui-sans-serif,system-ui,sans-serif] text-[15px] font-normal leading-[1.75] marker:text-zinc-300 dark:marker:text-neutral-600 ${articleTextColor}`} {...props} />,
   ol: (props: React.ComponentPropsWithoutRef<"ol">) => <ol className={`list-decimal space-y-1.5 pl-5 font-[ui-sans-serif,system-ui,sans-serif] text-[15px] font-normal leading-[1.75] marker:text-zinc-400 dark:marker:text-neutral-500 ${articleTextColor}`} {...props} />,

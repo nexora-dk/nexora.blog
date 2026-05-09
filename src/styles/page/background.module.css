@@ -1,22 +1,31 @@
+/* 全站背景容器：为 RootLayout 中的站点外壳提供基础背景和层叠上下文。 */
 .siteBg {
+  /* position relative 让内部层级和可能的伪元素定位有参照。 */
   position: relative;
+  /* isolation 创建新的层叠上下文，避免背景效果影响外部浮层。 */
   isolation: isolate;
+  /* 横向裁剪，防止视觉装饰或动画造成水平滚动条。 */
   overflow-x: clip;
+  /* 亮色模式下使用接近白色的垂直渐变作为页面底色。 */
   background: linear-gradient(180deg, rgb(250 250 250) 0%, rgb(250 250 250) 100%);
 }
 
+/* 暗色模式背景：在 .dark 主题下切换为接近黑色的底色。 */
 :global(.dark) .siteBg {
   background: linear-gradient(180deg, rgb(10 10 10) 0%, rgb(10 10 10) 100%);
 }
 
+/* 除 header 外的直接子元素都建立相对定位，方便统一管理 z-index。 */
 .siteBg > :not(header) {
   position: relative;
 }
 
+/* 头部导航需要高于页面内容和页脚，保证悬浮菜单不被遮挡。 */
 .siteBg > header {
   z-index: 200;
 }
 
+/* 主内容和页脚保持同一层级，位于背景之上但低于头部。 */
 .siteBg > main,
 .siteBg > footer {
   z-index: 1;

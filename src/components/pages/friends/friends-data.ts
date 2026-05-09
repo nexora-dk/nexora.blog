@@ -1,10 +1,16 @@
+// FriendLink 描述友链卡片所需的全部数据字段。
 export type FriendLink = {
+  // name 用于展示站点名称，同时作为列表渲染 key。
   name: string;
+  // description 是友链简介，会在卡片内以多行截断方式展示。
   description: string;
+  // href 是点击友链卡片后的跳转地址。
   href: string;
+  // avatar 是圆形头像区域展示的字符占位。
   avatar: string;
 };
 
+// friendLinks 是友链页面的静态数据源，FriendsContent 会遍历它生成卡片列表。
 export const friendLinks: FriendLink[] = [
   {
     name: "星河旅人",

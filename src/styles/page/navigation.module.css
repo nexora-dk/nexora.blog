@@ -1,23 +1,37 @@
+/* 主导航根容器：桌面端显示，移动端默认隐藏。 */
 .nav {
+  /* 为下拉 viewport 提供定位上下文。 */
   position: relative;
+  /* 保证导航和浮层高于普通页面内容。 */
   z-index: 100;
+  /* 移动端不显示顶部横向导航。 */
   display: none;
+  /* 导航项纵向居中。 */
   align-items: center;
+  /* 导航项之间的基础间距。 */
   gap: 1.25rem;
+  /* 扩大上下面积，给 hover 面板留出可交互缓冲区。 */
   padding-block: 1rem 4rem;
+  /* 用负 margin 抵消额外 padding 对布局高度的影响。 */
   margin-block: -1rem -4rem;
+  /* 亮色模式下导航文字颜色。 */
   color: rgb(115 115 115 / 0.85);
+  /* 导航文字大小。 */
   font-size: 0.875rem;
+  /* 导航文字字重。 */
   font-weight: 500;
+  /* 导航文字行高。 */
   line-height: 1.25rem;
 }
 
+/* 中等屏幕及以上显示桌面导航。 */
 @media (width >= 48rem) {
   .nav {
     display: flex;
   }
 }
 
+/* 导航列表：横向排列所有一级导航项。 */
 .list {
   display: flex;
   align-items: center;
@@ -27,10 +41,12 @@
   list-style: none;
 }
 
+/* 暗色模式下的导航默认文字颜色。 */
 :global(.dark) .nav {
   color: rgb(163 163 163 / 0.85);
 }
 
+/* 单个导航项容器：为触发器和内容提供相对定位基础。 */
 .item {
   position: relative;
   display: flex;
@@ -38,29 +54,41 @@
 }
 
 /* ================== 一级菜单悬浮特效 ================== */
+/* 一级导航链接和触发器的基础样式。 */
 .link {
+  /* 作为 hover 装饰和溢出裁剪的定位上下文。 */
   position: relative;
+  /* 创建局部层叠上下文，避免内部装饰影响相邻项。 */
   isolation: isolate;
+  /* 让链接内容水平居中排列。 */
   display: inline-flex;
   align-items: center;
+  /* 扩大点击热区。 */
   padding: 0.25rem 0.45rem;
+  /* 用负 margin 抵消热区对导航间距的影响。 */
   margin: -0.25rem -0.45rem;
+  /* 裁剪可能出现的内部装饰效果。 */
   overflow: hidden;
+  /* 胶囊圆角。 */
   border-radius: 9999px;
+  /* 悬浮时平滑过渡颜色、阴影滤镜和字重。 */
   transition: color 150ms ease, filter 150ms ease, font-weight 150ms ease;
 }
 
+/* 亮色模式下一级导航 hover 状态。 */
 .link:hover {
   color: #111827;
   filter: drop-shadow(0 0 8px rgb(17 24 39 / 0.12));
   font-weight: 600;
 }
 
+/* 暗色模式下一级导航 hover 状态。 */
 :global(.dark) .link:hover {
   color: #fff;
   filter: drop-shadow(0 0 8px rgb(250 250 250 / 0.22));
 }
 
+/* Radix NavigationMenu viewport：承载下拉面板的玻璃拟态浮层。 */
 .viewport {
   position: absolute;
   top: 2.35rem;
@@ -72,10 +100,12 @@
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.72),
     0 16px 40px rgb(15 23 42 / 0.12);
+  /* width 和 height 由 Radix 根据当前面板尺寸动态更新，这里只负责动画。 */
   transition: width 320ms cubic-bezier(0.16, 1, 0.3, 1), height 320ms cubic-bezier(0.16, 1, 0.3, 1);
   backdrop-filter: blur(24px) saturate(150%);
 }
 
+/* 暗色模式下的下拉浮层样式。 */
 :global(.dark) .viewport {
   border-color: rgb(255 255 255 / 0.12);
   background: rgb(24 24 27 / 0.94);
@@ -84,26 +114,32 @@
     0 16px 40px rgb(0 0 0 / 0.28);
 }
 
+/* 面板内容默认不额外加内边距，具体面板自行控制内部布局。 */
 .panel {
   padding: 0;
 }
 
+/* 从左侧进入的面板动画，对应 Radix data-motion。 */
 .panel[data-motion="from-start"] {
   animation: panelFromLeft 320ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* 从右侧进入的面板动画，对应 Radix data-motion。 */
 .panel[data-motion="from-end"] {
   animation: panelFromRight 320ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* 向左侧离开的面板动画，对应 Radix data-motion。 */
 .panel[data-motion="to-start"] {
   animation: panelToLeft 320ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* 向右侧离开的面板动画，对应 Radix data-motion。 */
 .panel[data-motion="to-end"] {
   animation: panelToRight 320ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* 面板从左侧滑入。 */
 @keyframes panelFromLeft {
   from {
     transform: translateX(-100%);
@@ -114,6 +150,7 @@
   }
 }
 
+/* 面板从右侧滑入。 */
 @keyframes panelFromRight {
   from {
     transform: translateX(100%);
@@ -124,6 +161,7 @@
   }
 }
 
+/* 面板向左侧滑出。 */
 @keyframes panelToLeft {
   from {
     transform: translateX(0);
@@ -134,6 +172,7 @@
   }
 }
 
+/* 面板向右侧滑出。 */
 @keyframes panelToRight {
   from {
     transform: translateX(0);
@@ -144,10 +183,12 @@
   }
 }
 
+/* 未单独定义样式的默认面板宽度。 */
 .defaultPanelShell {
   width: 13.125rem;
 }
 
+/* 默认面板中的普通链接样式。 */
 .panelLinkPlain {
   display: block;
   padding: 0.65rem 0.75rem;
@@ -155,14 +196,17 @@
   transition: background 150ms ease, color 150ms ease;
 }
 
+/* 默认面板链接的亮色 hover 背景。 */
 .panelLinkPlain:hover {
   background: rgb(229 229 229 / 0.55);
 }
 
+/* 默认面板链接的暗色 hover 背景。 */
 :global(.dark) .panelLinkPlain:hover {
   background: rgb(255 255 255 / 0.12);
 }
 
+/* 默认面板链接标题文本。 */
 .panelLinkTitle {
   color: #262626;
   font-size: 13px;
@@ -171,7 +215,7 @@
   white-space: nowrap;
 }
 
+/* 暗色模式下默认面板链接标题。 */
 :global(.dark) .panelLinkTitle {
   color: #fff;
 }
-

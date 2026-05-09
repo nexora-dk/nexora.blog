@@ -1,17 +1,21 @@
+/* 首页导航面板外壳宽度：匹配头像、身份信息和快捷链接的横向空间。 */
 .panelShell {
   width: 18.75rem;
 }
 
+/* 首页面板根容器：提供内部留白。 */
 .homePanel {
   padding: 0.7rem;
 }
 
+/* 个人信息行：头像和身份文字横向排列。 */
 .homeProfile {
   display: flex;
   align-items: center;
   gap: 0.85rem;
 }
 
+/* 头像样式：固定尺寸、圆形裁切和内部高光边框。 */
 .homeAvatar {
   width: 3rem;
   height: 3rem;
@@ -20,23 +24,27 @@
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.55);
 }
 
+/* 身份文本容器：垂直排列昵称和在线状态。 */
 .homeIdentity {
   display: grid;
   gap: 0.2rem;
 }
 
+/* 昵称文字样式。 */
 .homeName {
   color: #111827;
   font-size: 1.1rem;
   line-height: 1.2;
 }
 
+/* 在线状态文字，使用绿色表达当前活跃。 */
 .homeStatus {
   color: #22c55e;
   font-size: .6875rem;
   line-height: 1.2;
 }
 
+/* 在线状态前的圆点，继承文字颜色形成统一的在线标识。 */
 .homeStatus::before {
   display: inline-block;
   width: 0.42rem;
@@ -48,18 +56,21 @@
   vertical-align: 0.05rem;
 }
 
+/* 面板分隔线：隔开身份信息和快捷链接。 */
 .homeDivider {
   height: 1px;
   margin: 1rem 0 0.85rem;
   background: rgb(229 229 229 / 0.86);
 }
 
+/* 快捷链接容器：允许链接换行排列。 */
 .homeLinks {
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem;
 }
 
+/* 快捷链接胶囊按钮。 */
 .homeLink {
   padding: 0.4rem 0.8rem;
   border-radius: 9999px;
@@ -70,24 +81,29 @@
   transition: background 150ms ease, color 150ms ease;
 }
 
+/* 快捷链接 hover 状态。 */
 .homeLink:hover {
   background: rgb(212 212 212 / 0.85);
   color: #171717;
 }
 
+/* 暗色模式下昵称颜色。 */
 :global(.dark) .homeName {
   color: #fff;
 }
 
+/* 暗色模式下面板分隔线颜色。 */
 :global(.dark) .homeDivider {
   background: rgb(255 255 255 / 0.12);
 }
 
+/* 暗色模式下快捷链接背景和文字。 */
 :global(.dark) .homeLink {
   background: rgb(255 255 255 / 0.12);
   color: rgb(244 244 245 / 0.82);
 }
 
+/* 暗色模式下快捷链接 hover 状态。 */
 :global(.dark) .homeLink:hover {
   background: rgb(255 255 255 / 0.18);
   color: #fff;

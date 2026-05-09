@@ -1,18 +1,22 @@
 "use client";
 
+// Client Component：首行必须保留 use client；阅读面板依赖 DOM、滚动事件和字号按钮状态。
 import { useEffect, useState } from "react";
 import type { NoteTocItem } from "./notes-data";
 
+// 阅读面板接收目录项，用于侧栏目录高亮。
 type NoteReadingPanelProps = {
   items: NoteTocItem[];
 };
 
+// 字形选项定义了正文容器上的 CSS 变量值，不改变实际 MDX 内容。
 const typographyOptions = [
   { label: "A", name: "紧凑", fontSize: "15px", lineHeight: "1.82" },
   { label: "A", name: "舒适", fontSize: "16px", lineHeight: "1.95" },
   { label: "A", name: "宽松", fontSize: "17px", lineHeight: "2.08" },
 ];
 
+// 阅读辅助面板：展示目录、全页进度和字形选择控件。
 export function NoteReadingPanel({ items }: NoteReadingPanelProps) {
   const [activeId, setActiveId] = useState(items[0]?.id);
   const [progress, setProgress] = useState(0);
@@ -22,6 +26,7 @@ export function NoteReadingPanel({ items }: NoteReadingPanelProps) {
     const option = typographyOptions[typographyIndex];
     const element = document.getElementById("note-paper-content");
 
+    // 正文容器不存在时跳过设置，避免客户端首轮渲染访问空 DOM。
     if (!element) {
       return;
     }
@@ -32,10 +37,12 @@ export function NoteReadingPanel({ items }: NoteReadingPanelProps) {
 
   useEffect(() => {
     function updateReadingState() {
+      // 进度按整个文档可滚动高度计算，与右侧目录的文章纸张进度不同。
       const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
       const nextProgress = scrollableHeight > 0 ? Math.min(100, Math.max(0, Math.round((window.scrollY / scrollableHeight) * 100))) : 0;
       setProgress(nextProgress);
 
+      // 没有目录项时只更新进度，不做标题高亮计算。
       if (items.length === 0) {
         return;
       }
@@ -66,10 +73,12 @@ export function NoteReadingPanel({ items }: NoteReadingPanelProps) {
   return (
     <aside className="sticky top-32 hidden self-start xl:block">
       <div className="space-y-6 font-[ui-sans-serif,system-ui,sans-serif] text-sm text-[#938a7f] dark:text-neutral-500">
+        {/* 有目录时才渲染目录区；没有标题的手记仍保留进度和字形控件。 */}
         {items.length > 0 ? (
           <nav className="border-l border-[#eadfce] pl-4 dark:border-white/10" aria-label="手记目录">
             <div className="mb-3 text-[11px] font-medium tracking-[0.2em] text-[#a3459e] dark:text-violet-200/80">目录</div>
             <div className="space-y-1.5">
+              {/* 循环输出目录锚点，activeId 决定当前标题的强调样式。 */}
               {items.map((item) => {
                 const isActive = activeId === item.id;
 
@@ -84,6 +93,7 @@ export function NoteReadingPanel({ items }: NoteReadingPanelProps) {
           </nav>
         ) : null}
 
+        {/* 阅读进度条根据 progress 百分比设置内部条宽度。 */}
         <div className="space-y-3 border-l border-[#eadfce] pl-4 dark:border-white/10">
           <div className="text-[11px] font-medium tracking-[0.2em] text-[#a3459e] dark:text-violet-200/80">进度</div>
           <div className="flex items-center gap-3">
@@ -94,6 +104,7 @@ export function NoteReadingPanel({ items }: NoteReadingPanelProps) {
           </div>
         </div>
 
+        {/* 字形选择循环渲染三个按钮，点击后切换正文 CSS 变量。 */}
         <div className="space-y-3 border-l border-[#eadfce] pl-4 dark:border-white/10">
           <div className="text-[11px] font-medium tracking-[0.2em] text-[#a3459e] dark:text-violet-200/80">字形选择</div>
           <div className="flex items-center gap-2">

@@ -1,9 +1,16 @@
+// React 命名空间类型用于继承 Radix 原始组件的 props。
 import * as React from "react"
+// cva 用于抽出可复用的导航触发器样式。
 import { cva } from "class-variance-authority"
+// Radix NavigationMenu 提供无障碍导航菜单的底层交互能力。
 import { NavigationMenu as NavigationMenuPrimitive } from "radix-ui"
 
+// cn 用于合并默认样式和调用方传入的 className。
 import { cn } from "@/lib/utils"
 
+/**
+ * 导航菜单根组件：封装 Radix Root，并可选择是否渲染共享 viewport。
+ */
 function NavigationMenu({
   className,
   children,
@@ -11,10 +18,13 @@ function NavigationMenu({
   viewportClassName,
   ...props
 }: React.ComponentProps<typeof NavigationMenuPrimitive.Root> & {
+  // 是否启用 Radix viewport，用于承载下拉面板动画和尺寸同步。
   viewport?: boolean
+  // 传给 viewport 的额外样式。
   viewportClassName?: string
 }) {
   return (
+    // Root 是导航菜单的交互上下文，data-slot 便于样式或调试时识别组件层级。
     <NavigationMenuPrimitive.Root
       data-slot="navigation-menu"
       data-viewport={viewport}
@@ -24,12 +34,17 @@ function NavigationMenu({
       )}
       {...props}
     >
+      {/* 调用方传入的导航列表和条目。 */}
       {children}
+      {/* 启用 viewport 时渲染浮层容器，用于承载菜单内容面板。 */}
       {viewport && <NavigationMenuViewport className={viewportClassName} />}
     </NavigationMenuPrimitive.Root>
   )
 }
 
+/**
+ * 导航菜单列表：封装 Radix List 并统一横向排列样式。
+ */
 function NavigationMenuList({
   className,
   ...props
@@ -46,6 +61,9 @@ function NavigationMenuList({
   )
 }
 
+/**
+ * 导航菜单项：封装 Radix Item，作为触发器和内容的相对定位父级。
+ */
 function NavigationMenuItem({
   className,
   ...props
@@ -59,10 +77,14 @@ function NavigationMenuItem({
   )
 }
 
+// 导航触发器基础样式，保持透明背景、居中对齐和禁用态表现。
 const navigationMenuTriggerStyle = cva(
   "group/navigation-menu-trigger inline-flex w-max items-center justify-center bg-transparent text-sm font-medium transition-all outline-none disabled:pointer-events-none disabled:opacity-50"
 )
 
+/**
+ * 导航菜单触发器：用于打开对应的下拉内容面板。
+ */
 function NavigationMenuTrigger({
   className,
   children,
@@ -74,11 +96,15 @@ function NavigationMenuTrigger({
       className={cn(navigationMenuTriggerStyle(), "group", className)}
       {...props}
     >
+      {/* 触发器内部内容通常是导航标题和装饰元素。 */}
       {children}
     </NavigationMenuPrimitive.Trigger>
   )
 }
 
+/**
+ * 导航菜单内容：承载每个导航项展开后的面板内容和进出场动画类。
+ */
 function NavigationMenuContent({
   className,
   ...props
@@ -95,16 +121,23 @@ function NavigationMenuContent({
   )
 }
 
+/**
+ * 导航菜单 viewport：负责定位并渲染 Radix 下拉浮层的尺寸动画容器。
+ */
 function NavigationMenuViewport({
   className,
   ...props
 }: React.ComponentProps<typeof NavigationMenuPrimitive.Viewport>) {
   return (
+    // 外层 div 负责把 viewport 定位到当前触发项下方，并基于 CSS 变量水平居中。
     <div
       className="absolute isolate z-50 flex justify-center"
       style={{
+        // 与导航触发器保持适当垂直距离。
         top: "1.85rem",
+        // Radix 会维护 --navigation-menu-viewport-x，让浮层跟随触发项。
         left: "var(--navigation-menu-viewport-x, 50%)",
+        // 将自身中心对齐到 left 指定位置。
         transform: "translateX(-50%)",
       }}
     >
@@ -120,6 +153,9 @@ function NavigationMenuViewport({
   )
 }
 
+/**
+ * 导航菜单链接：封装 Radix Link，统一菜单内链接的间距和焦点样式。
+ */
 function NavigationMenuLink({
   className,
   ...props
@@ -136,6 +172,9 @@ function NavigationMenuLink({
   )
 }
 
+/**
+ * 导航菜单指示器：在触发项下方显示小箭头，指向当前展开的浮层。
+ */
 function NavigationMenuIndicator({
   className,
   ...props
@@ -149,11 +188,13 @@ function NavigationMenuIndicator({
       )}
       {...props}
     >
+      {/* 旋转 45 度的小方块形成箭头视觉。 */}
       <div className="relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm bg-border shadow-md" />
     </NavigationMenuPrimitive.Indicator>
   )
 }
 
+// 统一导出封装后的导航菜单组件，供站点导航按需组合使用。
 export {
   NavigationMenu,
   NavigationMenuList,

@@ -1,14 +1,24 @@
+// ProjectItem 描述项目卡片展示所需的数据结构。
 export type ProjectItem = {
+  // title 是项目名称，同时用于列表 key。
   title: string;
+  // description 是项目简介，会在卡片正文中显示并限制行数。
   description: string;
+  // status 表示项目阶段，当前数据保留给后续展示扩展。
   status: string;
+  // category 表示项目分类，当前数据保留给后续展示扩展。
   category: string;
+  // tags 是技术或主题标签数组，ProjectCard 会循环渲染。
   tags: string[];
+  // href 是可选的项目访问地址。
   href?: string;
+  // repoHref 是可选的代码仓库地址。
   repoHref?: string;
+  // developmentTime 是项目开发或计划时间，在卡片头图区域展示。
   developmentTime: string;
 };
 
+// projectItems 是项目页面的静态项目列表，由 ProjectsContent 遍历生成卡片。
 export const projectItems: ProjectItem[] = [
   {
     title: "Personal Blog",
@@ -48,4 +58,5 @@ export const projectItems: ProjectItem[] = [
   },
 ];
 
+// projectStats 是项目页可复用的概览文案，当前文件只负责集中导出数据。
 export const projectStats = ["持续迭代中", "开源优先", "记录构建过程"];

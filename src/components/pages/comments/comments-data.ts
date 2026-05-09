@@ -1,21 +1,31 @@
+// CommentReply 描述一条评论回复的数据结构。
 export type CommentReply = {
+  // name 是回复者名称。
   name: string;
+  // role 是可选身份标签，例如站长。
   role?: string;
+  // date 是回复时间文案。
   date: string;
+  // message 是回复正文。
   message: string;
+  // avatar 是头像字符占位。
   avatar: string;
 };
 
+// CommentItem 描述顶层留言，字段在 CommentCard 和 CommentBubble 中消费。
 export type CommentItem = {
   name: string;
   role?: string;
   date: string;
+  // location 只存在于顶层留言，渲染前会用 in 运算符判断。
   location?: string;
   message: string;
   avatar: string;
+  // replies 是可选回复列表，存在时会在顶层留言下循环渲染。
   replies?: CommentReply[];
 };
 
+// commentItems 是留言页面的静态数据源，用于展示初始留言和回复。
 export const commentItems: CommentItem[] = [
   {
     name: "路过的朋友",

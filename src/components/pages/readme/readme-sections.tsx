@@ -1,6 +1,8 @@
+// ReadmeSections 负责渲染自述页面正文，section id 与 readmeTocItems 的锚点保持对应。
 export function ReadmeSections() {
   return (
     <article className="max-w-[52rem] space-y-16 text-zinc-700 dark:text-neutral-200">
+      {/* intro 区块：自述开头，包含主标题和两段个人介绍。 */}
       <section id="intro" className="scroll-mt-28 space-y-7 pt-8">
         <h1 className="-mt-4 font-[family-name:var(--font-dingtalk)] text-4xl font-semibold tracking-tight text-zinc-950 dark:text-neutral-50 md:text-5xl">自述</h1>
         <div className="space-y-5 text-[1.05rem] font-medium leading-9">
@@ -13,6 +15,7 @@ export function ReadmeSections() {
         </div>
       </section>
 
+      {/* interests 区块：通过左侧时间线圆点和边框强调兴趣爱好段落。 */}
       <section id="interests" className="relative scroll-mt-28 space-y-6 border-l border-zinc-200/70 pl-6 dark:border-white/10">
         <span className="absolute -left-[5px] top-3 size-2.5 rounded-full bg-sky-400 ring-4 ring-white dark:ring-neutral-950" />
         <h2 className="font-[family-name:var(--font-dingtalk)] text-3xl font-semibold tracking-tight text-zinc-950 dark:text-neutral-50">兴趣爱好</h2>
@@ -21,9 +24,11 @@ export function ReadmeSections() {
         </p>
       </section>
 
+      {/* status 区块：展示当前学习和成长状态，列表项逐条说明。 */}
       <section id="status" className="relative scroll-mt-28 space-y-6 border-l border-zinc-200/70 pl-6 dark:border-white/10">
         <span className="absolute -left-[5px] top-3 size-2.5 rounded-full bg-sky-400 ring-4 ring-white dark:ring-neutral-950" />
         <h2 className="font-[family-name:var(--font-dingtalk)] text-3xl font-semibold tracking-tight text-zinc-950 dark:text-neutral-50">目前状况</h2>
+        {/* 当前状况使用列表渲染固定条目，每条由小圆点和文本组成。 */}
         <ul className="space-y-3 text-[1.02rem] font-medium leading-8 text-zinc-700 dark:text-neutral-200">
           <li className="flex gap-3">
             <span className="mt-3 size-1.5 rounded-full bg-zinc-400 dark:bg-neutral-500" />
@@ -36,6 +41,7 @@ export function ReadmeSections() {
         </ul>
       </section>
 
+      {/* future 区块：自述收尾段，底部 padding 保证滚动到末尾仍有呼吸感。 */}
       <section id="future" className="relative scroll-mt-28 space-y-6 border-l border-zinc-200/70 pb-12 pl-6 dark:border-white/10">
         <span className="absolute -left-[5px] top-3 size-2.5 rounded-full bg-sky-400 ring-4 ring-white dark:ring-neutral-950" />
         <h2 className="font-[family-name:var(--font-dingtalk)] text-3xl font-semibold tracking-tight text-zinc-950 dark:text-neutral-50">展望未来</h2>

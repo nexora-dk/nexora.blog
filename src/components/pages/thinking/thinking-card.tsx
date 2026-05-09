@@ -2,23 +2,30 @@ import Image from "next/image";
 import avatarImage from "@/../public/images/avatar/avatar.jpg";
 import type { ThinkingItem } from "./thinking-data";
 
+// ThinkingCardProps 约束动态卡片只接收一条 ThinkingItem 数据。
 type ThinkingCardProps = {
   item: ThinkingItem;
 };
 
+// ThinkingCard 负责把单条碎碎念渲染成头像加内容气泡的结构。
 export function ThinkingCard({ item }: ThinkingCardProps) {
   return (
     <article className="grid grid-cols-[2.75rem_minmax(0,1fr)] gap-4">
+      {/* 左侧固定展示站长头像，作为每条动态的作者标识。 */}
       <Image src={avatarImage} alt="Nexora 头像" className="mt-1 size-11 rounded-full object-cover ring-1 ring-zinc-200/80 dark:ring-white/10" />
 
+      {/* 右侧内容区包含作者信息、发布时间和正文气泡。 */}
       <div className="min-w-0">
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
           <span className="text-base font-medium text-zinc-950 dark:text-neutral-50">Nexora</span>
           <time className="text-xs text-zinc-400 dark:text-neutral-500">{item.publishedAt}</time>
+          {/* 条件渲染具体时间：没有 time 时不占位。 */}
           {item.time ? <span className="text-xs tabular-nums text-zinc-400 dark:text-neutral-500">{item.time}</span> : null}
+          {/* 条件渲染心情标签：没有 mood 时保持信息行简洁。 */}
           {item.mood ? <span className="text-xs text-sky-500 dark:text-sky-300/80">{item.mood}</span> : null}
         </div>
 
+        {/* 正文气泡用于承载动态内容，whitespace-pre-line 支持文本中的换行。 */}
         <div className="mt-3 w-fit max-w-full rounded-2xl rounded-tl-md bg-zinc-100/85 px-4 py-3 dark:bg-white/[0.07]">
           <p className="whitespace-pre-line text-[0.96rem] font-medium leading-7 text-zinc-700 dark:text-neutral-200">{item.content}</p>
         </div>

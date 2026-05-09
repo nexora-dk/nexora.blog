@@ -1,17 +1,21 @@
+/* 手记导航面板外壳宽度：容纳左侧专栏和右侧近期手记双栏。 */
 .panelShell {
   width: 30rem;
 }
 
+/* 手记面板根容器：使用 grid 方便主体和底部分区排列。 */
 .notesPanel {
   display: grid;
 }
 
+/* 面板主体双栏布局：左侧固定专栏宽度，右侧自适应手记列表。 */
 .panelBody {
   display: grid;
   grid-template-columns: 10rem minmax(0, 1fr);
   min-height: 15rem;
 }
 
+/* 专栏列：顶部对齐，并用右边框和近期手记列分隔。 */
 .categoriesColumn {
   display: grid;
   align-content: start;
@@ -20,6 +24,7 @@
   border-right: 1px solid rgb(229 229 229 / 0.78);
 }
 
+/* 近期手记列。 */
 .postsColumn {
   display: grid;
   align-content: start;
@@ -27,6 +32,7 @@
   padding: 0.55rem 0.8rem 0.5rem 1.75rem;
 }
 
+/* 面板分组标题。 */
 .panelHeader {
   color: rgb(115 115 115 / 0.72);
   font-size: 0.78rem;
@@ -34,11 +40,13 @@
   padding-left: 0.3rem;
 }
 
+/* 专栏链接列表。 */
 .categoryList {
   display: grid;
   gap: 0.45rem;
 }
 
+/* 单个专栏链接。 */
 .categoryLink {
   display: flex;
   align-items: center;
@@ -52,11 +60,13 @@
   transition: background 150ms ease, color 150ms ease;
 }
 
+/* 专栏链接 hover 状态。 */
 .categoryLink:hover {
   background: rgb(229 229 229 / 0.55);
   color: #171717;
 }
 
+/* 专栏标签：表情图标和专栏名水平排列。 */
 .categoryLabel {
   display: inline-flex;
   align-items: center;
@@ -64,11 +74,13 @@
   white-space: nowrap;
 }
 
+/* 近期手记列表。 */
 .postList {
   display: grid;
   gap: 0.45rem;
 }
 
+/* 单个手记链接：标题和日期上下排列。 */
 .postLink {
   display: grid;
   gap: 0.35rem;
@@ -79,22 +91,26 @@
   transition: background 150ms ease, color 150ms ease;
 }
 
+/* 手记链接 hover 状态。 */
 .postLink:hover {
   background: rgb(229 229 229 / 0.55);
   color: #111827;
 }
 
+/* 手记标题：加粗并保持单行。 */
 .postTitle {
   font-size: .875rem;
   font-weight: 600;
   white-space: nowrap;
 }
 
+/* 手记日期或相对时间。 */
 .postDate {
   color: rgb(115 115 115 / 0.72);
   font-size: 0.8rem;
 }
 
+/* 面板底部：展示查看全部和全部专栏入口。 */
 .panelFooter {
   display: flex;
   align-items: center;
@@ -108,35 +124,42 @@
   line-height: 1.2;
 }
 
+/* 面板底部链接 hover 状态。 */
 .panelFooter a:hover {
   color: #171717;
 }
 
+/* 暗色模式下专栏列分隔线。 */
 :global(.dark) .categoriesColumn {
   border-right-color: rgb(255 255 255 / 0.12);
 }
 
+/* 暗色模式下弱化信息文字。 */
 :global(.dark) .panelHeader,
 :global(.dark) .postDate,
 :global(.dark) .panelFooter {
   color: rgb(212 212 216 / 0.7);
 }
 
+/* 暗色模式下链接默认文字色。 */
 :global(.dark) .categoryLink,
 :global(.dark) .postLink {
   color: rgb(244 244 245 / 0.86);
 }
 
+/* 暗色模式下专栏和手记链接 hover 状态。 */
 :global(.dark) .categoryLink:hover,
 :global(.dark) .postLink:hover {
   background: rgb(255 255 255 / 0.12);
   color: #fff;
 }
 
+/* 暗色模式下面板底部链接 hover。 */
 :global(.dark) .panelFooter a:hover {
   color: #fff;
 }
 
+/* 暗色模式下面板底部分隔线。 */
 :global(.dark) .panelFooter {
   border-top-color: rgb(255 255 255 / 0.12);
 }

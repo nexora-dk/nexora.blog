@@ -1,5 +1,6 @@
 import type { StaticImageData } from "next/image";
 
+// 这些静态图片导入会被 Next.js 处理成 StaticImageData，供 Image 组件直接使用。
 import badmintonPhoto from "../../../../public/images/about-me/badminton.jpg";
 import birthdayPhoto from "../../../../public/images/about-me/birthday.jpg";
 import esfjPhoto from "../../../../public/images/about-me/esfj.png";
@@ -13,13 +14,19 @@ import piscesPhoto from "../../../../public/images/about-me/Pisces.jpg";
 import strongPhoto from "../../../../public/images/about-me/Strong.jpg";
 import swimmingPhoto from "../../../../public/images/about-me/Swimming.jpg";
 
+// GalleryPhoto 描述相册中一张图片的展示数据。
 export type GalleryPhoto = {
+  // image 是静态导入后的图片对象。
   image: StaticImageData;
+  // alt 提供图片无障碍替代文本，也用于瀑布流按钮 key。
   alt: string;
+  // title 是图片标题，会在封面、悬浮层和灯箱底部展示。
   title: string;
+  // location 是地点或场景文案，会搭配定位图标展示。
   location: string;
 };
 
+// featuredPhoto 是相册页顶部精选大图的数据源。
 export const featuredPhoto: GalleryPhoto = {
   image: photographyPhoto,
   alt: "相册封面风景照",
@@ -27,6 +34,7 @@ export const featuredPhoto: GalleryPhoto = {
   location: "Somewhere",
 };
 
+// galleryPhotos 是灯箱瀑布流的数据源，GalleryLightbox 会按顺序循环渲染。
 export const galleryPhotos: GalleryPhoto[] = [
   { image: photographyPhoto, alt: "风景照片 1", title: "山野云层", location: "旅途中" },
   { image: meFourPhoto, alt: "风景照片 2", title: "海边片刻", location: "海岸线" },

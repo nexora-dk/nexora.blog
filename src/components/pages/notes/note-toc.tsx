@@ -1,23 +1,28 @@
 "use client";
 
+// Client Component：首行必须保留 use client；目录高亮和阅读进度依赖滚动监听。
 import { useEffect, useState } from "react";
 import { RotateCw } from "lucide-react";
 import type { NoteTocItem } from "./notes-data";
 
+// 目录接收从 Markdown 二、三级标题解析出的条目。
 type NoteTocProps = {
   items: NoteTocItem[];
 };
 
+// 桌面侧边目录：根据滚动位置高亮当前标题，并显示文章内阅读进度。
 export function NoteToc({ items }: NoteTocProps) {
   const [activeId, setActiveId] = useState(items[0]?.id);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    // 没有标题时不注册滚动监听，组件后续也会条件渲染为空。
     if (items.length === 0) {
       return;
     }
 
     function updateTocState() {
+      // 按目录顺序寻找最后一个越过阈值的标题，作为当前阅读位置。
       const nextActiveId = items.reduce((currentId, item) => {
         const element = document.getElementById(item.id);
 
@@ -29,6 +34,7 @@ export function NoteToc({ items }: NoteTocProps) {
       }, items[0].id);
       const paperElement = document.getElementById("note-paper");
 
+      // 如果纸张容器不存在，仍更新当前标题，但进度回到 0。
       if (!paperElement) {
         setActiveId(nextActiveId);
         setProgress(0);
@@ -54,6 +60,7 @@ export function NoteToc({ items }: NoteTocProps) {
     };
   }, [items]);
 
+  // 没有目录数据时不渲染 aside，避免空导航出现在页面上。
   if (items.length === 0) {
     return null;
   }
@@ -61,11 +68,13 @@ export function NoteToc({ items }: NoteTocProps) {
   return (
     <aside className="sticky top-32 w-52 self-start">
       <nav className="border-l border-zinc-200/80 pl-4 font-[ui-sans-serif,system-ui,sans-serif] text-xs dark:border-white/10" aria-label="手记目录">
+        {/* 目录标题区作为侧栏识别，不参与跳转。 */}
         <div className="mb-2 flex items-center gap-2 text-[10px] font-medium tracking-[0.18em] text-zinc-300 dark:text-neutral-600">
           <span className="h-px w-4 bg-zinc-200 dark:bg-white/10" />
           目录
         </div>
         <div className="space-y-1">
+          {/* 循环渲染目录项，三级标题额外缩进并显示小圆点。 */}
           {items.map((item) => {
             const isActive = activeId === item.id;
 
@@ -78,6 +87,7 @@ export function NoteToc({ items }: NoteTocProps) {
           })}
         </div>
 
+        {/* 阅读进度区与目录分隔，显示当前纸张阅读百分比。 */}
         <div className="mt-5 border-t border-zinc-200/80 pt-4 text-zinc-500 dark:border-white/10 dark:text-neutral-400">
           <div className="mb-4 h-px bg-zinc-100 dark:bg-white/[0.06]" />
           <div className="flex items-center gap-2 text-sm font-medium tabular-nums">

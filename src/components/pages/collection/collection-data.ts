@@ -1,3 +1,4 @@
+// simple-icons 图标名称白名单，CollectionCard 会用这些字符串映射到具体图标组件。
 export type SimpleIconName =
   | "tldraw"
   | "excalidraw"
@@ -16,19 +17,23 @@ export type SimpleIconName =
   | "shadcnui"
   | "daisyui";
 
+// 收藏图标的联合类型：可以使用 simple-icons，也可以使用本地图片资源。
 export type CollectionIcon =
   | {
+      // simple 类型通过 name 从映射表中找到对应图标组件。
       type: "simple";
       name: SimpleIconName;
       className?: string;
     }
   | {
+      // image 类型通过 src/alt 渲染本地图片；src 为空时由卡片组件展示占位图标。
       type: "image";
       src?: string;
       alt?: string;
       className?: string;
     };
 
+// 单个收藏条目的数据结构，href 可选以支持暂不提供跳转的收藏项。
 export type CollectionItem = {
   title: string;
   description: string;
@@ -36,11 +41,13 @@ export type CollectionItem = {
   icon: CollectionIcon;
 };
 
+// 收藏分组结构，页面按 group 渲染标题和卡片网格。
 export type CollectionGroup = {
   title: string;
   items: CollectionItem[];
 };
 
+// 收藏页面的完整分组数据源，按工具、设计、开发、组件库等主题组织。
 export const collectionGroups: CollectionGroup[] = [
   {
     title: "好用工具",

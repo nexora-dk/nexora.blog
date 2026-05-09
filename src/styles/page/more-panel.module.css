@@ -1,12 +1,15 @@
+/* 更多导航面板外壳宽度：适配图标、标题和说明文案。 */
 .panelShell {
   width: 13.125rem;
 }
 
+/* 更多面板根容器：纵向排列入口链接。 */
 .morePanel {
   display: grid;
   gap: 0.25rem;
 }
 
+/* 单个更多入口链接：左侧图标，右侧文字。 */
 .panelLink {
   display: grid;
   grid-template-columns: 1rem minmax(0, 1fr);
@@ -17,10 +20,12 @@
   transition: background 150ms ease, color 150ms ease;
 }
 
+/* 亮色模式下入口 hover 背景。 */
 .panelLink:hover {
   background: rgb(229 229 229 / 0.55);
 }
 
+/* 入口图标样式：固定尺寸并设置默认颜色。 */
 .panelIcon {
   width: 0.9375rem;
   height: 0.9375rem;
@@ -28,12 +33,14 @@
   font-weight: 900;
 }
 
+/* 入口文字容器：垂直排列标题和说明，并允许内容收缩。 */
 .panelLinkText {
   display: grid;
   min-width: 0;
   gap: 0.15rem;
 }
 
+/* 入口标题文字。 */
 .panelLinkTitle {
   color: #262626;
   font-size: 13px;
@@ -42,6 +49,7 @@
   white-space: nowrap;
 }
 
+/* 入口说明文字，字号更小并保持单行。 */
 .panelLinkDescription {
   color: rgb(115 115 115 / 0.86);
   font-size: 11px;
@@ -49,18 +57,22 @@
   white-space: nowrap;
 }
 
+/* 暗色模式下入口 hover 背景。 */
 :global(.dark) .panelLink:hover {
   background: rgb(255 255 255 / 0.12);
 }
 
+/* 暗色模式下入口图标颜色。 */
 :global(.dark) .panelIcon {
   color: #fff;
 }
 
+/* 暗色模式下入口标题颜色。 */
 :global(.dark) .panelLinkTitle {
   color: #fff;
 }
 
+/* 暗色模式下入口说明颜色。 */
 :global(.dark) .panelLinkDescription {
   color: rgb(212 212 216 / 0.7);
 }

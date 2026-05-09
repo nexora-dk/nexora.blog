@@ -1,153 +1,274 @@
+/* 引入 Tailwind CSS v4 的核心样式和工具类生成能力。 */
 @import "tailwindcss";
+/* 引入动画工具扩展，供页面入场、菜单和交互动效复用。 */
 @import "tw-animate-css";
+/* 引入 shadcn 预设的 Tailwind 样式层，补齐组件主题变量和基础规则。 */
 @import "shadcn/tailwind.css";
 
+/* 自定义 dark 变体：当元素自身或祖先处于 .dark 下时启用暗色模式工具类。 */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* 亮色主题变量：为 shadcn/Tailwind 主题提供默认颜色、圆角和侧边栏配色。 */
 :root {
+  /* 声明浏览器原生控件使用亮色配色。 */
   color-scheme: light;
+  /* 页面背景色。 */
   --background: oklch(1 0 0);
+  /* 页面前景文字色。 */
   --foreground: oklch(0.145 0 0);
+  /* 卡片背景色。 */
   --card: oklch(1 0 0);
+  /* 卡片前景文字色。 */
   --card-foreground: oklch(0.145 0 0);
+  /* 弹层背景色。 */
   --popover: oklch(1 0 0);
+  /* 弹层前景文字色。 */
   --popover-foreground: oklch(0.145 0 0);
+  /* 主色。 */
   --primary: oklch(0.205 0 0);
+  /* 主色上的文字色。 */
   --primary-foreground: oklch(0.985 0 0);
+  /* 次级背景色。 */
   --secondary: oklch(0.97 0 0);
+  /* 次级背景上的文字色。 */
   --secondary-foreground: oklch(0.205 0 0);
+  /* 弱化区域背景色。 */
   --muted: oklch(0.97 0 0);
+  /* 弱化区域文字色。 */
   --muted-foreground: oklch(0.556 0 0);
+  /* 强调区域背景色。 */
   --accent: oklch(0.97 0 0);
+  /* 强调区域文字色。 */
   --accent-foreground: oklch(0.205 0 0);
+  /* 危险操作颜色。 */
   --destructive: oklch(0.577 0.245 27.325);
+  /* 默认边框颜色。 */
   --border: oklch(0.922 0 0);
+  /* 表单输入边框或背景辅助色。 */
   --input: oklch(0.922 0 0);
+  /* 聚焦环颜色。 */
   --ring: oklch(0.708 0 0);
+  /* 图表辅助色 1。 */
   --chart-1: oklch(0.87 0 0);
+  /* 图表辅助色 2。 */
   --chart-2: oklch(0.556 0 0);
+  /* 图表辅助色 3。 */
   --chart-3: oklch(0.439 0 0);
+  /* 图表辅助色 4。 */
   --chart-4: oklch(0.371 0 0);
+  /* 图表辅助色 5。 */
   --chart-5: oklch(0.269 0 0);
+  /* 基础圆角半径，后续半径 token 都从这里推导。 */
   --radius: 0.625rem;
+  /* 侧边栏背景色。 */
   --sidebar: oklch(0.985 0 0);
+  /* 侧边栏文字色。 */
   --sidebar-foreground: oklch(0.145 0 0);
+  /* 侧边栏主色。 */
   --sidebar-primary: oklch(0.205 0 0);
+  /* 侧边栏主色上的文字色。 */
   --sidebar-primary-foreground: oklch(0.985 0 0);
+  /* 侧边栏强调背景色。 */
   --sidebar-accent: oklch(0.97 0 0);
+  /* 侧边栏强调文字色。 */
   --sidebar-accent-foreground: oklch(0.205 0 0);
+  /* 侧边栏边框色。 */
   --sidebar-border: oklch(0.922 0 0);
+  /* 侧边栏聚焦环色。 */
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+/* 暗色主题变量：当 html 上存在 .dark 时覆盖亮色主题 token。 */
 .dark {
+  /* 声明浏览器原生控件使用暗色配色。 */
   color-scheme: dark;
+  /* 暗色页面背景。 */
   --background: oklch(0.145 0 0);
+  /* 暗色页面文字。 */
   --foreground: oklch(0.985 0 0);
+  /* 暗色卡片背景。 */
   --card: oklch(0.205 0 0);
+  /* 暗色卡片文字。 */
   --card-foreground: oklch(0.985 0 0);
+  /* 暗色弹层背景。 */
   --popover: oklch(0.205 0 0);
+  /* 暗色弹层文字。 */
   --popover-foreground: oklch(0.985 0 0);
+  /* 暗色主色。 */
   --primary: oklch(0.922 0 0);
+  /* 暗色主色上的文字色。 */
   --primary-foreground: oklch(0.205 0 0);
+  /* 暗色次级背景。 */
   --secondary: oklch(0.269 0 0);
+  /* 暗色次级文字。 */
   --secondary-foreground: oklch(0.985 0 0);
+  /* 暗色弱化背景。 */
   --muted: oklch(0.269 0 0);
+  /* 暗色弱化文字。 */
   --muted-foreground: oklch(0.708 0 0);
+  /* 暗色强调背景。 */
   --accent: oklch(0.269 0 0);
+  /* 暗色强调文字。 */
   --accent-foreground: oklch(0.985 0 0);
+  /* 暗色危险操作颜色。 */
   --destructive: oklch(0.704 0.191 22.216);
+  /* 暗色边框颜色，带透明度以降低硬边感。 */
   --border: oklch(1 0 0 / 10%);
+  /* 暗色输入区域颜色，略高于边框透明度。 */
   --input: oklch(1 0 0 / 15%);
+  /* 暗色聚焦环颜色。 */
   --ring: oklch(0.556 0 0);
+  /* 暗色图表辅助色 1。 */
   --chart-1: oklch(0.87 0 0);
+  /* 暗色图表辅助色 2。 */
   --chart-2: oklch(0.556 0 0);
+  /* 暗色图表辅助色 3。 */
   --chart-3: oklch(0.439 0 0);
+  /* 暗色图表辅助色 4。 */
   --chart-4: oklch(0.371 0 0);
+  /* 暗色图表辅助色 5。 */
   --chart-5: oklch(0.269 0 0);
+  /* 暗色侧边栏背景。 */
   --sidebar: oklch(0.205 0 0);
+  /* 暗色侧边栏文字。 */
   --sidebar-foreground: oklch(0.985 0 0);
+  /* 暗色侧边栏主色。 */
   --sidebar-primary: oklch(0.488 0.243 264.376);
+  /* 暗色侧边栏主色文字。 */
   --sidebar-primary-foreground: oklch(0.985 0 0);
+  /* 暗色侧边栏强调背景。 */
   --sidebar-accent: oklch(0.269 0 0);
+  /* 暗色侧边栏强调文字。 */
   --sidebar-accent-foreground: oklch(0.985 0 0);
+  /* 暗色侧边栏边框。 */
   --sidebar-border: oklch(1 0 0 / 10%);
+  /* 暗色侧边栏聚焦环。 */
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* 全局盒模型重置：让宽高计算包含 padding 和 border。 */
 * {
   box-sizing: border-box;
 }
 
+/* 开启浏览器原生平滑滚动，配合返回顶部按钮和目录跳转。 */
 html {
   scroll-behavior: smooth;
 }
 
+/* 页面基础 body：清除默认外边距并保证最小高度覆盖视口。 */
 body {
   margin: 0;
   min-height: 100vh;
 }
 
+/* 链接默认继承文字颜色并取消下划线，由组件自行定义 hover 样式。 */
 a {
   color: inherit;
   text-decoration: none;
 }
 
+/* Tailwind v4 主题映射：把 CSS 变量暴露成可用的 color、font 和 radius token。 */
 @theme inline {
+  /* 标题字体映射到全站 sans 字体变量。 */
   --font-heading: var(--font-sans);
+  /* 正文字体映射到 RootLayout 注入的字体变量。 */
   --font-sans: var(--font-sans);
+  /* 侧边栏聚焦环颜色 token。 */
   --color-sidebar-ring: var(--sidebar-ring);
+  /* 侧边栏边框颜色 token。 */
   --color-sidebar-border: var(--sidebar-border);
+  /* 侧边栏强调文字颜色 token。 */
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  /* 侧边栏强调背景颜色 token。 */
   --color-sidebar-accent: var(--sidebar-accent);
+  /* 侧边栏主色文字 token。 */
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  /* 侧边栏主色 token。 */
   --color-sidebar-primary: var(--sidebar-primary);
+  /* 侧边栏文字色 token。 */
   --color-sidebar-foreground: var(--sidebar-foreground);
+  /* 侧边栏背景色 token。 */
   --color-sidebar: var(--sidebar);
+  /* 图表颜色 token 5。 */
   --color-chart-5: var(--chart-5);
+  /* 图表颜色 token 4。 */
   --color-chart-4: var(--chart-4);
+  /* 图表颜色 token 3。 */
   --color-chart-3: var(--chart-3);
+  /* 图表颜色 token 2。 */
   --color-chart-2: var(--chart-2);
+  /* 图表颜色 token 1。 */
   --color-chart-1: var(--chart-1);
+  /* 聚焦环颜色 token。 */
   --color-ring: var(--ring);
+  /* 输入区域颜色 token。 */
   --color-input: var(--input);
+  /* 边框颜色 token。 */
   --color-border: var(--border);
+  /* 危险操作颜色 token。 */
   --color-destructive: var(--destructive);
+  /* 强调文字颜色 token。 */
   --color-accent-foreground: var(--accent-foreground);
+  /* 强调背景颜色 token。 */
   --color-accent: var(--accent);
+  /* 弱化文字颜色 token。 */
   --color-muted-foreground: var(--muted-foreground);
+  /* 弱化背景颜色 token。 */
   --color-muted: var(--muted);
+  /* 次级文字颜色 token。 */
   --color-secondary-foreground: var(--secondary-foreground);
+  /* 次级背景颜色 token。 */
   --color-secondary: var(--secondary);
+  /* 主色文字 token。 */
   --color-primary-foreground: var(--primary-foreground);
+  /* 主色 token。 */
   --color-primary: var(--primary);
+  /* 弹层文字颜色 token。 */
   --color-popover-foreground: var(--popover-foreground);
+  /* 弹层背景颜色 token。 */
   --color-popover: var(--popover);
+  /* 卡片文字颜色 token。 */
   --color-card-foreground: var(--card-foreground);
+  /* 卡片背景颜色 token。 */
   --color-card: var(--card);
+  /* 前景文字颜色 token。 */
   --color-foreground: var(--foreground);
+  /* 页面背景颜色 token。 */
   --color-background: var(--background);
+  /* 小圆角 token。 */
   --radius-sm: calc(var(--radius) * 0.6);
+  /* 中等圆角 token。 */
   --radius-md: calc(var(--radius) * 0.8);
+  /* 大圆角 token。 */
   --radius-lg: var(--radius);
+  /* 加大圆角 token。 */
   --radius-xl: calc(var(--radius) * 1.4);
+  /* 2xl 圆角 token。 */
   --radius-2xl: calc(var(--radius) * 1.8);
+  /* 3xl 圆角 token。 */
   --radius-3xl: calc(var(--radius) * 2.2);
+  /* 4xl 圆角 token。 */
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* 基础样式层：把主题变量应用到全站默认元素。 */
 @layer base {
+  /* 所有元素默认使用主题边框色和半透明聚焦轮廓。 */
   * {
     @apply border-border outline-ring/50;
   }
+  /* body 使用主题背景色和文字色。 */
   body {
     @apply bg-background text-foreground;
   }
+  /* html 使用全站 sans 字体。 */
   html {
     @apply font-sans;
   }
 }
 
+/* 页面整体入场动画：用于 PageTransition 的外层容器。 */
 @keyframes page-enter-soft {
   from {
     opacity: 0.001;
@@ -159,6 +280,7 @@ a {
   }
 }
 
+/* 页面子元素入场动画：让内容区块比外层稍微错峰出现。 */
 @keyframes page-enter-item {
   from {
     opacity: 0.001;
@@ -170,36 +292,45 @@ a {
   }
 }
 
+/* 页面入场工具类：控制路由切换时的整体与子元素动画。 */
 @layer utilities {
+  /* 外层页面容器的柔和入场动画。 */
   .page-enter-soft {
     animation: page-enter-soft 820ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
     backface-visibility: hidden;
   }
 
+  /* 页面主要子区块使用错峰入场动画。 */
   .page-enter-soft > * > * {
     animation: page-enter-item 780ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
   }
 
+  /* 第一个子区块的动画延迟。 */
   .page-enter-soft > * > *:nth-child(1) {
     animation-delay: 80ms;
   }
 
+  /* 第二个子区块的动画延迟。 */
   .page-enter-soft > * > *:nth-child(2) {
     animation-delay: 150ms;
   }
 
+  /* 第三个子区块的动画延迟。 */
   .page-enter-soft > * > *:nth-child(3) {
     animation-delay: 220ms;
   }
 
+  /* 第四个子区块的动画延迟。 */
   .page-enter-soft > * > *:nth-child(4) {
     animation-delay: 290ms;
   }
 
+  /* 第五个及之后的子区块统一使用较长延迟，避免延迟无限增长。 */
   .page-enter-soft > * > *:nth-child(n + 5) {
     animation-delay: 340ms;
   }
 
+  /* 尊重用户减少动态效果的系统偏好，关闭页面入场动画。 */
   @media (prefers-reduced-motion: reduce) {
     .page-enter-soft,
     .page-enter-soft > * > * {
@@ -208,6 +339,7 @@ a {
   }
 }
 
+/* 返回顶部火箭图标的发射动画。 */
 @keyframes rocket-lift {
   0% {
     transform: translateY(0);
@@ -220,11 +352,14 @@ a {
   }
 }
 
+/* 返回顶部按钮动画工具类。 */
 @layer utilities {
+  /* 按钮处于 rocket-launching 状态时，让内部火箭图标向上飞出。 */
   .rocket-button.rocket-launching .rocket-icon {
     animation: rocket-lift 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
+  /* 减少动态效果时关闭火箭发射动画。 */
   @media (prefers-reduced-motion: reduce) {
     .rocket-button.rocket-launching .rocket-icon {
       animation: none;
@@ -232,6 +367,7 @@ a {
   }
 }
 
+/* 横向跑马灯动画：从起点向左移动半段内容宽度。 */
 @keyframes marquee {
   from {
     transform: translateX(0);
@@ -241,6 +377,7 @@ a {
   }
 }
 
+/* 反向跑马灯动画：从左侧偏移位置回到起点。 */
 @keyframes marquee-reverse {
   from {
     transform: translateX(calc(-50% - 1rem));
