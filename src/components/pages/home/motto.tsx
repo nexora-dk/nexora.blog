@@ -41,7 +41,7 @@ export function Motto() {
           if (index >= ENGLISH_MOTTO.length && timer) {
             window.clearInterval(timer);
           }
-        }, 55);
+        }, 85);
         observer.disconnect();
       },
       // threshold 控制区块露出约三分之一时才开始动画。

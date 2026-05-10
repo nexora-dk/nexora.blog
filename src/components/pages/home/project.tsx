@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import { Hammer } from "lucide-react";
 
 // 首页精选项目数据源，每一项对应一个项目卡片。
 const projects = [
@@ -26,7 +26,7 @@ function SectionTitle({ label, title, ghost }: { label: string; title: string; g
         {ghost}
       </span>
       {/* 椭圆描边增强标题区域的手绘标记感。 */}
-      <span className="absolute left-1/2 top-1/2 -z-10 h-14 w-48 -translate-x-1/2 -translate-y-1/2 -rotate-[-8deg] rounded-[50%] border border-neutral-200 dark:border-neutral-800" />
+      <span className="absolute left-1/2 top-1/2 -z-10 h-14 w-48 -translate-x-1/2 -translate-y-1/2 -rotate-[-8deg] rounded-[50%] border border-neutral-300 dark:border-neutral-800" />
       <p className="font-serif text-sm italic leading-none text-neutral-500 dark:text-neutral-400">{label}</p>
       <h2 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">{title}</h2>
     </div>
@@ -50,7 +50,7 @@ export function Project() {
             {/* 卡片顶部展示类型标签和项目状态。 */}
             <div className="flex items-center justify-between px-2 pb-4 text-sm">
               <span className="flex items-center gap-2 font-medium">
-                <Sparkles className="size-4" />
+                <Hammer className="size-4" />
                 项目
               </span>
               <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">{project.status}</span>

@@ -8,7 +8,7 @@ const socialContacts = [
   { label: "抖音", icon: SiTiktok, href: "https://www.douyin.com/user/self?from_tab_name=main" },
   { label: "微信", icon: SiWechat, href: "/images/wechat-qr.jpg" },
   // outline 用于 Email 图标，因为 lucide 图标依赖描边而不是 simple-icons 的填充。
-  { label: "Email", icon: Mail, href: "mailto:1175115123@qq.com", outline: true },
+  { label: "Email", icon: Mail, href: "mailto:codernexora@foxmail.com", outline: true },
 ];
 
 // 首页“联系我”卡片，循环渲染社交链接并根据链接类型决定打开方式。

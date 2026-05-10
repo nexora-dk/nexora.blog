@@ -1,6 +1,6 @@
 // 共享正文标题和文本颜色，供 MDX 映射与详情头部复用。
 export const noteHeadingColor = "text-[#151d31] dark:text-neutral-50";
-export const noteTextColor = "text-[#473d35] dark:text-neutral-100/90";
+const noteTextColor = "text-[#473d35] dark:text-neutral-100/90";
 
 // 将标题文本转换为稳定 id，便于目录链接和滚动定位。
 function slugifyHeading(title: string) {

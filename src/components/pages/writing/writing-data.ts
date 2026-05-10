@@ -7,7 +7,7 @@ import matter from "gray-matter";
 export type ArticleCategory = "programming" | "tinkering" | "archive" | "tech";
 
 // 分类展示结构，label 用于界面文案，value 用于数据筛选和路由参数。
-export type WritingCategory = {
+type WritingCategory = {
   label: string;
   value: ArticleCategory;
 };
@@ -221,7 +221,7 @@ function getDateTime(date: string) {
 }
 
 // articleDetails 是详情页数据源，按发布日期从新到旧排序。
-export const articleDetails: ArticleDetail[] = getArticleDetails().sort((first, second) => getDateTime(second.date) - getDateTime(first.date));
+const articleDetails: ArticleDetail[] = getArticleDetails().sort((first, second) => getDateTime(second.date) - getDateTime(first.date));
 
 // articleItems 从详情数据投影出列表页所需字段，避免列表携带正文内容。
 export const articleItems: ArticleItem[] = articleDetails.map((article) => ({

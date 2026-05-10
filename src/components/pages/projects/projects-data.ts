@@ -58,5 +58,3 @@ export const projectItems: ProjectItem[] = [
   },
 ];
 
-// projectStats 是项目页可复用的概览文案，当前文件只负责集中导出数据。
-export const projectStats = ["持续迭代中", "开源优先", "记录构建过程"];

@@ -102,7 +102,7 @@ function Hero() {
             <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <span>我是</span>
               <Image src="/images/signature/signature.svg" alt="Nexora" width={142} height={52} priority className="h-[21px] w-auto dark:invert sm:h-[31px]" />
-              <span>，一个爱捣鼓的前端</span>
+              <span>，一个爱捣鼓的码农</span>
             </span>
             <span className="flex flex-wrap gap-1 leading-[30px] sm:leading-[40px]">
               <span className="pt-4 ">在这里分享</span>
@@ -134,7 +134,7 @@ function Hero() {
             onPointerLeave={resetAvatarTilt}
           >
             {/* Hi 标签放在头像前方的 Z 轴位置，强化卡片层次。 */}
-            <div className="absolute left-0 top-0 z-10 flex h-7 items-center justify-center rounded-full bg-white/45 px-2.5 text-sm font-medium text-neutral-900 shadow-sm backdrop-blur-[10px] [transform:translateZ(22px)] dark:bg-white/20 dark:text-white">
+            <div className="absolute left-0 top-0 z-10 flex h-7 items-center justify-center rounded-full bg-white/25 px-2.5 text-sm font-medium text-neutral-900 shadow-sm backdrop-blur-[10px] [transform:translateZ(22px)] dark:bg-white/20 dark:text-white">
               Hi
             </div>
             <Image

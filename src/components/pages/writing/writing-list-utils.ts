@@ -2,7 +2,7 @@
 import type { ArticleCategory, ArticleItem } from "./writing-data";
 
 // 从中文日期文案中提取年份，用于归档分组；不匹配时归入“未归档”。
-export function getArticleYear(date: string) {
+function getArticleYear(date: string) {
   return date.match(/^(\d{4})年/)?.[1] ?? "未归档";
 }
 

@@ -15,7 +15,7 @@ function SectionTitle({ label, title, ghost }: { label: string; title: string; g
         {ghost}
       </span>
       {/* 倾斜椭圆边框给标题增加手写标注感。 */}
-      <span className="absolute left-1/2 top-1/2 -z-10 h-14 w-48 -translate-x-1/2 -translate-y-1/2 -rotate-[-8deg] rounded-[50%] border border-neutral-200 dark:border-neutral-800" />
+      <span className="absolute left-1/2 top-1/2 -z-10 h-14 w-48 -translate-x-1/2 -translate-y-1/2 -rotate-[-8deg] rounded-[50%] border border-neutral-300 dark:border-neutral-800" />
       <p className="font-serif text-sm italic leading-none text-neutral-500 dark:text-neutral-400">{label}</p>
       <h2 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">{title}</h2>
     </div>

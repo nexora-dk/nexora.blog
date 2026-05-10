@@ -220,7 +220,7 @@ function getNoteDetails() {
 }
 
 // 全量详情数据按发布日期倒序排序，列表、归档和静态参数都共享这一顺序。
-export const noteDetails: NoteDetail[] = getNoteDetails().sort((first, second) => getDateTime(second.publishedAt) - getDateTime(first.publishedAt));
+const noteDetails: NoteDetail[] = getNoteDetails().sort((first, second) => getDateTime(second.publishedAt) - getDateTime(first.publishedAt));
 
 // 列表数据从详情数据裁剪而来，避免列表组件接触正文内容。
 export const noteItems: NoteItem[] = noteDetails.map((note) => ({

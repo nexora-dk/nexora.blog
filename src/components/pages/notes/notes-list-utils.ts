@@ -1,7 +1,7 @@
 import type { NoteColumn, NoteItem } from "./notes-data";
 
 // 从中文发布日期中提取归档年份，无法解析时归入“近期”。
-export function getNoteYear(date: string) {
+function getNoteYear(date: string) {
   return date.match(/^(\d{4})年/)?.[1] ?? "近期";
 }
 
