@@ -1,6 +1,7 @@
 "use client";
 
 import { updateWritingLikeAction } from "@/app/actions/writing-like";
+import { useRouter } from "next/navigation";
 
 // 客户端点赞按钮负责本地记录用户是否已点赞，并即时更新展示计数。
 import { useEffect, useMemo, useState, useTransition } from "react";
@@ -45,6 +46,7 @@ export function ArticleLikeButton({
   articleSlug,
   initialLikes,
 }: ArticleLikeButtonProps) {
+  const router = useRouter();
   const storageKey = `personal-blog:article-like:${articleSlug}`;
   
   const [liked, setLiked] = useState(false);
@@ -76,8 +78,9 @@ export function ArticleLikeButton({
       setShowTip(false);
     }
 
-    startTransition(() => {
-      void updateWritingLikeAction(articleSlug, nextLiked);
+    startTransition(async () => {
+      await updateWritingLikeAction(articleSlug, nextLiked);
+      router.refresh();
     });
   }
 

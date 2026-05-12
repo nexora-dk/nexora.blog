@@ -1,6 +1,7 @@
 "use client";
 
 import { updateNoteLikeAction } from "@/app/actions/note-like";
+import { useRouter } from "next/navigation";
 
 // Client Component：首行必须保留 use client；点赞状态依赖浏览器 localStorage 和点击事件。
 import { useEffect, useMemo, useState, useTransition } from "react";
@@ -42,6 +43,7 @@ function formatLikeCount(value: number) {
 
 // 点赞交互组件：在客户端读取/写入 localStorage，并即时更新按钮状态和计数。
 export function NoteLikeButton({ noteSlug, initialLikes }: NoteLikeButtonProps) {
+  const router = useRouter();
   const storageKey = `personal-blog:note-like:${noteSlug}`;
   const [liked, setLiked] = useState(false);
   const [showTip, setShowTip] = useState(false);
@@ -70,8 +72,9 @@ export function NoteLikeButton({ noteSlug, initialLikes }: NoteLikeButtonProps) 
       setShowTip(false);
     }
 
-    startTransition(() => {
-      void updateNoteLikeAction(noteSlug, nextLiked);
+    startTransition(async () => {
+      await updateNoteLikeAction(noteSlug, nextLiked);
+      router.refresh();
     });
   }
 
