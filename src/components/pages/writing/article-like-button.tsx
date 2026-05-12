@@ -46,7 +46,7 @@ export function ArticleLikeButton({
   initialLikes,
 }: ArticleLikeButtonProps) {
   const storageKey = `personal-blog:article-like:${articleSlug}`;
-  // liked 初始值从 localStorage 读取；服务端渲染阶段没有 window 时回退为 false。
+  
   const [liked, setLiked] = useState(false);
   // showTip 控制“谢谢喜欢”提示的显隐动画。
   const [showTip, setShowTip] = useState(false);
