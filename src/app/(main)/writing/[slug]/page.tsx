@@ -1,9 +1,16 @@
-// notFound 用于在文章不存在时触发 Next.js 404 页面。
+import {
+  getWritingItemBySlug,
+  incrementWritingViews,
+} from "@/db/queries/writings.query";
+
 import { notFound } from "next/navigation";
 // 文章详情组件负责展示正文、目录、评论和点赞等具体内容。
 import { ArticleDetail } from "@/components/pages/writing/article-detail";
 // 文稿数据工具提供通过 slug 查找文章以及生成静态参数的能力。
-import { getArticleBySlug, getArticleStaticParams } from "@/components/pages/writing/writing-data";
+import {
+  getArticleBySlug,
+  getArticleStaticParams,
+} from "@/components/pages/writing/writing-data";
 // PageShell 提供统一页面标题、描述和主体容器。
 import { PageShell } from "@/components/ui/page-shell";
 
@@ -29,20 +36,41 @@ export function generateStaticParams() {
 /**
  * 文章详情页面：根据 slug 查找文章，存在则渲染详情，不存在则进入 404。
  */
-export default async function WritingDetailPage({ params }: WritingDetailPageProps) {
+export default async function WritingDetailPage({
+  params,
+}: WritingDetailPageProps) {
   // 等待动态路由参数 Promise，并取出文章 slug。
   const { slug } = await params;
   // 通过 slug 从本地文章数据中查找对应文章。
-  const article = getArticleBySlug(slug);
+  const markdownArticle = getArticleBySlug(slug);
 
-  // 如果没有匹配文章，立即交给 Next.js 渲染 not-found 页面。
-  if (!article) {
+  if (!markdownArticle) {
     notFound();
   }
 
+  await incrementWritingViews(slug);
+
+  const databaseArticle = await getWritingItemBySlug(slug);
+
+  // 如果没有匹配文章，立即交给 Next.js 渲染 not-found 页面。
+  if (!databaseArticle) {
+    notFound();
+  }
+
+  const article = {
+    ...markdownArticle,
+    ...databaseArticle,
+    content: markdownArticle.content,
+    toc: markdownArticle.toc,
+  };
+
   return (
     // 详情页标题和描述来自文章本身；hideHeader 让 ArticleDetail 控制自己的头部排版。
-    <PageShell title={article.title} description={article.description} hideHeader>
+    <PageShell
+      title={article.title}
+      description={article.description}
+      hideHeader
+    >
       {/* 文章详情组件负责正文、目录、代码块、互动区等完整展示。 */}
       <ArticleDetail article={article} />
     </PageShell>

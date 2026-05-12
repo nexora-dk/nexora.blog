@@ -1,4 +1,5 @@
-// 手记页面主体组件，负责渲染手记列表、专栏筛选和分页。
+import { getNoteItems } from "@/db/queries/notes.query";
+
 import { NotesContent } from "@/components/pages/notes/notes-content";
 // 手记专栏工具用于校验 URL 查询参数并读取专栏展示文案。
 import { isNoteColumn, noteColumns } from "@/components/pages/notes/notes-data";
@@ -31,12 +32,14 @@ export default async function NotesPage({ searchParams }: NotesPageProps) {
   const activeColumn = isNoteColumn(column) ? column : undefined;
   // 根据有效专栏查找中文专栏名，用于页面标题显示。
   const columnLabel = noteColumns.find((item) => item.value === activeColumn)?.label;
+  const notes = await getNoteItems();
+
 
   return (
     // 有专栏时标题显示为“专栏-xxx”，并隐藏默认页头，让专栏页更像筛选结果页。
     <PageShell title={columnLabel ? `专栏-${columnLabel}` : "手记"} description="记录日常观察、碎碎念和阶段性想法。" hideHeader={Boolean(columnLabel)}>
       {/* NotesContent 继续接收原始专栏值和规范化后的页码，由内部完成筛选与分页渲染。 */}
-      <NotesContent selectedColumn={column} currentPage={pageNumber} />
+      <NotesContent notes={notes} selectedColumn={column} currentPage={pageNumber} />
     </PageShell>
   );
 }

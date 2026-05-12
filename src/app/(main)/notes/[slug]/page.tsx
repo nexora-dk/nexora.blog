@@ -1,9 +1,16 @@
-// notFound 用于在手记不存在时触发 Next.js 404 页面。
+import {
+  getNoteItemBySlug,
+  incrementNoteViews,
+} from "@/db/queries/notes.query";
+
 import { notFound } from "next/navigation";
 // 手记详情组件负责展示正文、目录、评论和点赞等具体内容。
 import { NoteDetail } from "@/components/pages/notes/note-detail";
 // 手记数据工具提供通过 slug 查找手记以及生成静态参数的能力。
-import { getNoteBySlug, getNoteStaticParams } from "@/components/pages/notes/notes-data";
+import {
+  getNoteBySlug,
+  getNoteStaticParams,
+} from "@/components/pages/notes/notes-data";
 // PageShell 提供统一页面标题、描述和主体容器。
 import { PageShell } from "@/components/ui/page-shell";
 
@@ -29,16 +36,34 @@ export function generateStaticParams() {
 /**
  * 手记详情页面：根据 slug 查找手记，存在则渲染详情，不存在则进入 404。
  */
-export default async function NotesDetailPage({ params }: NotesDetailPageProps) {
+export default async function NotesDetailPage({
+  params,
+}: NotesDetailPageProps) {
   // 等待动态路由参数 Promise，并取出手记 slug。
   const { slug } = await params;
   // 通过 slug 从本地手记数据中查找对应内容。
-  const note = getNoteBySlug(slug);
+  const markdownNote = getNoteBySlug(slug);
 
-  // 如果没有匹配手记，立即交给 Next.js 渲染 not-found 页面。
-  if (!note) {
+  if (!markdownNote) {
     notFound();
   }
+
+  await incrementNoteViews(slug);
+
+  const databaseNote = await getNoteItemBySlug(slug);
+
+  if (!databaseNote) {
+    notFound();
+  }
+
+  const note = {
+    ...markdownNote,
+    ...databaseNote,
+    slug,
+    content: markdownNote.content,
+    toc: markdownNote.toc,
+    insight: markdownNote.insight,
+  };
 
   return (
     // 详情页标题和描述来自手记本身；hideHeader 让 NoteDetail 控制自己的头部排版。

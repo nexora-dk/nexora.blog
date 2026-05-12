@@ -1,7 +1,9 @@
 "use client";
 
+import { updateNoteLikeAction } from "@/app/actions/note-like";
+
 // Client Component：首行必须保留 use client；点赞状态依赖浏览器 localStorage 和点击事件。
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { Heart } from "lucide-react";
 
 // 点赞按钮需要手记 slug 做本地存储隔离，并接收 frontmatter 中的初始喜欢数。
@@ -41,33 +43,42 @@ function formatLikeCount(value: number) {
 // 点赞交互组件：在客户端读取/写入 localStorage，并即时更新按钮状态和计数。
 export function NoteLikeButton({ noteSlug, initialLikes }: NoteLikeButtonProps) {
   const storageKey = `personal-blog:note-like:${noteSlug}`;
-  const [liked, setLiked] = useState(() => (typeof window === "undefined" ? false : window.localStorage.getItem(storageKey) === "true"));
+  const [liked, setLiked] = useState(false);
   const [showTip, setShowTip] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const baseLikes = useMemo(() => parseLikeCount(initialLikes), [initialLikes]);
-  const likeCount = baseLikes + (liked ? 1 : 0);
+  const [likeCount, setLikeCount] = useState(baseLikes);
+
+  useEffect(() => {
+    setLiked(window.localStorage.getItem(storageKey) === "true");
+    setLikeCount(baseLikes);
+  }, [baseLikes, storageKey]);
 
   // 切换点赞状态时同步本地存储；点赞成功短暂显示感谢提示。
   function toggleLike() {
-    setLiked((currentLiked) => {
-      const nextLiked = !currentLiked;
+    const nextLiked = !liked;
 
-      if (nextLiked) {
-        window.localStorage.setItem(storageKey, "true");
-        setShowTip(true);
-        window.setTimeout(() => setShowTip(false), 1600);
-      } else {
-        window.localStorage.removeItem(storageKey);
-        setShowTip(false);
-      }
+    setLiked(nextLiked);
+    setLikeCount((currentCount) => Math.max(0, currentCount + (nextLiked ? 1 : -1)));
 
-      return nextLiked;
+    if (nextLiked) {
+      window.localStorage.setItem(storageKey, "true");
+      setShowTip(true);
+      window.setTimeout(() => setShowTip(false), 1600);
+    } else {
+      window.localStorage.removeItem(storageKey);
+      setShowTip(false);
+    }
+
+    startTransition(() => {
+      void updateNoteLikeAction(noteSlug, nextLiked);
     });
   }
 
   return (
     <div className="relative inline-flex flex-col items-center gap-2">
       {/* 按钮使用 aria-pressed 暴露点赞状态，样式根据 liked 条件切换。 */}
-      <button type="button" aria-label={liked ? "取消点赞" : "点赞"} aria-pressed={liked} onClick={toggleLike} className={`inline-flex min-w-32 items-center justify-center gap-2 rounded-full border px-5 py-2.5 text-sm font-medium shadow-sm transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/40 ${liked ? "border-[#18181b] bg-[#18181b] text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-950" : "border-zinc-200/80 bg-white/60 text-[#756b62] hover:border-zinc-300 hover:bg-white/80 hover:text-[#18181b] dark:border-white/10 dark:bg-white/[0.04] dark:text-neutral-300 dark:hover:border-white/20 dark:hover:bg-white/[0.07] dark:hover:text-white"}`}>
+      <button type="button" aria-label={liked ? "取消点赞" : "点赞"} aria-pressed={liked} disabled={isPending} onClick={toggleLike} className={`inline-flex min-w-32 items-center justify-center gap-2 rounded-full border px-5 py-2.5 text-sm font-medium shadow-sm transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/40 ${liked ? "border-[#18181b] bg-[#18181b] text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-950" : "border-zinc-200/80 bg-white/60 text-[#756b62] hover:border-zinc-300 hover:bg-white/80 hover:text-[#18181b] dark:border-white/10 dark:bg-white/[0.04] dark:text-neutral-300 dark:hover:border-white/20 dark:hover:bg-white/[0.07] dark:hover:text-white"}`}>
         <Heart className={`size-4 shrink-0 stroke-[1.7] ${liked ? "fill-red-500 text-red-500" : ""}`} />
         <span>{liked ? "已点赞" : "点赞"}</span>
         <span className="tabular-nums">{formatLikeCount(likeCount)}</span>

@@ -1,4 +1,5 @@
-// 时间线主体组件，负责根据筛选类型展示时间线内容。
+import { getTimelineItemsFromDb } from "@/db/queries/timeline.query";
+
 import { TimelineContent } from "@/components/pages/timeline/timeline-content";
 
 // 时间线页面接收 URL 查询参数，Next.js 16 中 searchParams 是 Promise。
@@ -14,7 +15,10 @@ export default async function TimelinePage({ searchParams }: TimelinePageProps) 
   const typeParam = (await searchParams).type;
   // 如果 URL 中出现多个 type 参数，只使用第一个作为当前筛选值。
   const selectedType = Array.isArray(typeParam) ? typeParam[0] : typeParam;
+  const timelineItems = await getTimelineItemsFromDb();
+
 
   // 内容组件负责具体的页面布局、筛选导航和时间线条目渲染。
-  return <TimelineContent selectedType={selectedType} />;
+  return <TimelineContent timelineItems={timelineItems} selectedType={selectedType} />;
+
 }

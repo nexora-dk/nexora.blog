@@ -1,4 +1,5 @@
-// 文稿页面主体组件，负责渲染文章列表、分类和分页。
+import { getWritingItems } from "@/db/queries/writings.query";
+
 import { WritingContent } from "@/components/pages/writing/writing-content";
 // 文稿分类工具用于校验 URL 查询参数并读取分类展示文案。
 import { isArticleCategory, writingCategories } from "@/components/pages/writing/writing-data";
@@ -29,12 +30,14 @@ export default async function WritingPage({ searchParams }: WritingPageProps) {
   const activeCategory = isArticleCategory(category) ? category : undefined;
   // 根据有效分类查找中文分类名，用于页面标题显示。
   const categoryLabel = writingCategories.find((item) => item.value === activeCategory)?.label;
+  const articles = await getWritingItems();
+
 
   return (
     // 有分类时标题显示为“分类-xxx”，并隐藏默认页头，让分类页更像筛选结果页。
     <PageShell title={categoryLabel ? `分类-${categoryLabel}` : "文稿"} description="沉淀编程、前端和工程化相关的长文章。" hideHeader={Boolean(categoryLabel)}>
       {/* WritingContent 继续接收原始分类和页码，由内部完成列表筛选与分页渲染。 */}
-      <WritingContent selectedCategory={category} selectedPage={page} />
+      <WritingContent articles={articles} selectedCategory={category} selectedPage={page}  />
     </PageShell>
   );
 }

@@ -1,10 +1,11 @@
 import { NoteCard } from "./note-card";
 import { NotesArchive } from "./notes-archive";
 import { NotesPagination } from "./notes-pagination";
-import { isNoteColumn, noteColumns, noteItems } from "./notes-data";
+import { isNoteColumn, noteColumns, type NoteItem } from "./notes-data";
 
 // 页面内容组件接收路由层解析出的 column 查询值和当前页码。
 type NotesContentProps = {
+  notes: NoteItem[];
   selectedColumn?: string;
   currentPage: number;
 };
@@ -18,7 +19,7 @@ function NotesEmptyState() {
 }
 
 // 手记列表内容控制器：决定展示全部分页列表，还是某个专栏的年份归档。
-export function NotesContent({ selectedColumn, currentPage }: NotesContentProps) {
+export function NotesContent({notes: noteItems, selectedColumn, currentPage }: NotesContentProps) {
   const activeColumn = isNoteColumn(selectedColumn) ? selectedColumn : undefined;
   const activeColumnMeta = noteColumns.find((column) => column.value === activeColumn);
   const notes = activeColumn ? noteItems.filter((note) => note.column === activeColumn) : noteItems;

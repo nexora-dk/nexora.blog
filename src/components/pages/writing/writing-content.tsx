@@ -2,13 +2,16 @@
 import { ArticleCard } from "./article-card";
 import { WritingArchive } from "./writing-archive";
 import { WritingPagination } from "./writing-pagination";
-import { articleItems, isArticleCategory, writingCategories } from "./writing-data";
+import { isArticleCategory, writingCategories, type ArticleItem } from "./writing-data";
+
 
 // selectedCategory 和 selectedPage 通常来自页面 searchParams，仍按字符串接收并在组件内校验。
 type WritingContentProps = {
+  articles: ArticleItem[];
   selectedCategory?: string;
   selectedPage?: string;
 };
+
 
 // 列表每页展示数量，分类归档和默认卡片列表共用同一分页尺寸。
 const pageSize = 10;
@@ -19,7 +22,8 @@ function WritingEmptyState() {
 }
 
 // WritingContent 是文稿页主体：分类存在时走归档视图，否则走卡片列表视图。
-export function WritingContent({ selectedCategory, selectedPage }: WritingContentProps) {
+export function WritingContent({ articles: articleItems, selectedCategory, selectedPage }: WritingContentProps) {
+
   // 先用类型守卫校验分类参数，非法分类视为未选择分类。
   const activeCategory = isArticleCategory(selectedCategory) ? selectedCategory : undefined;
   const activeCategoryLabel = writingCategories.find((category) => category.value === activeCategory)?.label;

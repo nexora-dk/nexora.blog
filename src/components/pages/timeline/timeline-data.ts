@@ -1,7 +1,3 @@
-// 汇入文稿与手记数据，时间线会把不同来源的内容归一成同一种展示结构。
-import { noteItems } from "@/components/pages/notes/notes-data";
-import { articleItems } from "@/components/pages/writing/writing-data";
-
 // 时间线支持的内容类型；同时用于筛选参数、类型元信息索引和条目标记。
 export type TimelineType = "writing" | "notes" | "memory";
 
@@ -67,38 +63,3 @@ export function getDateParts(date: string) {
   };
 }
 
-// 生成时间线条目；可选 type 参数用于按内容类型过滤。
-export function getTimelineItems(type?: TimelineType) {
-  // 将文稿和手记合并为同一数组，再按日期从新到旧排序。
-  const timelineItems: TimelineItem[] = [
-    // 文稿数据映射：保留文章字段，并补充 writing 类型与分类元信息。
-    ...articleItems.map((article) => ({
-      title: article.title,
-      description: article.description,
-      href: article.href,
-      date: article.date,
-      type: "writing" as const,
-      typeLabel: timelineTypeMeta.writing.label,
-      meta: article.categoryLabel,
-    })),
-    // 手记数据映射：根据栏目区分普通手记和回忆。
-    ...noteItems.map((note) => {
-      // memory 栏目进入“回忆”类型，其余手记进入“手记”类型。
-      const noteType: TimelineType = note.column === "memory" ? "memory" : "notes";
-
-      // 输出统一的 TimelineItem 结构，供列表组件无差别渲染。
-      return {
-        title: note.title,
-        description: note.description,
-        href: note.href,
-        date: note.publishedAt,
-        type: noteType,
-        typeLabel: timelineTypeMeta[noteType].label,
-        meta: note.columnLabel,
-      };
-    }),
-  ].sort((first, second) => getDateParts(second.date).time - getDateParts(first.date).time);
-
-  // 有筛选类型时只返回对应类型；否则返回完整时间线。
-  return type ? timelineItems.filter((item) => item.type === type) : timelineItems;
-}
