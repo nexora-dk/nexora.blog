@@ -1,4 +1,11 @@
 /* 头部外壳：承载品牌、导航和操作按钮的玻璃拟态胶囊容器。 */
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .shell {
   /* 三列布局：左侧品牌，中间导航，右侧操作按钮。 */
   display: grid;
@@ -7,6 +14,7 @@
   align-items: center;
   /* 与页面主体保持一致的最大宽度。 */
   max-width: 870px;
+  width: min(100%, 870px);
   /* 胶囊内部留白。 */
   padding: 0.75rem 1.25rem;
   /* 水平居中头部容器。 */
@@ -32,6 +40,21 @@
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.12),
     0 12px 36px rgb(0 0 0 / 0.28);
+}
+
+.authAction {
+  position: absolute;
+  left: calc(50% + 435px + 21.5rem);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@media (max-width: 980px) {
+  .authAction {
+    position: static;
+    margin-left: 0.75rem;
+    transform: none;
+  }
 }
 
 /* 品牌链接：位于头部左侧。 */

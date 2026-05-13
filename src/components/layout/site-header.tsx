@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 // Next.js Link 提供客户端路由跳转能力。
 import Link from "next/link";
+import { AuthButton } from "@/components/layout/auth-button";
 // 主导航组件负责渲染导航菜单和悬浮面板。
 import { SiteNav } from "@/components/layout/site-nav";
 // 主题切换按钮放在头部右侧操作区。
@@ -55,17 +56,19 @@ export function SiteHeader() {
   return (
     // fixed 让头部悬浮在顶部；根据 isHidden 切换位移和透明度动画。
     <header className={`fixed inset-x-0 top-3 z-100 px-5 transition-all duration-500 ease-out ${isHidden ? "-translate-y-24 opacity-0" : "translate-y-0 opacity-100"}`}>
-      {/* shell 样式提供玻璃拟态导航背景和整体布局。 */}
-      <div className={styles.shell}>
-        {/* 品牌入口点击回到首页。 */}
-        <Link href="/" className={styles.brand}>
-          {siteConfig.name}
-        </Link>
-        {/* 站点主导航菜单。 */}
-        <SiteNav />
-        {/* 右侧操作区，目前放置主题切换按钮。 */}
-        <div className={styles.actions}>
-          <ThemeToggle />
+      <div className={styles.wrapper}>
+        <div className={styles.shell}>
+          <Link href="/" className={styles.brand}>
+            {siteConfig.name}
+          </Link>
+          <SiteNav />
+          <div className={styles.actions}>
+            <ThemeToggle />
+          </div>
+        </div>
+
+        <div className={styles.authAction}>
+          <AuthButton />
         </div>
       </div>
     </header>
