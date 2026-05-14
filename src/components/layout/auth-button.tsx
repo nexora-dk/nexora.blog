@@ -20,10 +20,49 @@ const providerTooltipClassName =
 const headerTooltipClassName =
   "pointer-events-none absolute left-1/2 top-[calc(100%+0.5rem)] z-10 -translate-x-1/2 whitespace-nowrap rounded-full border border-zinc-200 bg-white px-2.5 py-1 text-xs font-medium text-zinc-700 opacity-0 shadow-sm shadow-zinc-950/5 transition group-hover:opacity-100 dark:border-white/10 dark:bg-neutral-900 dark:text-neutral-200";
 
+function getAuthErrorMessage(error: string | null, description: string | null) {
+  if (error === "access_denied") {
+    return "你取消了授权登录。";
+  }
+
+  if (error === "invalid_code") {
+    return "登录验证失败，请重新尝试。开发环境下请确认 dev server 已用代理启动。";
+  }
+
+  if (error === "account_not_linked" || error === "unable_to_link_account") {
+    return "这个邮箱已绑定其他登录方式，请先用原方式登录后再绑定账号。";
+  }
+
+  if (error === "email_not_found") {
+    return "没有从该账号获取到邮箱，请确认账号邮箱可用后再试。";
+  }
+
+  if (error === "unable_to_get_user_info") {
+    return "登录成功后获取账号信息失败，请稍后重试。";
+  }
+
+  if (error === "oauth_provider_not_found") {
+    return "当前登录方式暂不可用，请稍后再试。";
+  }
+
+  return description || "登录失败，请稍后重试。";
+}
+
+function getAuthErrorCallbackURL() {
+  const url = new URL(window.location.href);
+  url.searchParams.delete("auth_error");
+  url.searchParams.delete("error");
+  url.searchParams.delete("error_description");
+  url.searchParams.set("auth_error", "1");
+  return `${url.pathname}${url.search}${url.hash}`;
+}
+
 export function AuthButton() {
   const { data: session, isPending } = authClient.useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [isDialogMounted, setIsDialogMounted] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   useEffect(() => {
     if (isOpen || !isDialogMounted) {
@@ -47,12 +86,52 @@ export function AuthButton() {
     };
   }, [isDialogMounted]);
 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+
+    if (searchParams.get("auth_error") !== "1") {
+      return;
+    }
+
+    const message = getAuthErrorMessage(searchParams.get("error"), searchParams.get("error_description"));
+    const frame = window.requestAnimationFrame(() => {
+      setAuthError(message);
+      setIsDialogMounted(true);
+      window.requestAnimationFrame(() => setIsOpen(true));
+    });
+
+    searchParams.delete("auth_error");
+    searchParams.delete("error");
+    searchParams.delete("error_description");
+
+    const nextURL = `${window.location.pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}${window.location.hash}`;
+    window.history.replaceState(null, "", nextURL);
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
   function openDialog() {
     setIsDialogMounted(true);
     window.requestAnimationFrame(() => setIsOpen(true));
   }
 
   const closeDialog = () => setIsOpen(false);
+
+  async function signIn(provider: "github" | "google") {
+    setIsSigningIn(true);
+    setAuthError(null);
+
+    const { error } = await authClient.signIn.social({
+      provider,
+      callbackURL: "/",
+      errorCallbackURL: getAuthErrorCallbackURL(),
+    });
+
+    if (error) {
+      setIsSigningIn(false);
+      setAuthError(getAuthErrorMessage(error.code || error.message || null, error.message || null));
+    }
+  }
 
   const loginDialog = isDialogMounted
     ? createPortal(
@@ -82,34 +161,32 @@ export function AuthButton() {
 
             <p className="mt-2 text-sm leading-6 text-zinc-500 dark:text-neutral-400">登录后可以发表评论，并使用你的账号头像和昵称。</p>
 
+            {authError ? (
+              <p className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-3 py-2 text-sm leading-5 text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-200">
+                {authError}
+              </p>
+            ) : null}
+
             <div className="mt-6 flex justify-center gap-4">
               <button
                 type="button"
-                onClick={() =>
-                  authClient.signIn.social({
-                    provider: "github",
-                    callbackURL: "/",
-                  })
-                }
+                onClick={() => signIn("github")}
+                disabled={isSigningIn}
                 className={providerButtonClassName}
                 aria-label="使用 GitHub 登录"
               >
-                <SiGithub className="size-5" />
+                <SiGithub className={`size-5 ${isSigningIn ? "opacity-45" : ""}`} />
                 <span className={providerTooltipClassName}>GitHub 账号登录</span>
               </button>
 
               <button
                 type="button"
-                onClick={() =>
-                  authClient.signIn.social({
-                    provider: "google",
-                    callbackURL: "/",
-                  })
-                }
+                onClick={() => signIn("google")}
+                disabled={isSigningIn}
                 className={providerButtonClassName}
                 aria-label="使用 Google 登录"
               >
-                <SiGoogle className="size-5" />
+                <SiGoogle className={`size-5 ${isSigningIn ? "opacity-45" : ""}`} />
                 <span className={providerTooltipClassName}>Google 账号登录</span>
               </button>
             </div>

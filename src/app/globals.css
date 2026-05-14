@@ -4,6 +4,9 @@
 @import "tw-animate-css";
 /* 引入 shadcn 预设的 Tailwind 样式层，补齐组件主题变量和基础规则。 */
 @import "shadcn/tailwind.css";
+@tailwind components;
+@tailwind utilities;
+@tailwind base;
 
 /* 自定义 dark 变体：当元素自身或祖先处于 .dark 下时启用暗色模式工具类。 */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -384,5 +387,41 @@ a {
   }
   to {
     transform: translateX(0);
+  }
+}
+
+@layer utilities {
+  /* 定义涟漪扩散动画 */
+  @keyframes loadingRipple {
+    0% {
+      transform: scale(0.3);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+
+  /* 定义中心圆点呼吸动画 */
+  @keyframes loadingDot {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(0.85);
+      opacity: 0.7;
+    }
+  }
+
+  /* 定义文字呼吸动画 */
+  @keyframes loadingText {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
   }
 }
