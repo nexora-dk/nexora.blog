@@ -28,7 +28,7 @@ export default function Loading() {
 
         {/* 模糊加载文案：增加了 motion-safe 尊重用户设备设置 */}
         <p className="mt-4 text-xs font-medium tracking-[0.25em] text-neutral-400 motion-safe:animate-[loadingText_1.8s_ease-in-out_infinite] dark:text-neutral-500">
-          开一页，文章稍候
+          马上好，真的马上
         </p>
       </div>
     </div>
