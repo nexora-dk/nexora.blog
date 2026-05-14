@@ -4,8 +4,6 @@
 export default function Loading() {
   return (
     <div 
-      // 移除了 pointer-events-none，防止加载时用户误触老页面
-      // 减弱了 backdrop-blur 的值，1px 有点太少，通常 sm (4px) 更有磨砂质感
       className="fixed inset-0 z-50 flex items-center justify-center bg-white/70 backdrop-blur-sm transition-all dark:bg-neutral-950/70"
       role="status"
       aria-label="页面加载中，请稍候"

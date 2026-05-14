@@ -48,6 +48,14 @@ function getAuthErrorMessage(error: string | null, description: string | null) {
   return description || "登录失败，请稍后重试。";
 }
 
+function getAuthCallbackURL() {
+  const url = new URL(window.location.href);
+  url.searchParams.delete("auth_error");
+  url.searchParams.delete("error");
+  url.searchParams.delete("error_description");
+  return `${url.pathname}${url.search}${url.hash}`;
+}
+
 function getAuthErrorCallbackURL() {
   const url = new URL(window.location.href);
   url.searchParams.delete("auth_error");
@@ -115,6 +123,11 @@ export function AuthButton() {
     window.requestAnimationFrame(() => setIsOpen(true));
   }
 
+  useEffect(() => {
+    window.addEventListener("open-auth-dialog", openDialog);
+    return () => window.removeEventListener("open-auth-dialog", openDialog);
+  }, []);
+
   const closeDialog = () => setIsOpen(false);
 
   async function signIn(provider: "github" | "google") {
@@ -123,7 +136,7 @@ export function AuthButton() {
 
     const { error } = await authClient.signIn.social({
       provider,
-      callbackURL: "/",
+      callbackURL: getAuthCallbackURL(),
       errorCallbackURL: getAuthErrorCallbackURL(),
     });
 

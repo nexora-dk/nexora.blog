@@ -1,4 +1,13 @@
-import { integer, pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import {
+  type AnyPgColumn,
+  integer,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
+
+import { users } from "./auth";
 import { writings } from "./writings";
 
 export const writingComments = pgTable("writing_comments", {
@@ -8,7 +17,14 @@ export const writingComments = pgTable("writing_comments", {
     .notNull()
     .references(() => writings.id, { onDelete: "cascade" }),
 
-  authorName: varchar("author_name", { length: 80 }).notNull(),
+  parentId: integer("parent_id").references(
+    (): AnyPgColumn => writingComments.id,
+    { onDelete: "cascade" },
+  ),
+
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
 
   content: text("content").notNull(),
 

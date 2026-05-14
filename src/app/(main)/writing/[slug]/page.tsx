@@ -3,6 +3,9 @@ import {
   incrementWritingViews,
 } from "@/db/queries/writings.query";
 
+import { getWritingComments } from "@/db/queries/writing-comments.query";
+
+
 import { notFound } from "next/navigation";
 // 文章详情组件负责展示正文、目录、评论和点赞等具体内容。
 import { ArticleDetail } from "@/components/pages/writing/article-detail";
@@ -51,6 +54,7 @@ export default async function WritingDetailPage({
   await incrementWritingViews(slug);
 
   const databaseArticle = await getWritingItemBySlug(slug);
+const comments = await getWritingComments(slug);
 
   // 如果没有匹配文章，立即交给 Next.js 渲染 not-found 页面。
   if (!databaseArticle) {
@@ -72,7 +76,7 @@ export default async function WritingDetailPage({
       hideHeader
     >
       {/* 文章详情组件负责正文、目录、代码块、互动区等完整展示。 */}
-      <ArticleDetail article={article} />
+      <ArticleDetail article={article} comments={comments} />
     </PageShell>
   );
 }

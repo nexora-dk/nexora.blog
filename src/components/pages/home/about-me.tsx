@@ -45,7 +45,7 @@ export function AboutMe() {
             <div className="h-full rounded-[1.35rem] border border-neutral-200/55 bg-white/60 p-7 shadow-[0_1px_18px_rgba(0,0,0,0.035)] backdrop-blur dark:border-neutral-800/55 dark:bg-neutral-950/30">
               <div className="flex items-center gap-3 text-base font-semibold tracking-tight">
                 <Clock3 className="size-5" />
-                学习前端
+                编程时间
               </div>
               {/* LearningDays 只输出数字，这里补充单位组成完整文案。 */}
               <p className="mt-14 ml-5 text-3xl font-bold tracking-tight">

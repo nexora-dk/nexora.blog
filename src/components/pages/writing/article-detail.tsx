@@ -6,14 +6,17 @@ import { ArticleFooter } from "./article-footer";
 import { ArticleHeader } from "./article-header";
 import { ArticleToc } from "./article-toc";
 import type { ArticleDetail as ArticleDetailData } from "./writing-data";
+import type { WritingCommentTreeItem } from "@/db/queries/writing-comments.query";
+
 
 // article 是从数据层读取出的完整详情结构，包含正文 content、toc 和元信息。
 type ArticleDetailProps = {
   article: ArticleDetailData;
+  comments: WritingCommentTreeItem[];
 };
 
 // ArticleDetail 只做页面区块编排，不直接处理 Markdown 解析或客户端交互。
-export function ArticleDetail({ article }: ArticleDetailProps) {
+export function ArticleDetail({ article, comments }: ArticleDetailProps) {
   return (
     <article className="relative -mx-5 space-y-10 px-5 pt-2 lg:-mx-28 lg:px-28 xl:-mx-72 xl:px-72">
       {/* 顶部展示标题和文章元信息。 */}
@@ -34,7 +37,7 @@ export function ArticleDetail({ article }: ArticleDetailProps) {
 
       {/* 评论区与正文同宽，放在详情页末尾。 */}
       <div className="mx-auto w-full max-w-[52rem]">
-        <ArticleComments articleTitle={article.title} />
+        <ArticleComments articleTitle={article.title} slug={article.slug} initialComments={comments} />
       </div>
     </article>
   );
