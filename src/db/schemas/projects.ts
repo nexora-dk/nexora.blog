@@ -1,0 +1,41 @@
+import {
+  boolean,
+  index,
+  integer,
+  jsonb,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+  uniqueIndex,
+  varchar,
+} from "drizzle-orm/pg-core";
+
+export const projects = pgTable(
+  "projects",
+  {
+    id: serial("id").primaryKey(),
+    title: varchar("title", { length: 120 }).notNull(),
+    description: text("description").notNull(),
+    status: varchar("status", { length: 80 }).notNull(),
+    category: varchar("category", { length: 120 }).notNull(),
+    tags: jsonb("tags").$type<string[]>().notNull().default([]),
+    href: text("href"),
+    repoHref: text("repo_href"),
+    developmentTime: varchar("development_time", { length: 80 }).notNull(),
+    coverImageUrl: text("cover_image_url"),
+    coverBlobKey: text("cover_blob_key"),
+    isFeatured: boolean("is_featured").notNull().default(false),
+    isVisible: boolean("is_visible").notNull().default(true),
+    sortOrder: integer("sort_order").notNull().default(0),
+    sourceKey: varchar("source_key", { length: 255 }),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex("projects_source_key_idx").on(table.sourceKey),
+    index("projects_is_visible_idx").on(table.isVisible),
+    index("projects_is_featured_idx").on(table.isFeatured),
+    index("projects_sort_order_idx").on(table.sortOrder),
+  ],
+);

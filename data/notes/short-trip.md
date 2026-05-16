@@ -1,20 +1,19 @@
 ---
-title: "一次没有计划的短途出走"
-date: "2025年12月7日星期日"
-column: "travel"
-columnLabel: "游记"
-location: "海边"
+title: 没有计划的短途出走
+description: 没有做攻略，也没有赶景点，只是换个城市让自己慢下来。
+date: 2025年12月7日星期日
+column: memory
+columnLabel: 朝花夕拾
+location: 海边
 tags:
-  - "旅行"
-  - "城市"
-  - "放空"
-publishedAt: "2025年12月7日"
-views: "530"
-likes: "35"
-readingTime: "6 分钟"
-insight: "这篇手记记录了一次没有计划的短途出走：没有攻略、没有打卡，只是在陌生城市里把节奏放慢，让身体和情绪重新获得一点余地。"
+  - 旅行
+  - 城市
+publishedAt: 2025年12月7日
+views: '614'
+likes: '35'
+readingTime: 6 分钟
+insight: 没有做攻略，也没有赶景点，只是换个城市让自己慢下来。
 ---
-
 没有做攻略，也没有赶景点，只是换个城市让自己慢下来。
 
 ## 出发之前

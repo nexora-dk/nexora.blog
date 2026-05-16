@@ -8,11 +8,14 @@ import { Motto } from "@/components/pages/home/motto";
 import { Project } from "@/components/pages/home/project";
 // SiteNew 展示站点近期更新或新鲜内容。
 import { SiteNew } from "@/components/pages/home/site-new";
+import { getFeaturedProjects } from "@/db/queries/projects.query";
 
 /**
  * 首页路由组件：按从首屏到内容区的顺序组合首页各展示模块。
  */
-export default function HomePage() {
+export default async function HomePage() {
+  const featuredProjects = await getFeaturedProjects(2);
+
   return (
     // 外层容器用于承载 Hero 和后续纵向内容区。
     <div>
@@ -23,7 +26,7 @@ export default function HomePage() {
         {/* 站点新鲜事或近期更新模块。 */}
         <SiteNew />
         {/* 精选项目展示模块。 */}
-        <Project />
+        <Project projects={featuredProjects} />
         {/* 作者简介模块。 */}
         <AboutMe />
         {/* 底部态度短句模块。 */}

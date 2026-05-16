@@ -1,17 +1,24 @@
+import type { ProjectItem } from "@/db/queries/projects.query";
 import { ProjectCard } from "./project-card";
-import { projectItems } from "./projects-data";
 
-// ProjectsContent 是项目页面的列表容器，负责把项目数据组织成响应式网格。
-export function ProjectsContent() {
+type ProjectsContentProps = {
+  projects: ProjectItem[];
+};
+
+export function ProjectsContent({ projects }: ProjectsContentProps) {
   return (
     <div className="pt-4">
-      {/* 项目列表区：中等屏幕开始变为两列布局。 */}
-      <section className="grid gap-5 md:grid-cols-2">
-        {/* 循环渲染项目卡片，使用项目 title 作为 key 并传入完整 project 数据。 */}
-        {projectItems.map((project) => (
-          <ProjectCard key={project.title} project={project} />
-        ))}
-      </section>
+      {projects.length > 0 ? (
+        <section className="grid gap-5 md:grid-cols-2">
+          {projects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </section>
+      ) : (
+        <div className="rounded-[1.75rem] border border-dashed border-neutral-200/70 bg-white/55 p-10 text-center text-sm text-neutral-400 dark:border-white/10 dark:bg-white/[0.035] dark:text-neutral-500">
+          暂无公开项目
+        </div>
+      )}
     </div>
   );
 }

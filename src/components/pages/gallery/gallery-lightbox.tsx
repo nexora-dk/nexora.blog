@@ -1,12 +1,25 @@
 "use client";
 
 // Client Component：灯箱需要响应点击、键盘事件、Portal 和浏览器滚动锁定。
-import Image from "next/image";
 import { ArrowLeft, ChevronLeft, ChevronRight, MapPin, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 import type { GalleryPhoto } from "./gallery-data";
+import { GalleryFillImage } from "./gallery-image";
+
+const photoAspectClassNames = [
+  "aspect-[4/3]",
+  "aspect-[5/4]",
+  "aspect-[3/4]",
+  "aspect-square",
+  "aspect-[16/10]",
+  "aspect-[4/5]",
+];
+
+function getPhotoAspectClassName(index: number) {
+  return photoAspectClassNames[index % photoAspectClassNames.length];
+}
 
 // PhotoOverlay 负责渲染单张缩略图 hover 时出现的标题和地点覆盖层。
 function PhotoOverlay({ title, location }: { title: string; location: string }) {
@@ -60,8 +73,10 @@ export function GalleryLightbox({ photos }: { photos: GalleryPhoto[] }) {
       <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 [&>*]:mb-4">
         {/* 循环渲染每张照片，点击按钮时记录对应 index 并打开灯箱。 */}
         {photos.map((photo, index) => (
-          <button key={photo.alt} type="button" onClick={() => setActiveIndex(index)} className="group relative block w-full break-inside-avoid overflow-hidden rounded-[1.1rem] bg-neutral-100 text-left shadow-[0_1px_18px_rgba(0,0,0,0.05)] transition duration-300 hover:-translate-y-0.5 dark:bg-neutral-900">
-            <Image src={photo.image} alt={photo.alt} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 290px" className="h-auto w-full transition duration-700 group-hover:scale-[1.025]" />
+          <button key={photo.id ?? `${photo.imageSrc}-${index}`} type="button" onClick={() => setActiveIndex(index)} className="group relative block w-full break-inside-avoid overflow-hidden rounded-[1.1rem] bg-neutral-100 text-left shadow-[0_1px_18px_rgba(0,0,0,0.05)] transition duration-300 hover:-translate-y-0.5 dark:bg-neutral-900">
+            <div className={`relative w-full ${getPhotoAspectClassName(index)}`}>
+              <GalleryFillImage src={photo.imageSrc} alt={photo.alt} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 290px" className="object-cover transition duration-700 group-hover:scale-[1.025]" />
+            </div>
             <PhotoOverlay title={photo.title} location={photo.location} />
           </button>
         ))}
@@ -95,7 +110,7 @@ export function GalleryLightbox({ photos }: { photos: GalleryPhoto[] }) {
           {/* 中央预览区使用 object-contain 保持图片完整显示。 */}
           <div className="flex h-full items-center justify-center px-6 py-20 sm:px-16">
             <div className="relative h-full max-h-[78vh] w-full max-w-6xl">
-              <Image src={activePhoto.image} alt={activePhoto.alt} fill sizes="100vw" className="object-contain" priority />
+              <GalleryFillImage src={activePhoto.imageSrc} alt={activePhoto.alt} sizes="100vw" className="object-contain" priority />
             </div>
           </div>
 

@@ -24,11 +24,8 @@ type NotesDetailPageProps = {
   }>;
 };
 
-// 禁止访问未在 generateStaticParams 中生成的动态参数，保证手记详情只来自已知内容。
-export const dynamicParams = false;
-
 /**
- * 生成手记详情页的静态路径参数，让 Next.js 在构建时预生成所有手记页面。
+ * 生成手记详情页的静态路径参数，让 Next.js 在构建时预生成已有手记页面。
  */
 export function generateStaticParams() {
   // 静态参数由手记数据文件统一生成，避免路由层重复维护 slug 列表。

@@ -1,22 +1,30 @@
-import { featuredPhoto, galleryPhotos } from "./gallery-data";
+import type { GalleryPhoto } from "./gallery-data";
 import { GalleryFeatured } from "./gallery-featured";
 import { GalleryLightbox } from "./gallery-lightbox";
 
-// GalleryContent 是相册页面的内容容器，负责组合精选大图和图片灯箱列表。
-export function GalleryContent() {
+type GalleryContentProps = {
+  featuredPhoto?: GalleryPhoto;
+  photos: GalleryPhoto[];
+};
+
+export function GalleryContent({ featuredPhoto, photos }: GalleryContentProps) {
   return (
     <div className="space-y-6">
-      {/* 顶部精选图片区域，传入单张 featuredPhoto 数据。 */}
-      <GalleryFeatured photo={featuredPhoto} />
+      {featuredPhoto ? <GalleryFeatured photo={featuredPhoto} /> : null}
 
-      {/* 下方相册列表区包含栏目标题和可点击预览的瀑布流。 */}
       <section className="space-y-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-neutral-400 dark:text-neutral-500">Gallery</p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">风景记录</h2>
         </div>
-        {/* GalleryLightbox 内部负责循环渲染照片和处理预览交互。 */}
-        <GalleryLightbox photos={galleryPhotos} />
+
+        {photos.length > 0 ? (
+          <GalleryLightbox photos={photos} />
+        ) : (
+          <div className="rounded-[1.35rem] border border-dashed border-neutral-200/70 bg-white/55 p-10 text-center text-sm text-neutral-400 dark:border-white/10 dark:bg-white/[0.035] dark:text-neutral-500">
+            暂无公开照片
+          </div>
+        )}
       </section>
     </div>
   );

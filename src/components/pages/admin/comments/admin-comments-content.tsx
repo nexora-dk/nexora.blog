@@ -3,11 +3,13 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
-import { MessageSquareText, Trash2 } from "lucide-react";
+import { MessageSquareText, Search, Trash2 } from "lucide-react";
 import { deleteAdminCommentAction } from "@/app/actions/admin-comments";
 
 import { AdminContentPanel } from "../admin-content-panel";
+import { AdminEmptyState } from "../admin-empty-state";
 import { AdminPageHeader } from "../admin-page-header";
+import { AdminPagination } from "../admin-pagination";
 import type { AdminCommentItem } from "@/db/queries/admin-comments.query";
 
 type AdminCommentsContentProps = {
@@ -104,18 +106,37 @@ export function AdminCommentsContent({ comments }: AdminCommentsContentProps) {
     [groups],
   );
   const [selectedTargetKey, setSelectedTargetKey] = useState("all");
+  const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   const filteredComments = useMemo(() => {
-    if (selectedTargetKey === "all") {
-      return comments;
-    }
+    const keyword = searchValue.trim().toLowerCase();
 
     return comments.filter((comment) => {
       const key = `${comment.source}-${comment.targetSlug}`;
-      return key === selectedTargetKey;
+      const matchesTarget = selectedTargetKey === "all" || key === selectedTargetKey;
+
+      if (!matchesTarget) {
+        return false;
+      }
+
+      if (!keyword) {
+        return true;
+      }
+
+      return [
+        getSourceLabel(comment.source),
+        comment.targetTitle,
+        comment.targetSlug,
+        comment.authorName,
+        comment.authorEmail,
+        comment.content,
+      ]
+        .join(" ")
+        .toLowerCase()
+        .includes(keyword);
     });
-  }, [comments, selectedTargetKey]);
+  }, [comments, selectedTargetKey, searchValue]);
 
   const totalPages = Math.max(
     1,
@@ -141,6 +162,11 @@ export function AdminCommentsContent({ comments }: AdminCommentsContentProps) {
 
   function handleTargetChange(value: string) {
     setSelectedTargetKey(value);
+    setCurrentPage(1);
+  }
+
+  function handleSearchChange(value: string) {
+    setSearchValue(value);
     setCurrentPage(1);
   }
 
@@ -214,17 +240,30 @@ export function AdminCommentsContent({ comments }: AdminCommentsContentProps) {
             </p>
           </div>
 
-          <select
-            value={selectedTargetKey}
-            onChange={(event) => handleTargetChange(event.target.value)}
-            className="h-11 rounded-2xl border border-neutral-200/80 bg-white/80 px-4 text-sm font-medium text-neutral-700 shadow-sm outline-none transition focus:border-neutral-300 dark:border-white/10 dark:bg-neutral-950/70 dark:text-neutral-200 dark:focus:border-white/20"
-          >
-            {targetOptions.map((option) => (
-              <option key={option.key} value={option.key}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <label className="relative block sm:w-72">
+              <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-neutral-300" />
+              <input
+                type="search"
+                value={searchValue}
+                onChange={(event) => handleSearchChange(event.target.value)}
+                placeholder="按作者/邮箱/内容搜索..."
+                className="h-11 w-full rounded-2xl border border-neutral-200/80 bg-white/80 pl-11 pr-4 text-sm text-neutral-700 shadow-sm outline-none transition placeholder:text-neutral-300 focus:border-neutral-300 dark:border-white/10 dark:bg-neutral-950/70 dark:text-neutral-200 dark:placeholder:text-neutral-600 dark:focus:border-white/20"
+              />
+            </label>
+
+            <select
+              value={selectedTargetKey}
+              onChange={(event) => handleTargetChange(event.target.value)}
+              className="h-11 rounded-2xl border border-neutral-200/80 bg-white/80 px-4 text-sm font-medium text-neutral-700 shadow-sm outline-none transition focus:border-neutral-300 dark:border-white/10 dark:bg-neutral-950/70 dark:text-neutral-200 dark:focus:border-white/20"
+            >
+              {targetOptions.map((option) => (
+                <option key={option.key} value={option.key}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="mt-7 divide-y divide-neutral-200/70 dark:divide-white/10">
@@ -293,39 +332,20 @@ export function AdminCommentsContent({ comments }: AdminCommentsContentProps) {
               </article>
             ))
           ) : (
-            <div className="flex min-h-[42vh] items-center justify-center text-sm text-neutral-400 dark:text-neutral-500">
-              暂无评论
-            </div>
+            <AdminEmptyState>
+              {comments.length === 0 ? "暂无评论" : "没有找到匹配的评论"}
+            </AdminEmptyState>
           )}
         </div>
 
-        {filteredComments.length > 0 ? (
-          <div className="mt-6 flex flex-col gap-3 border-t border-neutral-200/70 pt-5 dark:border-white/10 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-neutral-400">
-              第 {currentPage} / {totalPages} 页，共 {filteredComments.length}{" "}
-              条评论
-            </p>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={goToPreviousPage}
-                disabled={currentPage === 1}
-                className="rounded-full border border-neutral-200/80 bg-white/70 px-4 py-2 text-sm font-medium text-neutral-600 shadow-sm transition hover:text-neutral-950 disabled:cursor-not-allowed disabled:opacity-45 dark:border-white/10 dark:bg-white/[0.04] dark:text-neutral-300 dark:hover:text-neutral-50"
-              >
-                上一页
-              </button>
-              <button
-                type="button"
-                onClick={goToNextPage}
-                disabled={currentPage === totalPages}
-                className="rounded-full border border-neutral-200/80 bg-white/70 px-4 py-2 text-sm font-medium text-neutral-600 shadow-sm transition hover:text-neutral-950 disabled:cursor-not-allowed disabled:opacity-45 dark:border-white/10 dark:bg-white/[0.04] dark:text-neutral-300 dark:hover:text-neutral-50"
-              >
-                下一页
-              </button>
-            </div>
-          </div>
-        ) : null}
+        <AdminPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredComments.length}
+          itemLabel="条评论"
+          onPreviousPage={goToPreviousPage}
+          onNextPage={goToNextPage}
+        />
       </AdminContentPanel>
     </div>
   );

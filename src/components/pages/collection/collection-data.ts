@@ -1,21 +1,27 @@
-// simple-icons 图标名称白名单，CollectionCard 会用这些字符串映射到具体图标组件。
-export type SimpleIconName =
-  | "tldraw"
-  | "excalidraw"
-  | "figma"
-  | "github"
-  | "iconify"
-  | "railway"
-  | "resend"
-  | "nextdotjs"
-  | "drizzle"
-  | "vercel"
-  | "supabase"
-  | "upstash"
-  | "awwwards"
-  | "dribbble"
-  | "shadcnui"
-  | "daisyui";
+export const simpleIconNames = [
+  "tldraw",
+  "excalidraw",
+  "figma",
+  "github",
+  "iconify",
+  "railway",
+  "resend",
+  "nextdotjs",
+  "drizzle",
+  "vercel",
+  "supabase",
+  "upstash",
+  "awwwards",
+  "dribbble",
+  "shadcnui",
+  "daisyui",
+] as const;
+
+export type SimpleIconName = (typeof simpleIconNames)[number];
+
+export function isSimpleIconName(value: string): value is SimpleIconName {
+  return (simpleIconNames as readonly string[]).includes(value);
+}
 
 // 收藏图标的联合类型：可以使用 simple-icons，也可以使用本地图片资源。
 export type CollectionIcon =

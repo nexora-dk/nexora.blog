@@ -1,9 +1,93 @@
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, or, sql } from "drizzle-orm";
 
 import { db } from "../db";
 import { writings } from "../schemas/schema";
 import type { ArticleItem } from "@/components/pages/writing/writing-data";
 import { retryDatabaseRead } from "./retry";
+
+type CreateWritingInput = {
+  slug: string;
+  title: string;
+  description: string;
+  href: string;
+  date: string;
+  category: ArticleItem["category"];
+  categoryLabel: string;
+  tags: string[];
+  readingTime: string;
+  views: number;
+  likes: number;
+  modifiedTime: string;
+  contentPath: string;
+};
+
+type UpdateWritingInput = {
+  title: string;
+  description: string;
+  date: string;
+  category: ArticleItem["category"];
+  categoryLabel: string;
+  tags: string[];
+  readingTime: string;
+  modifiedTime: string;
+};
+
+export async function getWritingExistsBySlugOrHref(input: {
+  slug: string;
+  href: string;
+}) {
+  const [writing] = await retryDatabaseRead(() =>
+    db
+      .select({ id: writings.id })
+      .from(writings)
+      .where(or(eq(writings.slug, input.slug), eq(writings.href, input.href)))
+      .limit(1),
+  );
+
+  return Boolean(writing);
+}
+
+export async function createWriting(input: CreateWritingInput) {
+  const [writing] = await db
+    .insert(writings)
+    .values({
+      ...input,
+      updatedAt: new Date(),
+    })
+    .returning({ slug: writings.slug });
+
+  return writing;
+}
+
+export async function getAdminWritingBySlug(slug: string) {
+  const [writing] = await retryDatabaseRead(() =>
+    db.select().from(writings).where(eq(writings.slug, slug)).limit(1),
+  );
+
+  return writing;
+}
+
+export async function updateWritingBySlug(slug: string, input: UpdateWritingInput) {
+  const [writing] = await db
+    .update(writings)
+    .set({
+      ...input,
+      updatedAt: new Date(),
+    })
+    .where(eq(writings.slug, slug))
+    .returning({ slug: writings.slug });
+
+  return writing;
+}
+
+export async function deleteWritingBySlug(slug: string) {
+  const [writing] = await db
+    .delete(writings)
+    .where(eq(writings.slug, slug))
+    .returning({ slug: writings.slug });
+
+  return writing;
+}
 
 export async function getWritingItems(): Promise<ArticleItem[]> {
   const rows = await retryDatabaseRead(() => db.select().from(writings).orderBy(desc(writings.id)));

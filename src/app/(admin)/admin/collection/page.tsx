@@ -1,6 +1,8 @@
 import { AdminCollectionContent } from "@/components/pages/admin/collection/admin-collection-content";
-import { collectionGroups } from "@/components/pages/collection/collection-data";
+import { getAdminCollectionItems } from "@/db/queries/collection.query";
 
-export default function AdminCollectionPage() {
-  return <AdminCollectionContent groups={collectionGroups} />;
+export default async function AdminCollectionPage() {
+  const items = await getAdminCollectionItems();
+
+  return <AdminCollectionContent items={items} />;
 }

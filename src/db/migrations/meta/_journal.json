@@ -15,6 +15,27 @@
       "when": 1778828048528,
       "tag": "0001_outstanding_warpath",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778930364277,
+      "tag": "0002_lonely_lady_mastermind",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1778933994487,
+      "tag": "0003_flowery_dexter_bennett",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1778941713288,
+      "tag": "0004_pale_krista_starr",
+      "breakpoints": true
     }
   ]
 }

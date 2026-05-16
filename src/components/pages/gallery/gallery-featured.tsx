@@ -1,7 +1,7 @@
-import Image from "next/image";
 import { Camera, MapPin } from "lucide-react";
 
 import type { GalleryPhoto } from "./gallery-data";
+import { GalleryFillImage } from "./gallery-image";
 
 // GalleryFeaturedProps 约束精选区域只接收一张 GalleryPhoto。
 type GalleryFeaturedProps = {
@@ -14,7 +14,7 @@ export function GalleryFeatured({ photo }: GalleryFeaturedProps) {
     <section className="group relative overflow-hidden rounded-[1.35rem] bg-neutral-100 shadow-[0_1px_18px_rgba(0,0,0,0.05)] dark:bg-neutral-900">
       {/* 图片容器提供固定最小高度，内部 Image 使用 fill 铺满区域。 */}
       <div className="relative min-h-[340px] md:min-h-[430px]">
-        <Image src={photo.image} alt={photo.alt} fill priority sizes="(max-width: 768px) 100vw, 870px" className="object-cover transition duration-700 group-hover:scale-105" />
+        <GalleryFillImage src={photo.imageSrc} alt={photo.alt} priority sizes="(max-width: 768px) 100vw, 870px" className="object-cover transition duration-700 group-hover:scale-105" />
         {/* 渐变遮罩提升白色文字在照片上的可读性。 */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
         {/* 覆盖内容层纵向分布：顶部标签，底部标题和地点。 */}

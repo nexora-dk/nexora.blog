@@ -26,11 +26,8 @@ type WritingDetailPageProps = {
   }>;
 };
 
-// 禁止访问未在 generateStaticParams 中生成的动态参数，保证文章详情只来自已知内容。
-export const dynamicParams = false;
-
 /**
- * 生成文章详情页的静态路径参数，让 Next.js 在构建时预生成所有文章页面。
+ * 生成文章详情页的静态路径参数，让 Next.js 在构建时预生成已有文章页面。
  */
 export function generateStaticParams() {
   // 静态参数由文稿数据文件统一生成，避免路由层重复维护 slug 列表。

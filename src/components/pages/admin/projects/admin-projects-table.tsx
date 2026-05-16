@@ -22,15 +22,23 @@ function getStatusClassName(status: string) {
 export function AdminProjectsTable({ projects }: AdminProjectsTableProps) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[960px] border-separate border-spacing-y-3 text-left">
+      <table className="w-full min-w-[1120px] table-fixed border-separate border-spacing-y-3 text-left">
+        <colgroup>
+          <col className="w-[24%]" />
+          <col className="w-[9rem]" />
+          <col className="w-[30%]" />
+          <col className="w-[9rem]" />
+          <col className="w-[9rem]" />
+          <col className="w-[8rem]" />
+        </colgroup>
         <thead>
           <tr className="text-sm font-medium text-neutral-400 dark:text-neutral-500">
-            <th className="px-4 py-2">项目</th>
-            <th className="px-4 py-2">分类</th>
-            <th className="px-4 py-2">描述</th>
-            <th className="px-4 py-2">时间</th>
-            <th className="px-4 py-2">状态</th>
-            <th className="px-4 py-2 text-right">操作</th>
+            <th className="px-4 py-2 text-left">项目</th>
+            <th className="px-4 py-2 text-center whitespace-nowrap">分类</th>
+            <th className="px-4 py-2 text-left">描述</th>
+            <th className="px-4 py-2 text-center whitespace-nowrap">时间</th>
+            <th className="px-4 py-2 text-center whitespace-nowrap">状态</th>
+            <th className="px-4 py-2 text-center whitespace-nowrap">操作</th>
           </tr>
         </thead>
         <tbody>
@@ -71,8 +79,8 @@ export function AdminProjectsTable({ projects }: AdminProjectsTableProps) {
                   </div>
                 </div>
               </td>
-              <td className="border-y border-transparent px-4 py-4 transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
-                <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-500 dark:bg-white/10 dark:text-neutral-400">
+              <td className="border-y border-transparent px-4 py-4 text-center whitespace-nowrap transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
+                <span className="inline-flex rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-500 dark:bg-white/10 dark:text-neutral-400">
                   {project.category}
                 </span>
               </td>
@@ -86,16 +94,16 @@ export function AdminProjectsTable({ projects }: AdminProjectsTableProps) {
                   ))}
                 </div>
               </td>
-              <td className="border-y border-transparent px-4 py-4 tabular-nums transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
+              <td className="border-y border-transparent px-4 py-4 text-center whitespace-nowrap tabular-nums transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
                 {project.developmentTime}
               </td>
-              <td className="border-y border-transparent px-4 py-4 transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
+              <td className="border-y border-transparent px-4 py-4 text-center whitespace-nowrap transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
                 <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${getStatusClassName(project.status)}`}>
                   {project.status}
                 </span>
               </td>
               <td className="rounded-r-[1.4rem] border-y border-r border-transparent px-4 py-4 transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-center gap-2">
                   <button
                     type="button"
                     className="grid size-9 place-items-center rounded-full border border-neutral-200/70 bg-white/70 text-neutral-400 shadow-sm transition hover:text-neutral-950 dark:border-white/10 dark:bg-white/[0.04] dark:hover:text-neutral-50"

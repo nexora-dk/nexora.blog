@@ -15,6 +15,7 @@ export type NoteColumnMeta = {
 // 列表态手记数据结构：只包含卡片、分页、归档和详情头部需要的摘要字段。
 export type NoteItem = {
   title: string;
+  slug: string;
   description: string;
   href: string;
   date: string;
@@ -72,6 +73,7 @@ export const noteColumns: NoteColumnMeta[] = [
 
 // Markdown 手记文件统一放在 data/notes，组件层只消费这里读出的结构化数据。
 const notesDirectory = path.join(process.cwd(), "data", "notes");
+const SLUG_FILE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 // 基础类型守卫：确保 required/optional 字段不会把非字符串带入页面。
 function isString(value: unknown): value is string {
@@ -225,6 +227,7 @@ const noteDetails: NoteDetail[] = getNoteDetails().sort((first, second) => getDa
 // 列表数据从详情数据裁剪而来，避免列表组件接触正文内容。
 export const noteItems: NoteItem[] = noteDetails.map((note) => ({
   title: note.title,
+  slug: note.slug,
   description: note.description,
   href: note.href,
   date: note.date,
@@ -241,12 +244,24 @@ export const noteItems: NoteItem[] = noteDetails.map((note) => ({
 
 // 详情路由按 slug 查找单篇完整手记。
 export function getNoteBySlug(slug: string) {
-  return noteDetails.find((note) => note.slug === slug);
+  if (!SLUG_FILE_PATTERN.test(slug)) {
+    return undefined;
+  }
+
+  const fileName = `${slug}.md`;
+  const filePath = path.resolve(notesDirectory, fileName);
+  const relativePath = path.relative(notesDirectory, filePath);
+
+  if (relativePath.startsWith("..") || path.isAbsolute(relativePath) || !fs.existsSync(filePath)) {
+    return undefined;
+  }
+
+  return readNoteFile(fileName);
 }
 
 // 静态路由参数来自全部详情数据的 slug。
 export function getNoteStaticParams() {
-  return noteDetails.map((note) => ({ slug: note.slug }));
+  return getNoteDetails().map((note) => ({ slug: note.slug }));
 }
 
 // 查询参数校验入口：只有合法专栏值才会触发筛选和归档视图。

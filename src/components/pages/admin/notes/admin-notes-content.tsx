@@ -1,12 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { ArrowUpRight, NotebookPen, Plus, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState, useTransition } from "react";
+import { ArrowUpRight, NotebookPen, Pencil, Trash2 } from "lucide-react";
 
+import { deleteAdminNoteAction } from "@/app/actions/admin-notes";
 import type { NoteItem } from "@/components/pages/notes/notes-data";
 import { AdminContentPanel } from "../admin-content-panel";
+import { AdminEmptyState } from "../admin-empty-state";
+import { AdminListToolbar } from "../admin-list-toolbar";
 import { AdminPageHeader } from "../admin-page-header";
+import { AdminPagination } from "../admin-pagination";
 
 type AdminNotesContentProps = {
   notes: NoteItem[];
@@ -15,12 +20,68 @@ type AdminNotesContentProps = {
 const NOTES_PER_PAGE = 5;
 
 export function AdminNotesContent({ notes }: AdminNotesContentProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.max(1, Math.ceil(notes.length / NOTES_PER_PAGE));
-  const pagedNotes = notes.slice(
+
+  const filteredNotes = useMemo(() => {
+    const keyword = searchValue.trim().toLowerCase();
+
+    if (!keyword) {
+      return notes;
+    }
+
+    return notes.filter((note) => {
+      return [
+        note.title,
+        note.description,
+        note.columnLabel,
+        note.mood,
+        note.location,
+        ...note.tags,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(keyword);
+    });
+  }, [notes, searchValue]);
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredNotes.length / NOTES_PER_PAGE),
+  );
+  const pagedNotes = filteredNotes.slice(
     (currentPage - 1) * NOTES_PER_PAGE,
     currentPage * NOTES_PER_PAGE,
   );
+
+  function handleSearchChange(value: string) {
+    setSearchValue(value);
+    setCurrentPage(1);
+  }
+
+  function handleDelete(note: NoteItem) {
+    const confirmed = window.confirm(
+      `确定删除手记「${note.title}」吗？此操作会同时删除 Markdown 文件和相关评论，且不可撤销。`,
+    );
+
+    if (!confirmed || isPending) {
+      return;
+    }
+
+    startTransition(async () => {
+      const result = await deleteAdminNoteAction(note.slug);
+
+      if (!result.success) {
+        window.alert(result.message);
+        return;
+      }
+
+      router.refresh();
+    });
+  }
 
   function goToPreviousPage() {
     setCurrentPage((page) => Math.max(1, page - 1));
@@ -39,55 +100,46 @@ export function AdminNotesContent({ notes }: AdminNotesContentProps) {
       />
 
       <AdminContentPanel className="min-h-[72vh] p-6 sm:p-8">
-        <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold tracking-tight text-neutral-950 dark:text-neutral-50">
-              全部手记
-            </h2>
-            <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-500 dark:bg-white/10 dark:text-neutral-400">
-              {notes.length} 篇
-            </span>
-          </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <label className="relative block sm:w-80">
-              <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-neutral-300" />
-              <input
-                type="search"
-                placeholder="按标题/描述/标签搜索..."
-                className="h-12 w-full rounded-2xl border border-neutral-200/70 bg-white/70 pl-11 pr-4 text-sm text-neutral-700 shadow-sm outline-none transition placeholder:text-neutral-300 focus:border-neutral-300 dark:border-white/10 dark:bg-white/[0.04] dark:text-neutral-200 dark:placeholder:text-neutral-600 dark:focus:border-white/20"
-              />
-            </label>
-
-            <button
-              type="button"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-neutral-950 px-5 text-sm font-semibold text-white shadow-[0_16px_34px_rgba(15,23,42,0.18)] transition hover:-translate-y-0.5 dark:bg-neutral-100 dark:text-neutral-950"
-            >
-              <Plus className="size-4" />
-              新增
-            </button>
-          </div>
-        </div>
+        <AdminListToolbar
+          title="全部手记"
+          count={filteredNotes.length}
+          countLabel="篇"
+          searchPlaceholder="按标题/描述/标签搜索..."
+          actionLabel="新增"
+          searchValue={searchValue}
+          onSearchChange={handleSearchChange}
+          actionHref="/admin/notes/new"
+        />
 
         <div className="mt-7 overflow-x-auto">
-          <table className="w-full min-w-[980px] border-separate border-spacing-y-3 text-left">
+          <table className="w-full min-w-[1260px] table-fixed border-separate border-spacing-y-3 text-left">
+            <colgroup>
+              <col className="w-[32%]" />
+              <col className="w-[7rem]" />
+              <col className="w-[16%]" />
+              <col className="w-[12rem]" />
+              <col className="w-[5rem]" />
+              <col className="w-[5rem]" />
+              <col className="w-[12rem]" />
+              <col className="w-[9rem]" />
+            </colgroup>
             <thead>
               <tr className="text-sm font-medium text-neutral-400 dark:text-neutral-500">
-                <th className="px-4 py-2">标题</th>
-                <th className="px-4 py-2">专栏</th>
-                <th className="px-4 py-2">标签</th>
-                <th className="px-4 py-2">心情/地点</th>
-                <th className="px-4 py-2">浏览</th>
-                <th className="px-4 py-2">点赞</th>
-                <th className="px-4 py-2">发布</th>
-                <th className="px-4 py-2 text-right">操作</th>
+                <th className="px-4 py-2 text-left">标题</th>
+                <th className="px-4 py-2 text-center whitespace-nowrap">专栏</th>
+                <th className="px-4 py-2 text-center">标签</th>
+                <th className="px-4 py-2 text-center whitespace-nowrap">心情/地点</th>
+                <th className="px-4 py-2 text-center whitespace-nowrap">浏览</th>
+                <th className="px-4 py-2 text-center whitespace-nowrap">点赞</th>
+                <th className="px-4 py-2 text-center whitespace-nowrap">发布</th>
+                <th className="px-4 py-2 text-center whitespace-nowrap">操作</th>
               </tr>
             </thead>
 
             <tbody>
               {pagedNotes.map((note) => (
                 <tr
-                  key={note.href}
+                  key={note.slug}
                   className="group text-sm text-neutral-600 transition dark:text-neutral-300"
                 >
                   <td className="rounded-l-[1.4rem] border-y border-l border-transparent bg-white/0 px-4 py-4 transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
@@ -99,14 +151,14 @@ export function AdminNotesContent({ notes }: AdminNotesContentProps) {
                     </p>
                   </td>
 
-                  <td className="border-y border-transparent px-4 py-4 transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
-                    <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-500 dark:bg-white/10 dark:text-neutral-400">
+                  <td className="border-y border-transparent px-4 py-4 text-center whitespace-nowrap transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
+                    <span className="inline-flex rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-500 dark:bg-white/10 dark:text-neutral-400">
                       {note.columnLabel}
                     </span>
                   </td>
 
                   <td className="border-y border-transparent px-4 py-4 transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
-                    <div className="flex max-w-xs flex-wrap gap-1.5">
+                    <div className="mx-auto flex max-w-xs flex-wrap justify-center gap-1.5">
                       {note.tags.map((tag) => (
                         <span
                           key={tag}
@@ -119,7 +171,7 @@ export function AdminNotesContent({ notes }: AdminNotesContentProps) {
                   </td>
 
                   <td className="border-y border-transparent px-4 py-4 transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
-                    <div className="flex max-w-[12rem] flex-wrap gap-1.5">
+                    <div className="mx-auto flex max-w-[12rem] flex-wrap justify-center gap-1.5">
                       {note.mood ? (
                         <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-600 dark:bg-amber-500/10 dark:text-amber-300">
                           {note.mood}
@@ -136,20 +188,27 @@ export function AdminNotesContent({ notes }: AdminNotesContentProps) {
                     </div>
                   </td>
 
-                  <td className="border-y border-transparent px-4 py-4 tabular-nums transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
+                  <td className="border-y border-transparent px-4 py-4 text-center whitespace-nowrap tabular-nums transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
                     {note.views}
                   </td>
 
-                  <td className="border-y border-transparent px-4 py-4 tabular-nums transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
+                  <td className="border-y border-transparent px-4 py-4 text-center whitespace-nowrap tabular-nums transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
                     {note.likes}
                   </td>
 
-                  <td className="border-y border-transparent px-4 py-4 transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
+                  <td className="border-y border-transparent px-4 py-4 text-center whitespace-nowrap transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
                     {note.publishedAt}
                   </td>
 
                   <td className="rounded-r-[1.4rem] border-y border-r border-transparent px-4 py-4 transition group-hover:border-neutral-200/70 group-hover:bg-white/55 dark:group-hover:border-white/10 dark:group-hover:bg-white/[0.04]">
-                    <div className="flex justify-end">
+                    <div className="flex justify-center gap-2 whitespace-nowrap">
+                      <Link
+                        href={`/admin/notes/${note.slug}/edit`}
+                        className="grid size-9 place-items-center rounded-full border border-neutral-200/70 bg-white/70 text-neutral-400 shadow-sm transition hover:text-neutral-950 dark:border-white/10 dark:bg-white/[0.04] dark:hover:text-neutral-50"
+                        aria-label={`编辑 ${note.title}`}
+                      >
+                        <Pencil className="size-4" />
+                      </Link>
                       <Link
                         href={note.href}
                         className="grid size-9 place-items-center rounded-full border border-neutral-200/70 bg-white/70 text-neutral-400 shadow-sm transition hover:text-neutral-950 dark:border-white/10 dark:bg-white/[0.04] dark:hover:text-neutral-50"
@@ -157,6 +216,15 @@ export function AdminNotesContent({ notes }: AdminNotesContentProps) {
                       >
                         <ArrowUpRight className="size-4" />
                       </Link>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(note)}
+                        disabled={isPending}
+                        className="grid size-9 place-items-center rounded-full border border-red-200/80 bg-red-50/80 text-red-500 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/15"
+                        aria-label={`删除 ${note.title}`}
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -164,39 +232,21 @@ export function AdminNotesContent({ notes }: AdminNotesContentProps) {
             </tbody>
           </table>
 
-          {notes.length === 0 ? (
-            <div className="flex min-h-[42vh] items-center justify-center text-sm text-neutral-400 dark:text-neutral-500">
-              暂无手记
-            </div>
+          {filteredNotes.length === 0 ? (
+            <AdminEmptyState>
+              {notes.length === 0 ? "暂无手记" : "没有找到匹配的手记"}
+            </AdminEmptyState>
           ) : null}
         </div>
 
-        {notes.length > 0 ? (
-          <div className="mt-6 flex flex-col gap-3 border-t border-neutral-200/70 pt-5 dark:border-white/10 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-neutral-400">
-              第 {currentPage} / {totalPages} 页，共 {notes.length} 篇手记
-            </p>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={goToPreviousPage}
-                disabled={currentPage === 1}
-                className="rounded-full border border-neutral-200/80 bg-white/70 px-4 py-2 text-sm font-medium text-neutral-600 shadow-sm transition hover:text-neutral-950 disabled:cursor-not-allowed disabled:opacity-45 dark:border-white/10 dark:bg-white/[0.04] dark:text-neutral-300 dark:hover:text-neutral-50"
-              >
-                上一页
-              </button>
-              <button
-                type="button"
-                onClick={goToNextPage}
-                disabled={currentPage === totalPages}
-                className="rounded-full border border-neutral-200/80 bg-white/70 px-4 py-2 text-sm font-medium text-neutral-600 shadow-sm transition hover:text-neutral-950 disabled:cursor-not-allowed disabled:opacity-45 dark:border-white/10 dark:bg-white/[0.04] dark:text-neutral-300 dark:hover:text-neutral-50"
-              >
-                下一页
-              </button>
-            </div>
-          </div>
-        ) : null}
+        <AdminPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredNotes.length}
+          itemLabel="篇手记"
+          onPreviousPage={goToPreviousPage}
+          onNextPage={goToNextPage}
+        />
       </AdminContentPanel>
     </div>
   );

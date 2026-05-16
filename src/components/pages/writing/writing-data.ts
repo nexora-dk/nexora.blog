@@ -66,6 +66,7 @@ export const writingCategories: WritingCategory[] = [
 
 // Markdown 文件目录固定在项目根目录 data/writing 下。
 const writingDirectory = path.join(process.cwd(), "data", "writing");
+const SLUG_FILE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 // 字符串类型守卫用于校验 frontmatter 字段。
 function isString(value: unknown): value is string {
@@ -205,7 +206,8 @@ function getArticleDetails() {
   return fs
     .readdirSync(writingDirectory)
     .filter((fileName) => fileName.endsWith(".md"))
-    .map(readArticleFile);
+    .map(readArticleFile)
+    .sort((first, second) => getDateTime(second.date) - getDateTime(first.date));
 }
 
 // 把“YYYY年M月D日”格式转成时间戳，用于文章倒序排序。
@@ -220,33 +222,44 @@ function getDateTime(date: string) {
   return new Date(Number(year), Number(month) - 1, Number(day)).getTime();
 }
 
-// articleDetails 是详情页数据源，按发布日期从新到旧排序。
-const articleDetails: ArticleDetail[] = getArticleDetails().sort((first, second) => getDateTime(second.date) - getDateTime(first.date));
-
-// articleItems 从详情数据投影出列表页所需字段，避免列表携带正文内容。
-export const articleItems: ArticleItem[] = articleDetails.map((article) => ({
-  title: article.title,
-  slug: article.slug,
-  description: article.description,
-  href: article.href,
-  date: article.date,
-  category: article.category,
-  categoryLabel: article.categoryLabel,
-  tags: article.tags,
-  readingTime: article.readingTime,
-  views: article.views,
-  likes: article.likes,
-  modifiedTime: article.modifiedTime,
-}));
+// 从详情数据投影出列表页所需字段，避免列表携带正文内容。
+export function getArticleItemsFromMarkdown(): ArticleItem[] {
+  return getArticleDetails().map((article) => ({
+    title: article.title,
+    slug: article.slug,
+    description: article.description,
+    href: article.href,
+    date: article.date,
+    category: article.category,
+    categoryLabel: article.categoryLabel,
+    tags: article.tags,
+    readingTime: article.readingTime,
+    views: article.views,
+    likes: article.likes,
+    modifiedTime: article.modifiedTime,
+  }));
+}
 
 // 根据 slug 查找文章详情，供动态详情页读取。
 export function getArticleBySlug(slug: string) {
-  return articleDetails.find((article) => article.slug === slug);
+  if (!SLUG_FILE_PATTERN.test(slug)) {
+    return undefined;
+  }
+
+  const fileName = `${slug}.md`;
+  const filePath = path.resolve(writingDirectory, fileName);
+  const relativePath = path.relative(writingDirectory, filePath);
+
+  if (relativePath.startsWith("..") || path.isAbsolute(relativePath) || !fs.existsSync(filePath)) {
+    return undefined;
+  }
+
+  return readArticleFile(fileName);
 }
 
 // 生成静态路由参数，供 Next.js 预渲染每篇文章详情页。
 export function getArticleStaticParams() {
-  return articleItems.map((article) => ({ slug: article.slug }));
+  return getArticleItemsFromMarkdown().map((article) => ({ slug: article.slug }));
 }
 
 // 分类类型守卫复用 writingCategories，确保外部字符串能安全收窄为 ArticleCategory。
