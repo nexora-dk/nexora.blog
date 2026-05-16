@@ -14,6 +14,7 @@ import {
   getArticleBySlug,
   getArticleStaticParams,
 } from "@/components/pages/writing/writing-data";
+import { getDatabaseErrorMessage } from "@/db/queries/retry";
 // PageShell 提供统一页面标题、描述和主体容器。
 import { PageShell } from "@/components/ui/page-shell";
 
@@ -51,19 +52,30 @@ export default async function WritingDetailPage({
     notFound();
   }
 
-  await incrementWritingViews(slug);
+  try {
+    await incrementWritingViews(slug);
+  } catch (error) {
+    console.warn(`Failed to increment writing views for ${slug}: ${getDatabaseErrorMessage(error)}`);
+  }
 
-  const databaseArticle = await getWritingItemBySlug(slug);
-const comments = await getWritingComments(slug);
+  let databaseArticle: Awaited<ReturnType<typeof getWritingItemBySlug>>;
+  let comments: Awaited<ReturnType<typeof getWritingComments>> = [];
 
-  // 如果没有匹配文章，立即交给 Next.js 渲染 not-found 页面。
-  if (!databaseArticle) {
-    notFound();
+  try {
+    databaseArticle = await getWritingItemBySlug(slug);
+  } catch (error) {
+    console.warn(`Failed to load writing database article for ${slug}: ${getDatabaseErrorMessage(error)}`);
+  }
+
+  try {
+    comments = await getWritingComments(slug);
+  } catch (error) {
+    console.warn(`Failed to load writing comments for ${slug}: ${getDatabaseErrorMessage(error)}`);
   }
 
   const article = {
     ...markdownArticle,
-    ...databaseArticle,
+    ...(databaseArticle ?? {}),
     content: markdownArticle.content,
     toc: markdownArticle.toc,
   };

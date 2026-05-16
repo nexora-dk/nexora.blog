@@ -3,9 +3,10 @@ import { desc, eq, sql } from "drizzle-orm";
 import { db } from "../db";
 import { writings } from "../schemas/schema";
 import type { ArticleItem } from "@/components/pages/writing/writing-data";
+import { retryDatabaseRead } from "./retry";
 
 export async function getWritingItems(): Promise<ArticleItem[]> {
-  const rows = await db.select().from(writings).orderBy(desc(writings.id));
+  const rows = await retryDatabaseRead(() => db.select().from(writings).orderBy(desc(writings.id)));
 
   return rows.map((writing) => ({
     title: writing.title,
@@ -24,7 +25,7 @@ export async function getWritingItems(): Promise<ArticleItem[]> {
 }
 
 export async function getWritingItemBySlug(slug: string): Promise<ArticleItem | undefined> {
-  const [writing] = await db.select().from(writings).where(eq(writings.slug, slug)).limit(1);
+  const [writing] = await retryDatabaseRead(() => db.select().from(writings).where(eq(writings.slug, slug)).limit(1));
 
   if (!writing) {
     return undefined;

@@ -5,9 +5,6 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { MessageSquare, MoreVertical } from "lucide-react";
 
-import { deleteWritingCommentAction } from "@/app/actions/writing-comments";
-import type { WritingCommentItem } from "@/db/queries/writing-comments.query";
-
 import { CommentDeleteDialog } from "./comment-delete-dialog";
 import { CommentMarkdown } from "./comment-markdown";
 
@@ -17,14 +14,28 @@ export type ReplyTarget = {
   authorName: string;
 };
 
+export type CommentItemData = {
+  id: number;
+  parentId: number | null;
+  authorId: string;
+  authorName: string;
+  authorImage: string | null;
+  content: string;
+  createdAt: Date;
+};
+
+type CommentActionResult =
+  | { success: true }
+  | { success: false; message: string };
+
 type CommentItemProps = {
-  comment: WritingCommentItem;
-  slug: string;
+  comment: CommentItemData;
   rootId: number;
   currentUserId?: string;
   isReply?: boolean;
   replyCount?: number;
   onReply: (target: ReplyTarget) => void;
+  onDelete: (id: number) => Promise<CommentActionResult>;
 };
 
 function getAvatar(name: string) {
@@ -45,12 +56,12 @@ function formatCommentDate(date: Date) {
 
 export function CommentItem({
   comment,
-  slug,
   rootId,
   currentUserId,
   isReply,
   replyCount = 0,
   onReply,
+  onDelete,
 }: CommentItemProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -72,7 +83,7 @@ export function CommentItem({
 
   function deleteComment() {
     startDeleteTransition(async () => {
-      const result = await deleteWritingCommentAction({ slug, id: comment.id });
+      const result = await onDelete(comment.id);
 
       if (result.success) {
         setIsMenuOpen(false);
@@ -119,11 +130,7 @@ export function CommentItem({
 
         <div className="group/comment flex max-w-full items-center gap-2">
           <div
-            className={`${
-              isReply
-                ? "bg-zinc-50/85 text-[0.93rem]"
-                : "bg-white/80 text-[0.98rem]"
-            } inline-block max-w-full rounded-2xl rounded-tl-md border border-zinc-200/75 px-4 py-2.5 leading-7 text-zinc-700 shadow-sm shadow-zinc-950/[0.035] backdrop-blur-xl transition group-hover/comment:border-zinc-300 dark:border-white/10 dark:bg-white/[0.04] dark:text-neutral-300 dark:group-hover/comment:border-white/20`}
+            className={`${isReply ? "bg-zinc-50/85 text-[0.93rem]" : "bg-white/80 text-[0.98rem]"} inline-block max-w-full rounded-2xl rounded-tl-md border border-zinc-200/75 px-4 py-2.5 leading-7 text-zinc-700 shadow-sm shadow-zinc-950/[0.035] backdrop-blur-xl transition group-hover/comment:border-zinc-300 dark:border-white/10 dark:bg-white/[0.04] dark:text-neutral-300 dark:group-hover/comment:border-white/20`}
           >
             <CommentMarkdown content={comment.content} />
           </div>

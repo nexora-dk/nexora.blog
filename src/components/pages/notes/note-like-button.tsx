@@ -52,8 +52,10 @@ export function NoteLikeButton({ noteSlug, initialLikes }: NoteLikeButtonProps) 
   const [likeCount, setLikeCount] = useState(baseLikes);
 
   useEffect(() => {
-    setLiked(window.localStorage.getItem(storageKey) === "true");
-    setLikeCount(baseLikes);
+    queueMicrotask(() => {
+      setLiked(window.localStorage.getItem(storageKey) === "true");
+      setLikeCount(baseLikes);
+    });
   }, [baseLikes, storageKey]);
 
   // 切换点赞状态时同步本地存储；点赞成功短暂显示感谢提示。

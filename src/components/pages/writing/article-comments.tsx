@@ -3,22 +3,29 @@
 // 客户端评论区组件负责展示示例评论、回复和本地新增评论表单。
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { Image as ImageIcon, LogIn, Pencil, Smile } from "lucide-react";
+import { useMemo, useRef, useState, useSyncExternalStore, useTransition } from "react";
+import { LogIn, Pencil } from "lucide-react";
 
-import { createWritingCommentAction } from "@/app/actions/writing-comments";
+import {
+  createWritingCommentAction,
+  deleteWritingCommentAction,
+} from "@/app/actions/writing-comments";
 import type { WritingCommentTreeItem } from "@/db/queries/writing-comments.query";
 import { authClient } from "@/lib/auth-client";
 
 import {
   CommentEditor,
   type CommentEditorHandle,
-} from "./comment-editor";
-import { CommentItem, type ReplyTarget } from "./comment-item";
+} from "@/components/modules/comments/comment-editor";
+import { CommentEmojiPicker } from "@/components/modules/comments/comment-emoji-picker";
+import {
+  CommentItem,
+  type ReplyTarget,
+} from "@/components/modules/comments/comment-item";
 import {
   CommentSortMenu,
   type CommentSortMode,
-} from "./comment-sort-menu";
+} from "@/components/modules/comments/comment-sort-menu";
 
 // articleTitle 用于评论区 aria-label，说明评论所属文章。
 type ArticleCommentsProps = {
@@ -30,6 +37,18 @@ type ArticleCommentsProps = {
 // 根据名称生成头像占位字符，空名称时回退为“访”。
 function getAvatar(name: string) {
   return name.trim().slice(0, 1).toUpperCase() || "访";
+}
+
+function subscribeToHydration() {
+  return () => {};
+}
+
+function getClientHydrationSnapshot() {
+  return true;
+}
+
+function getServerHydrationSnapshot() {
+  return false;
 }
 
 // ArticleComments 管理评论输入、提交和当前展示的评论列表。
@@ -45,17 +64,17 @@ export function ArticleComments({
   const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null);
   const [sortMode, setSortMode] = useState<CommentSortMode>("latest");
   const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
-  const [hasMounted, setHasMounted] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const editorRef = useRef<CommentEditorHandle>(null);
   const { data: session } = authClient.useSession();
+  const hasHydrated = useSyncExternalStore(
+    subscribeToHydration,
+    getClientHydrationSnapshot,
+    getServerHydrationSnapshot,
+  );
 
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  const isSignedIn = hasMounted && Boolean(session?.user);
+  const isSignedIn = hasHydrated && Boolean(session?.user);
   const sortedComments = useMemo(() => {
     return [...initialComments].sort((left, right) => {
       if (sortMode === "oldest") {
@@ -207,16 +226,17 @@ export function ArticleComments({
                   className="size-full object-cover"
                 />
               ) : (
-                getAvatar(hasMounted ? session?.user.name || "访客" : "访客")
+                getAvatar(hasHydrated ? session?.user.name || "访客" : "访客")
               )}
             </div>
 
             <span>
               支持 <strong className="font-semibold">Markdown</strong> 与 GFM
             </span>
-            <ImageIcon className="size-4" />
-            <Smile className="size-4" />
-            <span>(・∀・)</span>
+            <CommentEmojiPicker
+              disabled={!isSignedIn || isPending}
+              onEmojiSelect={(emoji) => editorRef.current?.insertText(emoji)}
+            />
           </div>
 
           {/* 右侧展示输入字数和提交操作。 */}
@@ -255,21 +275,21 @@ export function ArticleComments({
             <div key={comment.id} className="space-y-6">
               <CommentItem
                 comment={comment}
-                slug={slug}
                 rootId={comment.id}
                 currentUserId={session?.user.id}
                 replyCount={comment.replies.length}
                 onReply={handleReply}
+                onDelete={(id) => deleteWritingCommentAction({ slug, id })}
               />
               {comment.replies.map((reply) => (
                 <CommentItem
                   key={reply.id}
                   comment={reply}
-                  slug={slug}
-                  rootId={comment.id}
+                    rootId={comment.id}
                   currentUserId={session?.user.id}
                   isReply
                   onReply={handleReply}
+                  onDelete={(id) => deleteWritingCommentAction({ slug, id })}
                 />
               ))}
             </div>

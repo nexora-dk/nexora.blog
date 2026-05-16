@@ -1,76 +1,284 @@
 "use client";
 
-// Client Component：留言编辑器需要使用本地状态和表单事件，因此必须保持 use client 在第一行。
-import { useState } from "react";
-import { Image as ImageIcon, Pencil, Smile } from "lucide-react";
-import { CommentCard } from "./comment-card";
-import { commentItems } from "./comments-data";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useMemo, useRef, useState, useSyncExternalStore, useTransition } from "react";
+import { LogIn, Pencil } from "lucide-react";
 
-// getAvatar 根据输入名称生成一个字符头像；空值时回退为“访”。
+import {
+  createGuestbookCommentAction,
+  deleteGuestbookCommentAction,
+} from "@/app/actions/guestbook-comments";
+import type { GuestbookCommentTreeItem } from "@/db/queries/guestbook-comments.query";
+import { authClient } from "@/lib/auth-client";
+
+import {
+  CommentEditor,
+  type CommentEditorHandle,
+} from "@/components/modules/comments/comment-editor";
+import { CommentEmojiPicker } from "@/components/modules/comments/comment-emoji-picker";
+import {
+  CommentItem,
+  type ReplyTarget,
+} from "@/components/modules/comments/comment-item";
+import {
+  CommentSortMenu,
+  type CommentSortMode,
+} from "@/components/modules/comments/comment-sort-menu";
+
+type CommentsContentProps = {
+  initialComments: GuestbookCommentTreeItem[];
+};
+
 function getAvatar(name: string) {
   return name.trim().slice(0, 1).toUpperCase() || "访";
 }
 
-// CommentsContent 是留言页主体，包含留言统计、编辑器开关、编辑表单和留言列表。
-export function CommentsContent() {
-  // isEditorOpen 控制留言编辑器是否展开。
-  const [isEditorOpen, setIsEditorOpen] = useState(false);
-  // name 保存访客名称，当前用于头像字符预览。
-  const [name, setName] = useState("");
-  // message 保存留言内容，并驱动字数统计和 textarea 受控输入。
-  const [message, setMessage] = useState("");
+function subscribeToHydration() {
+  return () => {};
+}
 
-  // handleSubmit 阻止默认提交，并清空当前编辑状态后关闭编辑器。
-  function handleSubmit(event: Parameters<NonNullable<React.ComponentPropsWithoutRef<"form">["onSubmit"]>>[0]) {
+function getClientHydrationSnapshot() {
+  return true;
+}
+
+function getServerHydrationSnapshot() {
+  return false;
+}
+
+export function CommentsContent({ initialComments }: CommentsContentProps) {
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null);
+  const [sortMode, setSortMode] = useState<CommentSortMode>("latest");
+  const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+  const editorRef = useRef<CommentEditorHandle>(null);
+  const { data: session } = authClient.useSession();
+  const hasHydrated = useSyncExternalStore(
+    subscribeToHydration,
+    getClientHydrationSnapshot,
+    getServerHydrationSnapshot,
+  );
+
+  const isSignedIn = hasHydrated && Boolean(session?.user);
+  const sortedComments = useMemo(() => {
+    return [...initialComments].sort((left, right) => {
+      if (sortMode === "oldest") {
+        return left.createdAt.getTime() - right.createdAt.getTime();
+      }
+
+      if (sortMode === "mostReplies") {
+        const replyDiff = right.replies.length - left.replies.length;
+
+        if (replyDiff !== 0) {
+          return replyDiff;
+        }
+      }
+
+      return right.createdAt.getTime() - left.createdAt.getTime();
+    });
+  }, [initialComments, sortMode]);
+
+  const rootCommentCount = initialComments.length;
+  const replyCount = initialComments.reduce(
+    (total, comment) => total + comment.replies.length,
+    0,
+  );
+
+  function openAuthDialog() {
+    window.dispatchEvent(new Event("open-auth-dialog"));
+  }
+
+  function handleReply(target: ReplyTarget) {
+    if (!isSignedIn) {
+      openAuthDialog();
+      return;
+    }
+
+    setReplyTarget(target);
+    setError("");
+    editorRef.current?.focusWrite();
+  }
+
+  function handleSubmit(
+    event: Parameters<
+      NonNullable<React.ComponentPropsWithoutRef<"form">["onSubmit"]>
+    >[0],
+  ) {
     event.preventDefault();
-    setName("");
-    setMessage("");
-    setIsEditorOpen(false);
+
+    const content = message.trim();
+
+    if (!isSignedIn) {
+      setError("请先登录后再留言");
+      return;
+    }
+
+    if (!content || isPending) {
+      return;
+    }
+
+    setError("");
+
+    startTransition(async () => {
+      const result = await createGuestbookCommentAction({
+        content,
+        parentId: replyTarget?.rootId ?? null,
+      });
+
+      if (!result.success) {
+        setError(result.message);
+        return;
+      }
+
+      setMessage("");
+      setReplyTarget(null);
+      editorRef.current?.focusWrite();
+      router.refresh();
+    });
   }
 
   return (
     <div className="mx-auto max-w-3xl pb-10 pt-2">
-      {/* 顶部栏展示留言数量，并提供展开/收起编辑器的按钮。 */}
-      <div className="mb-8 flex items-center justify-between border-b border-zinc-200/70 pb-4 dark:border-white/10">
-        <p className="text-sm font-semibold text-zinc-500 dark:text-neutral-400">{commentItems.length} 条留言</p>
-        <button type="button" onClick={() => setIsEditorOpen((current) => !current)} className="inline-flex items-center justify-center gap-2 rounded-full border border-zinc-200/80 bg-white/70 px-4 py-2 text-sm font-medium text-zinc-600 shadow-sm shadow-zinc-950/[0.03] transition hover:-translate-y-0.5 hover:border-sky-200 hover:text-sky-500 dark:border-white/10 dark:bg-white/[0.045] dark:text-neutral-300 dark:hover:border-sky-300/25 dark:hover:text-sky-300" aria-expanded={isEditorOpen}>
-          <span className="text-base leading-none">+</span>
-          写留言
-        </button>
-      </div>
+      <section className="space-y-10" aria-label="留言">
+        <form
+          onSubmit={handleSubmit}
+          className="overflow-hidden rounded-2xl border border-zinc-200/80 bg-white/45 shadow-[0_10px_30px_rgba(24,24,27,0.035)] backdrop-blur dark:border-white/10 dark:bg-white/[0.035] dark:shadow-black/20"
+        >
+          {replyTarget ? (
+            <div className="flex items-center justify-between gap-3 border-b border-zinc-200/70 px-5 py-2.5 text-xs text-zinc-500 dark:border-white/10 dark:text-neutral-400">
+              <span>
+                正在回复 <strong className="font-semibold text-zinc-800 dark:text-neutral-100">@{replyTarget.authorName}</strong>
+              </span>
+              <button
+                type="button"
+                onClick={() => setReplyTarget(null)}
+                className="font-medium text-zinc-500 transition hover:text-zinc-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+              >
+                取消回复
+              </button>
+            </div>
+          ) : null}
 
-      {/* 条件渲染留言编辑器：只有 isEditorOpen 为 true 时才显示表单。 */}
-      {isEditorOpen ? (
-        <form onSubmit={handleSubmit} className="mb-10 overflow-hidden rounded-2xl border border-zinc-200/80 bg-white/45 shadow-[0_10px_30px_rgba(24,24,27,0.035)] backdrop-blur dark:border-white/10 dark:bg-white/[0.035] dark:shadow-black/20">
-          {/* 受控 textarea 同步 message 状态，用于提交清空和字数统计。 */}
-          <textarea value={message} onChange={(event) => setMessage(event.target.value)} placeholder="君之一言，胜却鞭策。" className="h-[120px] w-full resize-none bg-transparent px-5 py-4 text-sm leading-7 text-zinc-800 outline-none placeholder:text-zinc-400 dark:text-neutral-100 dark:placeholder:text-neutral-600" />
+          <div className="relative">
+            <CommentEditor
+              ref={editorRef}
+              value={message}
+              onChange={setMessage}
+              disabled={isPending || !isSignedIn}
+              placeholder={
+                isSignedIn
+                  ? replyTarget
+                    ? `回复 @${replyTarget.authorName}...`
+                    : "君之一言，胜却鞭策。"
+                  : "登录后参与留言。"
+              }
+            />
 
-          {/* 表单底部工具栏展示头像预览、能力提示、装饰图标、字数统计和发表按钮。 */}
+            {!isSignedIn ? (
+              <button
+                type="button"
+                onClick={openAuthDialog}
+                className="absolute left-1/2 top-1/2 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 rounded-full bg-zinc-950 px-4 py-2 text-xs font-medium text-white shadow-sm transition hover:-translate-y-[calc(50%+2px)] hover:bg-zinc-800 dark:bg-neutral-100 dark:text-neutral-950 dark:hover:bg-neutral-200"
+              >
+                <LogIn className="size-3.5" />
+                登录
+              </button>
+            ) : null}
+          </div>
+
+          {error ? (
+            <p className="border-t border-zinc-200/70 px-5 py-2 text-xs text-red-500 dark:border-white/10">
+              {error}
+            </p>
+          ) : null}
+
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200/70 px-4 py-3 text-xs text-zinc-500 dark:border-white/10 dark:text-neutral-400">
             <div className="flex flex-wrap items-center gap-3">
-              <div className="grid size-12 place-items-center rounded-full border border-zinc-200 bg-white text-sm font-semibold text-zinc-700 shadow-sm shadow-zinc-950/[0.04] ring-4 ring-white dark:border-white/10 dark:bg-neutral-900 dark:text-neutral-300 dark:ring-neutral-950">{getAvatar(name || "访客")}</div>
-              <span>支持 <strong className="font-semibold">Markdown</strong> 与 GFM</span>
-              <ImageIcon className="size-4" />
-              <Smile className="size-4" />
-              <span>(・∀・)</span>
+              <div className="grid size-12 place-items-center overflow-hidden rounded-full border border-zinc-200 bg-white text-sm font-semibold text-zinc-700 shadow-sm shadow-zinc-950/[0.04] ring-4 ring-white dark:border-white/10 dark:bg-neutral-900 dark:text-neutral-300 dark:ring-neutral-950">
+                {isSignedIn && session?.user.image ? (
+                  <Image
+                    src={session.user.image}
+                    alt={session.user.name || "用户头像"}
+                    width={48}
+                    height={48}
+                    className="size-full object-cover"
+                  />
+                ) : (
+                  getAvatar(hasHydrated ? session?.user.name || "访客" : "访客")
+                )}
+              </div>
+
+              <span>
+                支持 <strong className="font-semibold">Markdown</strong> 与 GFM
+              </span>
+              <CommentEmojiPicker
+                disabled={!isSignedIn || isPending}
+                onEmojiSelect={(emoji) => editorRef.current?.insertText(emoji)}
+              />
             </div>
 
             <div className="flex items-center gap-3">
-              <span className="tabular-nums text-zinc-400 dark:text-neutral-500">{message.length} 字</span>
-              <button type="submit" className="inline-flex h-8 items-center gap-1.5 rounded-full bg-zinc-950 px-3.5 text-xs font-medium text-white transition hover:-translate-y-0.5 hover:bg-zinc-800 dark:bg-neutral-100 dark:text-neutral-950 dark:hover:bg-neutral-200">
+              <span className="tabular-nums text-zinc-400 dark:text-neutral-500">
+                {message.length} 字
+              </span>
+              <button
+                type="submit"
+                disabled={isPending || !isSignedIn || !message.trim()}
+                className="inline-flex h-8 items-center gap-1.5 rounded-full bg-zinc-950 px-3.5 text-xs font-medium text-white transition hover:-translate-y-0.5 hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-950 dark:hover:bg-neutral-200"
+              >
                 <Pencil className="size-3.5" />
-                发表
+                {isPending ? "发表中" : replyTarget ? "回复" : "发表"}
               </button>
             </div>
           </div>
         </form>
-      ) : null}
 
-      {/* 留言列表区：按静态数据顺序渲染每张评论卡片。 */}
-      <section className="space-y-10">
-        {commentItems.map((item) => (
-          <CommentCard key={`${item.name}-${item.date}`} item={item} />
-        ))}
+        <div className="flex items-center justify-between gap-3 border-b border-zinc-200/70 pb-4 dark:border-white/10">
+          <p className="text-sm font-medium text-zinc-700 dark:text-neutral-300">
+            {rootCommentCount} 条留言 · {replyCount} 条回复
+          </p>
+          <CommentSortMenu
+            sortMode={sortMode}
+            isOpen={isSortMenuOpen}
+            onOpenChange={setIsSortMenuOpen}
+            onSortChange={setSortMode}
+          />
+        </div>
+
+        {initialComments.length > 0 ? (
+          <div className="space-y-10">
+            {sortedComments.map((comment) => (
+              <div key={comment.id} className="space-y-6">
+                <CommentItem
+                  comment={comment}
+                  rootId={comment.id}
+                  currentUserId={session?.user.id}
+                  replyCount={comment.replies.length}
+                  onReply={handleReply}
+                  onDelete={(id) => deleteGuestbookCommentAction({ id })}
+                />
+                {comment.replies.map((reply) => (
+                  <CommentItem
+                    key={reply.id}
+                    comment={reply}
+                    rootId={comment.id}
+                    currentUserId={session?.user.id}
+                    isReply
+                    onReply={handleReply}
+                    onDelete={(id) => deleteGuestbookCommentAction({ id })}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="py-10 text-center text-sm text-zinc-400 dark:text-neutral-500">
+            暂无留言
+          </p>
+        )}
       </section>
     </div>
   );

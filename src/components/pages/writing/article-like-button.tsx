@@ -58,8 +58,10 @@ export function ArticleLikeButton({
   const [likeCount, setLikeCount] = useState(baseLikes);
 
   useEffect(() => {
-    setLiked(window.localStorage.getItem(storageKey) === "true");
-    setLikeCount(baseLikes);
+    queueMicrotask(() => {
+      setLiked(window.localStorage.getItem(storageKey) === "true");
+      setLikeCount(baseLikes);
+    });
   }, [baseLikes, storageKey]);
 
   // 切换点赞状态，并同步更新 localStorage 与短暂提示。

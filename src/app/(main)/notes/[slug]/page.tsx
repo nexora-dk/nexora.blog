@@ -2,6 +2,8 @@ import {
   getNoteItemBySlug,
   incrementNoteViews,
 } from "@/db/queries/notes.query";
+import { getNoteComments } from "@/db/queries/note-comments.query";
+import { getDatabaseErrorMessage } from "@/db/queries/retry";
 
 import { notFound } from "next/navigation";
 // 手记详情组件负责展示正文、目录、评论和点赞等具体内容。
@@ -48,17 +50,30 @@ export default async function NotesDetailPage({
     notFound();
   }
 
-  await incrementNoteViews(slug);
+  try {
+    await incrementNoteViews(slug);
+  } catch (error) {
+    console.warn(`Failed to increment note views for ${slug}: ${getDatabaseErrorMessage(error)}`);
+  }
 
-  const databaseNote = await getNoteItemBySlug(slug);
+  let databaseNote: Awaited<ReturnType<typeof getNoteItemBySlug>>;
+  let comments: Awaited<ReturnType<typeof getNoteComments>> = [];
 
-  if (!databaseNote) {
-    notFound();
+  try {
+    databaseNote = await getNoteItemBySlug(slug);
+  } catch (error) {
+    console.warn(`Failed to load note database item for ${slug}: ${getDatabaseErrorMessage(error)}`);
+  }
+
+  try {
+    comments = await getNoteComments(slug);
+  } catch (error) {
+    console.warn(`Failed to load note comments for ${slug}: ${getDatabaseErrorMessage(error)}`);
   }
 
   const note = {
     ...markdownNote,
-    ...databaseNote,
+    ...(databaseNote ?? {}),
     slug,
     content: markdownNote.content,
     toc: markdownNote.toc,
@@ -69,7 +84,7 @@ export default async function NotesDetailPage({
     // 详情页标题和描述来自手记本身；hideHeader 让 NoteDetail 控制自己的头部排版。
     <PageShell title={note.title} description={note.description} hideHeader>
       {/* 手记详情组件负责正文、目录、互动区等完整展示。 */}
-      <NoteDetail note={note} />
+      <NoteDetail note={note} comments={comments} />
     </PageShell>
   );
 }

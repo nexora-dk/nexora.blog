@@ -11,6 +11,15 @@ export const auth = betterAuth({
     schema,
     usePlural: true,
   }),
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 300,
+    },
+  },
+  account: {
+    storeStateStrategy: "cookie",
+  },
   socialProviders: {
     github: {
       clientId: process.env.GITHUB_CLIENT_ID!,

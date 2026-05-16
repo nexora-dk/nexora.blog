@@ -1,7 +1,8 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, isNull } from "drizzle-orm";
 
 import { db } from "../db";
 import { users, writingComments, writings } from "../schemas/schema";
+import { isRetryableDatabaseError, retryDatabaseRead } from "./retry";
 
 export type WritingCommentItem = {
   id: number;
@@ -25,21 +26,23 @@ export type WritingCommentTreeItem = WritingCommentItem & {
 export async function getWritingComments(
   slug: string,
 ): Promise<WritingCommentTreeItem[]> {
-  const rows = await db
-    .select({
-      id: writingComments.id,
-      parentId: writingComments.parentId,
-      authorId: users.id,
-      authorName: users.name,
-      authorImage: users.image,
-      content: writingComments.content,
-      createdAt: writingComments.createdAt,
-    })
-    .from(writingComments)
-    .innerJoin(writings, eq(writingComments.writingId, writings.id))
-    .innerJoin(users, eq(writingComments.userId, users.id))
-    .where(eq(writings.slug, slug))
-    .orderBy(asc(writingComments.createdAt));
+  const rows = await retryDatabaseRead(() =>
+    db
+      .select({
+        id: writingComments.id,
+        parentId: writingComments.parentId,
+        authorId: users.id,
+        authorName: users.name,
+        authorImage: users.image,
+        content: writingComments.content,
+        createdAt: writingComments.createdAt,
+      })
+      .from(writingComments)
+      .innerJoin(writings, eq(writingComments.writingId, writings.id))
+      .innerJoin(users, eq(writingComments.userId, users.id))
+      .where(eq(writings.slug, slug))
+      .orderBy(asc(writingComments.createdAt)),
+  );
 
   const roots: WritingCommentTreeItem[] = [];
   const rootsById = new Map<number, WritingCommentTreeItem>();
@@ -78,32 +81,37 @@ export async function createWritingComment(input: {
   content: string;
   parentId?: number | null;
 }) {
-  const [writing] = await db
-    .select({ id: writings.id })
-    .from(writings)
-    .where(eq(writings.slug, input.slug))
-    .limit(1);
+  const [writing] = await retryDatabaseRead(() =>
+    db
+      .select({ id: writings.id })
+      .from(writings)
+      .where(eq(writings.slug, input.slug))
+      .limit(1),
+  );
 
   if (!writing) {
     throw new Error("Writing not found");
   }
 
   let parentId: number | null = null;
+  const inputParentId = input.parentId;
 
-  if (input.parentId !== undefined && input.parentId !== null) {
-    const [parentComment] = await db
-      .select({
-        id: writingComments.id,
-        parentId: writingComments.parentId,
-      })
-      .from(writingComments)
-      .where(
-        and(
-          eq(writingComments.id, input.parentId),
-          eq(writingComments.writingId, writing.id),
-        ),
-      )
-      .limit(1);
+  if (inputParentId !== undefined && inputParentId !== null) {
+    const [parentComment] = await retryDatabaseRead(() =>
+      db
+        .select({
+          id: writingComments.id,
+          parentId: writingComments.parentId,
+        })
+        .from(writingComments)
+        .where(
+          and(
+            eq(writingComments.id, inputParentId),
+            eq(writingComments.writingId, writing.id),
+          ),
+        )
+        .limit(1),
+    );
 
     if (!parentComment) {
       throw new Error("Parent comment not found");
@@ -112,13 +120,39 @@ export async function createWritingComment(input: {
     parentId = parentComment.parentId ?? parentComment.id;
   }
 
-  await db.insert(writingComments).values({
-    writingId: writing.id,
-    parentId,
-    userId: input.userId,
-    content: input.content,
-    updatedAt: new Date(),
-  });
+  try {
+    await db.insert(writingComments).values({
+      writingId: writing.id,
+      parentId,
+      userId: input.userId,
+      content: input.content,
+      updatedAt: new Date(),
+    });
+  } catch (error) {
+    if (!isRetryableDatabaseError(error)) {
+      throw error;
+    }
+
+    const parentCondition = parentId === null ? isNull(writingComments.parentId) : eq(writingComments.parentId, parentId);
+    const [createdComment] = await retryDatabaseRead(() =>
+      db
+        .select({ id: writingComments.id })
+        .from(writingComments)
+        .where(
+          and(
+            eq(writingComments.writingId, writing.id),
+            parentCondition,
+            eq(writingComments.userId, input.userId),
+            eq(writingComments.content, input.content),
+          ),
+        )
+        .limit(1),
+    );
+
+    if (!createdComment) {
+      throw error;
+    }
+  }
 }
 
 export async function deleteWritingComment(input: {

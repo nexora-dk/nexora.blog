@@ -53,7 +53,7 @@ function getAuthCallbackURL() {
   url.searchParams.delete("auth_error");
   url.searchParams.delete("error");
   url.searchParams.delete("error_description");
-  return `${url.pathname}${url.search}${url.hash}`;
+  return `${url.pathname}${url.search}`;
 }
 
 function getAuthErrorCallbackURL() {
@@ -62,7 +62,7 @@ function getAuthErrorCallbackURL() {
   url.searchParams.delete("error");
   url.searchParams.delete("error_description");
   url.searchParams.set("auth_error", "1");
-  return `${url.pathname}${url.search}${url.hash}`;
+  return `${url.pathname}${url.search}`;
 }
 
 export function AuthButton() {

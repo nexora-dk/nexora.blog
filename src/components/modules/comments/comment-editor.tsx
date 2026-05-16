@@ -13,6 +13,7 @@ type CommentEditorProps = {
 
 export type CommentEditorHandle = {
   focusWrite: () => void;
+  insertText: (text: string) => void;
 };
 
 export const CommentEditor = forwardRef<
@@ -27,6 +28,22 @@ export const CommentEditor = forwardRef<
       setMode("write");
       window.requestAnimationFrame(() => {
         textareaRef.current?.focus();
+      });
+    },
+    insertText(text) {
+      setMode("write");
+
+      const textarea = textareaRef.current;
+      const start = textarea?.selectionStart ?? value.length;
+      const end = textarea?.selectionEnd ?? value.length;
+      const nextValue = `${value.slice(0, start)}${text}${value.slice(end)}`;
+      const nextCursorPosition = start + text.length;
+
+      onChange(nextValue);
+
+      window.requestAnimationFrame(() => {
+        textareaRef.current?.focus();
+        textareaRef.current?.setSelectionRange(nextCursorPosition, nextCursorPosition);
       });
     },
   }));
