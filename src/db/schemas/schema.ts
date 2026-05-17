@@ -7,4 +7,6 @@ export * from "./thinking";
 export * from "./collections";
 export * from "./gallery";
 export * from "./projects";
+export * from "./friend-links";
+export * from "./site-settings";
 export * from "./auth";

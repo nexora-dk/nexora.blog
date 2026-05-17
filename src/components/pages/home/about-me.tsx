@@ -5,6 +5,7 @@ import { LearningDays } from "./learning-days";
 import { LocationCard } from "./location-card";
 import { StacksCard } from "./stacks-card";
 import { SiNextdotjs} from "@icons-pack/react-simple-icons"
+import type { SiteSettings } from "@/lib/site-settings-defaults";
 
 // 首页复用的区块标题组件，用于生成带背景幽灵字的标题样式。
 function SectionTitle({ label, title, ghost }: { label: string; title: string; ghost: string }) {
@@ -22,8 +23,20 @@ function SectionTitle({ label, title, ghost }: { label: string; title: string; g
   );
 }
 
+type AboutMeProps = {
+  settings: Pick<
+    SiteSettings,
+    | "githubUrl"
+    | "neteaseMusicUrl"
+    | "douyinUrl"
+    | "wechatQrUrl"
+    | "contactEmail"
+    | "learningStartedAt"
+  >;
+};
+
 // 首页“关于我”摘要区块，把位置、技术栈、联系方式、学习天数和常用框架组合成卡片网格。
-export function AboutMe() {
+export function AboutMe({ settings }: AboutMeProps) {
   return (
     <section className="space-y-10">
       <SectionTitle label="about me" title="关于我" ghost="about" />
@@ -38,7 +51,7 @@ export function AboutMe() {
 
         {/* 右列放联系方式以及两个小统计卡片。 */}
         <div className="flex flex-col gap-4 min-[450px]:h-full">
-          <ContactMe />
+          <ContactMe settings={settings} />
 
           {/* 下方网格承载“学习前端”和“常用框架”两张等高卡片。 */}
           <div className="grid min-h-0 flex-1 gap-4 min-[450px]:grid-cols-2">
@@ -49,7 +62,7 @@ export function AboutMe() {
               </div>
               {/* LearningDays 只输出数字，这里补充单位组成完整文案。 */}
               <p className="mt-14 ml-5 text-3xl font-bold tracking-tight">
-                <LearningDays /> 天
+                <LearningDays startedAt={settings.learningStartedAt} /> 天
               </p>
             </div>
 

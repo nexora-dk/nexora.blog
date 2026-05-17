@@ -1,20 +1,25 @@
+import { KanbanGirlWidget } from "@/components/layout/kanban-girl-widget";
 import { PageTransition } from "@/components/layout/page-transition";
 import { ScrollProgressButton } from "@/components/layout/scroll-progress-button";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { getSiteSettings } from "@/db/queries/site-settings.query";
 
 type MainLayoutProps = {
   children: React.ReactNode;
 };
 
-export default function MainLayout({ children }: MainLayoutProps) {
+export default async function MainLayout({ children }: MainLayoutProps) {
+  const settings = await getSiteSettings();
+
   return (
     <>
-      <SiteHeader />
+      <SiteHeader siteName={settings.siteName} />
       <main className="mx-auto min-h-[calc(100vh-9rem)] max-w-[870px] px-5">
         <PageTransition>{children}</PageTransition>
       </main>
-      <SiteFooter />
+      <SiteFooter settings={settings} />
+      <KanbanGirlWidget />
       <ScrollProgressButton />
     </>
   );

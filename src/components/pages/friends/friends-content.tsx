@@ -1,23 +1,41 @@
+import type { FriendLinkItem } from "@/db/queries/friend-links.query";
+import type { SiteSettings } from "@/lib/site-settings-defaults";
 import { ApplyLinksSection } from "./apply-links-section";
 import { FriendCard } from "./friend-card";
-import { friendLinks } from "./friends-data";
 
-// FriendsContent 是友链页面的内容容器，负责组织友链列表和申请说明区。
-export function FriendsContent() {
+type FriendsContentProps = {
+  friends: FriendLinkItem[];
+  settings: Pick<
+    SiteSettings,
+    | "friendApplyEnabled"
+    | "friendApplyIntro"
+    | "friendApplyNotes"
+    | "friendOwnName"
+    | "friendOwnUrl"
+    | "friendOwnAvatarUrl"
+    | "friendOwnDescription"
+    | "friendApplySuccessMessage"
+  >;
+};
+
+export function FriendsContent({ friends, settings }: FriendsContentProps) {
   return (
     <div className="space-y-12 pt-4">
-      {/* 友链列表区：使用响应式网格承载每一张 FriendCard。 */}
       <section>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {/* 循环渲染静态友链数据，以 name 作为稳定 key 并把完整 friend 对象传给卡片。 */}
-          {friendLinks.map((friend) => (
-            <FriendCard key={friend.name} friend={friend} />
-          ))}
-        </div>
+        {friends.length > 0 ? (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {friends.map((friend) => (
+              <FriendCard key={friend.id} friend={friend} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-[1.75rem] border border-dashed border-neutral-200/70 bg-white/55 p-10 text-center text-sm text-neutral-400 dark:border-white/10 dark:bg-white/[0.035] dark:text-neutral-500">
+            暂无公开友链
+          </div>
+        )}
       </section>
 
-      {/* 申请友链区：包含交换要求、本站信息和添加友链弹窗入口。 */}
-      <ApplyLinksSection />
+      <ApplyLinksSection settings={settings} />
     </div>
   );
 }

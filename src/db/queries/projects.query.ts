@@ -1,8 +1,9 @@
 import { and, asc, eq } from "drizzle-orm";
 
+import { projectItems } from "@/components/pages/projects/projects-data";
 import { db } from "../db";
 import { projects } from "../schemas/schema";
-import { retryDatabaseRead } from "./retry";
+import { isRetryableDatabaseError, retryDatabaseRead } from "./retry";
 
 export type ProjectItem = {
   id: number;
@@ -65,29 +66,68 @@ function mapProject(row: typeof projects.$inferSelect): ProjectItem {
   };
 }
 
-export async function getProjects(): Promise<ProjectItem[]> {
-  const rows = await retryDatabaseRead(() =>
-    db
-      .select()
-      .from(projects)
-      .where(eq(projects.isVisible, true))
-      .orderBy(asc(projects.sortOrder), asc(projects.id)),
-  );
+function getFallbackProjects(): ProjectItem[] {
+  const createdAt = new Date(0);
 
-  return rows.map(mapProject);
+  return projectItems.map((project, index) => ({
+    id: -(index + 1),
+    title: project.title,
+    description: project.description,
+    status: project.status,
+    category: project.category,
+    tags: project.tags,
+    href: project.href === "#" ? undefined : project.href,
+    repoHref: project.repoHref === "#" ? undefined : project.repoHref,
+    developmentTime: project.developmentTime,
+    coverBlobKey: null,
+    isFeatured: index < 2,
+    isVisible: true,
+    sortOrder: index,
+    sourceKey: `fallback-project-${index}`,
+    createdAt,
+    updatedAt: createdAt,
+  }));
+}
+
+export async function getProjects(): Promise<ProjectItem[]> {
+  try {
+    const rows = await retryDatabaseRead(() =>
+      db
+        .select()
+        .from(projects)
+        .where(eq(projects.isVisible, true))
+        .orderBy(asc(projects.sortOrder), asc(projects.id)),
+    );
+
+    return rows.map(mapProject);
+  } catch (error) {
+    if (isRetryableDatabaseError(error)) {
+      return getFallbackProjects();
+    }
+
+    throw error;
+  }
 }
 
 export async function getFeaturedProjects(limit = 2): Promise<ProjectItem[]> {
-  const rows = await retryDatabaseRead(() =>
-    db
-      .select()
-      .from(projects)
-      .where(and(eq(projects.isVisible, true), eq(projects.isFeatured, true)))
-      .orderBy(asc(projects.sortOrder), asc(projects.id))
-      .limit(limit),
-  );
+  try {
+    const rows = await retryDatabaseRead(() =>
+      db
+        .select()
+        .from(projects)
+        .where(and(eq(projects.isVisible, true), eq(projects.isFeatured, true)))
+        .orderBy(asc(projects.sortOrder), asc(projects.id))
+        .limit(limit),
+    );
 
-  return rows.map(mapProject);
+    return rows.map(mapProject);
+  } catch (error) {
+    if (isRetryableDatabaseError(error)) {
+      return getFallbackProjects().filter((project) => project.isFeatured).slice(0, limit);
+    }
+
+    throw error;
+  }
 }
 
 export async function getAdminProjects(): Promise<AdminProjectItem[]> {

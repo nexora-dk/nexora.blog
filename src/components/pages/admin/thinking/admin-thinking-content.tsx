@@ -15,15 +15,14 @@ import { AdminPagination } from "../admin-pagination";
 
 type AdminThinkingContentProps = {
   thoughts: ThinkingItem[];
+  pageSize: number;
 };
-
-const THINKING_ITEMS_PER_PAGE = 5;
 
 function getStatusLabel(isVisible: boolean) {
   return isVisible ? "展示中" : "已隐藏";
 }
 
-export function AdminThinkingContent({ thoughts }: AdminThinkingContentProps) {
+export function AdminThinkingContent({ thoughts, pageSize }: AdminThinkingContentProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [searchValue, setSearchValue] = useState("");
@@ -53,11 +52,11 @@ export function AdminThinkingContent({ thoughts }: AdminThinkingContentProps) {
 
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredThoughts.length / THINKING_ITEMS_PER_PAGE),
+    Math.ceil(filteredThoughts.length / pageSize),
   );
   const pagedThoughts = filteredThoughts.slice(
-    (currentPage - 1) * THINKING_ITEMS_PER_PAGE,
-    currentPage * THINKING_ITEMS_PER_PAGE,
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
   );
 
   function handleSearchChange(value: string) {

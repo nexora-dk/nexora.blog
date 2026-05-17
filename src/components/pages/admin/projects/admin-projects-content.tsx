@@ -13,9 +13,9 @@ import { AdminProjectsTable } from "./admin-projects-table";
 
 type AdminProjectsContentProps = {
   projects: AdminProjectItem[];
+  pageSize: number;
+  errorMessage?: string;
 };
-
-const PROJECTS_PER_PAGE = 5;
 
 function getVisibilityLabel(project: AdminProjectItem) {
   return [project.isFeatured ? "精选" : "", project.isVisible ? "展示中" : "已隐藏"]
@@ -23,7 +23,7 @@ function getVisibilityLabel(project: AdminProjectItem) {
     .join(" ");
 }
 
-export function AdminProjectsContent({ projects }: AdminProjectsContentProps) {
+export function AdminProjectsContent({ projects, pageSize, errorMessage }: AdminProjectsContentProps) {
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -53,10 +53,10 @@ export function AdminProjectsContent({ projects }: AdminProjectsContentProps) {
     });
   }, [projects, searchValue]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredProjects.length / PROJECTS_PER_PAGE));
+  const totalPages = Math.max(1, Math.ceil(filteredProjects.length / pageSize));
   const pagedProjects = filteredProjects.slice(
-    (currentPage - 1) * PROJECTS_PER_PAGE,
-    currentPage * PROJECTS_PER_PAGE,
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
   );
 
   function handleSearchChange(value: string) {
@@ -91,6 +91,12 @@ export function AdminProjectsContent({ projects }: AdminProjectsContentProps) {
           onSearchChange={handleSearchChange}
           actionHref="/admin/projects/new"
         />
+
+        {errorMessage ? (
+          <div className="mt-6 rounded-2xl border border-amber-200/80 bg-amber-50/80 px-4 py-3 text-sm text-amber-700 dark:border-amber-400/20 dark:bg-amber-500/10 dark:text-amber-200">
+            {errorMessage}
+          </div>
+        ) : null}
 
         <div className="mt-7">
           {filteredProjects.length > 0 ? (

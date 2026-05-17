@@ -2,40 +2,41 @@
 
 import { useEffect, useState, type PointerEvent } from "react";
 import Image from "next/image";
+import type { SiteSettings } from "@/lib/site-settings-defaults";
 
-// 首页滚动展示的兴趣/内容方向文案。
-const TEXTS = [
-  {
-    text: "记录生活的照片",
-    className: "bg-gradient-to-r from-[#0077ff] to-[#00e7df] bg-clip-text text-center text-transparent",
-  },
-  {
-    text: "随性记录的手记",
-    className: "bg-gradient-to-r from-[#7f00de] to-[#ff007f] bg-clip-text text-center text-transparent",
-  },
-  {
-    text: "私藏已久的好物",
-    className: "bg-gradient-to-r from-[#ffc900] to-[#ff1835] bg-clip-text text-transparent",
-  },
-  {
-    text: "奇妙的代码世界",
-    className: "bg-gradient-to-r from-[#00e7df] to-[#0077ff] bg-clip-text text-transparent",
-  },
-  {
-    text: "鲜活的生活切片",
-    className: "bg-gradient-to-r from-[#2ecc70] to-[#1ca085] bg-clip-text text-center text-transparent",
-  },
-];
+const textClassNames = [
+  "bg-gradient-to-r from-[#0077ff] to-[#00e7df] bg-clip-text text-center text-transparent",
+  "bg-gradient-to-r from-[#7f00de] to-[#ff007f] bg-clip-text text-center text-transparent",
+  "bg-gradient-to-r from-[#ffc900] to-[#ff1835] bg-clip-text text-transparent",
+  "bg-gradient-to-r from-[#00e7df] to-[#0077ff] bg-clip-text text-transparent",
+  "bg-gradient-to-r from-[#2ecc70] to-[#1ca085] bg-clip-text text-center text-transparent",
+] as const;
+
+type HeroProps = {
+  settings: Pick<
+    SiteSettings,
+    | "authorName"
+    | "avatarUrl"
+    | "signatureUrl"
+    | "homeHeroPrefix"
+    | "homeHeroSuffix"
+    | "homeShareText"
+    | "homeLocationText"
+    | "homeRotatingTexts"
+  >;
+};
 
 // SPEED 控制滚动文案切换间隔，单位为秒。
 const SPEED = 2;
 // 文案行高类名被容器和每一行复用，保证 translateY 计算与实际高度一致。
 const LINE_HEIGHT_CLASS = "h-[30px] leading-[30px] sm:h-[40px] sm:leading-[40px]";
-// 复制第一项到末尾，用于滚动到最后后无缝回到开头。
-const LOOP_TEXTS = [...TEXTS, TEXTS[0]];
-
 // 首页首屏 Hero 组件，包含自我介绍、循环滚动文案和桌面端头像 3D 倾斜交互。
-function Hero() {
+function Hero({ settings }: HeroProps) {
+  const texts = settings.homeRotatingTexts.map((text, index) => ({
+    text,
+    className: textClassNames[index % textClassNames.length],
+  }));
+  const loopTexts = [...texts, texts[0]];
   // currentIndex 表示当前滚动到第几行文案，会直接参与 translateY 计算。
   const [currentIndex, setCurrentIndex] = useState(0);
   // isResetting 用于无缝回环瞬间关闭过渡动画，避免用户看到反向滚动。
@@ -55,7 +56,7 @@ function Hero() {
 
   useEffect(() => {
     // 只有滚动到复制出来的首项时才执行无缝重置。
-    if (currentIndex !== TEXTS.length) {
+    if (currentIndex !== texts.length) {
       return;
     }
 
@@ -71,7 +72,7 @@ function Hero() {
     }, 500);
 
     return () => window.clearTimeout(resetTimer);
-  }, [currentIndex]);
+  }, [currentIndex, texts.length]);
 
   function handleAvatarPointerMove(event: PointerEvent<HTMLDivElement>) {
     // 根据鼠标在头像区域的位置计算硬币式 3D 倾斜角度。
@@ -100,19 +101,19 @@ function Hero() {
           {/* 主标题拆成两行，方便签名图片和滚动词条混排。 */}
           <h1 className="flex flex-col flex-wrap font-[family-name:var(--font-dingtalk)] text-xl  sm:text-3xl">
             <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <span>我是</span>
-              <Image src="/images/signature/signature.svg" alt="Nexora" width={142} height={52} priority className="h-[21px] w-auto dark:invert sm:h-[31px]" />
-              <span>，一个爱捣鼓的码农</span>
+              <span>{settings.homeHeroPrefix}</span>
+              <Image src={settings.signatureUrl} alt={settings.authorName} width={142} height={52} priority className="h-[21px] w-auto dark:invert sm:h-[31px]" />
+              <span>{settings.homeHeroSuffix}</span>
             </span>
             <span className="flex flex-wrap gap-1 leading-[30px] sm:leading-[40px]">
-              <span className="pt-4 ">在这里分享</span>
+              <span className="pt-4 ">{settings.homeShareText}</span>
               {/* 固定高度的视窗隐藏溢出内容，只露出当前滚动到的一行。 */}
               <span className={`relative inline-block translate-y-4 overflow-hidden align-bottom [--hero-line-height:30px] sm:[--hero-line-height:40px] ${LINE_HEIGHT_CLASS}`}>
                 <span
                   className={`flex flex-col ${isResetting ? "transition-none" : "transition-transform duration-500 ease-out"}`}
                   style={{ transform: `translateY(calc(-${currentIndex} * var(--hero-line-height)))` }}
                 >
-                  {LOOP_TEXTS.map((item, index) => (
+                  {loopTexts.map((item, index) => (
                     // 循环渲染每条滚动文案，index 参与 key 以区分首尾重复项。
                     <span key={`${item.text}-${index}`} className={`block whitespace-nowrap ${LINE_HEIGHT_CLASS} ${item.className}`}>
                       {item.text}
@@ -122,7 +123,7 @@ function Hero() {
               </span>
             </span>
           </h1>
-          <div className="text-sm text-neutral-500 dark:text-neutral-400">广东 • UTC/GMT +8</div>
+          <div className="text-sm text-neutral-500 dark:text-neutral-400">{settings.homeLocationText}</div>
         </div>
 
         {/* 头像交互只在 md 以上显示，外层 perspective 提供 3D 透视。 */}
@@ -138,8 +139,8 @@ function Hero() {
               Hi
             </div>
             <Image
-              src="/images/avatar/avatar.jpg"
-              alt="nexora"
+              src={settings.avatarUrl}
+              alt={settings.authorName}
               width={98}
               height={98}
               priority

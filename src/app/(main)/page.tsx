@@ -9,18 +9,22 @@ import { Project } from "@/components/pages/home/project";
 // SiteNew 展示站点近期更新或新鲜内容。
 import { SiteNew } from "@/components/pages/home/site-new";
 import { getFeaturedProjects } from "@/db/queries/projects.query";
+import { getSiteSettings } from "@/db/queries/site-settings.query";
 
 /**
  * 首页路由组件：按从首屏到内容区的顺序组合首页各展示模块。
  */
 export default async function HomePage() {
-  const featuredProjects = await getFeaturedProjects(2);
+  const [featuredProjects, settings] = await Promise.all([
+    getFeaturedProjects(2),
+    getSiteSettings(),
+  ]);
 
   return (
     // 外层容器用于承载 Hero 和后续纵向内容区。
     <div>
       {/* 首屏视觉区，负责建立站点第一印象。 */}
-      <Hero />
+      <Hero settings={settings} />
       {/* 首页主体内容区，通过统一间距把各内容模块分隔开。 */}
       <div className="space-y-28 pb-16 md:space-y-32">
         {/* 站点新鲜事或近期更新模块。 */}
@@ -28,9 +32,9 @@ export default async function HomePage() {
         {/* 精选项目展示模块。 */}
         <Project projects={featuredProjects} />
         {/* 作者简介模块。 */}
-        <AboutMe />
+        <AboutMe settings={settings} />
         {/* 底部态度短句模块。 */}
-        <Motto />
+        <Motto settings={settings} />
       </div>
     </div>
   );

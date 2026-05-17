@@ -1,7 +1,6 @@
 // Next.js Link 用于页脚内部导航和外部入口跳转。
 import Link from "next/link";
-// 站点配置提供站点名称和简介。
-import { siteConfig } from "@/lib/site";
+import type { SiteSettings } from "@/lib/site-settings-defaults";
 
 // 页脚主导航入口，保持与顶部导航的核心栏目一致。
 const navLinks = [
@@ -28,11 +27,7 @@ const moreLinks = [
 ];
 
 // 页脚额外链接，包含外部平台和站点相关入口。
-const extraLinks = [
-  // GitHub 外部入口，目前指向 GitHub 首页。
-  { title: "GitHub", href: "https://github.com" },
-  // RSS 订阅入口。
-  { title: "RSS", href: "/rss.xml" },
+const staticExtraLinks = [
   // 此站点说明页面入口。
   { title: "站点", href: "/Site" },
 ];
@@ -43,7 +38,24 @@ const linkClassName = "group flex items-center justify-between rounded-full px-2
 /**
  * 站点页脚：展示品牌说明、常用导航、更多入口、外部链接和版权信息。
  */
-export function SiteFooter() {
+type SiteFooterProps = {
+  settings: Pick<
+    SiteSettings,
+    | "siteName"
+    | "footerDescription"
+    | "footerStatusText"
+    | "githubUrl"
+    | "rssUrl"
+  >;
+};
+
+export function SiteFooter({ settings }: SiteFooterProps) {
+  const extraLinks = [
+    { title: "GitHub", href: settings.githubUrl },
+    { title: "RSS", href: settings.rssUrl },
+    ...staticExtraLinks,
+  ];
+
   return (
     // 页脚外层提供左右边距和与正文的顶部间距。
     <footer className="px-5 pb-7 pt-14">
@@ -60,11 +72,11 @@ export function SiteFooter() {
                 href="/"
                 className="inline-flex text-[1.05rem] font-semibold tracking-[-0.035em] text-neutral-900 transition hover:text-orange-500 dark:text-zinc-100 dark:hover:text-amber-200"
               >
-                {siteConfig.name}
+                {settings.siteName}
               </Link>
               {/* 站点一句话说明，结合全局描述和博客主题。 */}
               <p className="max-w-60 text-[0.86rem] leading-6 text-neutral-500 dark:text-zinc-500">
-                {siteConfig.description}，记录代码、生活和一些阶段性的想法。
+                {settings.footerDescription}
               </p>
             </div>
 
@@ -72,7 +84,7 @@ export function SiteFooter() {
             <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/30 bg-white/38 px-3 py-1.5 text-xs font-medium text-neutral-500 shadow-[inset_0_1px_0_rgb(255_255_255_/_0.38)] dark:border-transparent dark:bg-white/[0.025] dark:text-zinc-500">
               {/* 绿色圆点模拟在线或活跃状态。 */}
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgb(34_197_94_/_0.55)]" />
-              持续折腾中
+              {settings.footerStatusText}
             </div>
           </div>
         </section>
@@ -135,7 +147,7 @@ export function SiteFooter() {
             </div>
             {/* 版权和技术栈简短说明。 */}
             <p className="text-xs leading-5 text-neutral-400 dark:text-zinc-600">
-              © {new Date().getFullYear()} {siteConfig.name}
+              © {new Date().getFullYear()} {settings.siteName}
               <br />
               Built with Next.js
             </p>

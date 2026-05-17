@@ -15,11 +15,10 @@ import type { ArticleItem } from "@/components/pages/writing/writing-data";
 
 type AdminWritingsContentProps = {
   writings: ArticleItem[];
+  pageSize: number;
 };
 
-const WRITINGS_PER_PAGE = 5;
-
-export function AdminWritingsContent({ writings }: AdminWritingsContentProps) {
+export function AdminWritingsContent({ writings, pageSize }: AdminWritingsContentProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [searchValue, setSearchValue] = useState("");
@@ -47,11 +46,11 @@ export function AdminWritingsContent({ writings }: AdminWritingsContentProps) {
 
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredWritings.length / WRITINGS_PER_PAGE),
+    Math.ceil(filteredWritings.length / pageSize),
   );
   const pagedWritings = filteredWritings.slice(
-    (currentPage - 1) * WRITINGS_PER_PAGE,
-    currentPage * WRITINGS_PER_PAGE,
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
   );
 
   function handleSearchChange(value: string) {

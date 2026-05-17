@@ -15,11 +15,6 @@
   background: linear-gradient(180deg, rgb(10 10 10) 0%, rgb(10 10 10) 100%);
 }
 
-/* 除 header 外的直接子元素都建立相对定位，方便统一管理 z-index。 */
-.siteBg > :not(header) {
-  position: relative;
-}
-
 /* 头部导航需要高于页面内容和页脚，保证悬浮菜单不被遮挡。 */
 .siteBg > header {
   z-index: 200;
@@ -28,5 +23,6 @@
 /* 主内容和页脚保持同一层级，位于背景之上但低于头部。 */
 .siteBg > main,
 .siteBg > footer {
+  position: relative;
   z-index: 1;
 }

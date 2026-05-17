@@ -15,11 +15,10 @@ import { AdminPagination } from "../admin-pagination";
 
 type AdminNotesContentProps = {
   notes: NoteItem[];
+  pageSize: number;
 };
 
-const NOTES_PER_PAGE = 5;
-
-export function AdminNotesContent({ notes }: AdminNotesContentProps) {
+export function AdminNotesContent({ notes, pageSize }: AdminNotesContentProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [searchValue, setSearchValue] = useState("");
@@ -50,11 +49,11 @@ export function AdminNotesContent({ notes }: AdminNotesContentProps) {
 
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredNotes.length / NOTES_PER_PAGE),
+    Math.ceil(filteredNotes.length / pageSize),
   );
   const pagedNotes = filteredNotes.slice(
-    (currentPage - 1) * NOTES_PER_PAGE,
-    currentPage * NOTES_PER_PAGE,
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
   );
 
   function handleSearchChange(value: string) {

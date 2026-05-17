@@ -1,6 +1,12 @@
 import { AdminFriendsContent } from "@/components/pages/admin/friends/admin-friends-content";
-import { friendLinks } from "@/components/pages/friends/friends-data";
+import { getAdminFriendLinks } from "@/db/queries/friend-links.query";
+import { getSiteSettings } from "@/db/queries/site-settings.query";
 
-export default function AdminFriendsPage() {
-  return <AdminFriendsContent friends={friendLinks} />;
+export default async function AdminFriendsPage() {
+  const [friends, settings] = await Promise.all([
+    getAdminFriendLinks(),
+    getSiteSettings(),
+  ]);
+
+  return <AdminFriendsContent friends={friends} pageSize={settings.adminPageSize} />;
 }

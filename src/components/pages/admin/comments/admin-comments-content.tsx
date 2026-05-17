@@ -14,9 +14,8 @@ import type { AdminCommentItem } from "@/db/queries/admin-comments.query";
 
 type AdminCommentsContentProps = {
   comments: AdminCommentItem[];
+  pageSize: number;
 };
-
-const COMMENTS_PER_PAGE = 5;
 
 type CommentTargetOption = {
   key: string;
@@ -96,7 +95,7 @@ function getCommentTargetOptions(groups: AdminCommentGroup[]) {
   return options;
 }
 
-export function AdminCommentsContent({ comments }: AdminCommentsContentProps) {
+export function AdminCommentsContent({ comments, pageSize }: AdminCommentsContentProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -140,11 +139,11 @@ export function AdminCommentsContent({ comments }: AdminCommentsContentProps) {
 
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredComments.length / COMMENTS_PER_PAGE),
+    Math.ceil(filteredComments.length / pageSize),
   );
   const pagedComments = filteredComments.slice(
-    (currentPage - 1) * COMMENTS_PER_PAGE,
-    currentPage * COMMENTS_PER_PAGE,
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
   );
 
   const writingCount = comments.filter(
@@ -236,7 +235,7 @@ export function AdminCommentsContent({ comments }: AdminCommentsContentProps) {
               当前查看：{selectedTargetLabel}
             </p>
             <p className="mt-1 text-xs text-neutral-400">
-              每页显示 {COMMENTS_PER_PAGE} 条评论，可按文稿或手记筛选。
+              每页显示 {pageSize} 条评论，可按文稿或手记筛选。
             </p>
           </div>
 

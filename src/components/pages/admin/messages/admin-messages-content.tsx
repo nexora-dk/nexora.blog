@@ -14,9 +14,8 @@ import { AdminPagination } from "../admin-pagination";
 
 type AdminMessagesContentProps = {
   messages: AdminGuestbookCommentItem[];
+  pageSize: number;
 };
-
-const MESSAGES_PER_PAGE = 5;
 
 function formatMessageDate(date: Date) {
   return new Intl.DateTimeFormat("zh-CN", {
@@ -32,7 +31,7 @@ function getAvatar(name: string) {
   return name.trim().slice(0, 1).toUpperCase() || "访";
 }
 
-export function AdminMessagesContent({ messages }: AdminMessagesContentProps) {
+export function AdminMessagesContent({ messages, pageSize }: AdminMessagesContentProps) {
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,11 +59,11 @@ export function AdminMessagesContent({ messages }: AdminMessagesContentProps) {
 
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredMessages.length / MESSAGES_PER_PAGE),
+    Math.ceil(filteredMessages.length / pageSize),
   );
   const pagedMessages = filteredMessages.slice(
-    (currentPage - 1) * MESSAGES_PER_PAGE,
-    currentPage * MESSAGES_PER_PAGE,
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
   );
 
   function handleSearchChange(value: string) {

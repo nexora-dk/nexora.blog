@@ -16,9 +16,8 @@ import { AdminPagination } from "../admin-pagination";
 
 type AdminGalleryContentProps = {
   photos: AdminGalleryPhoto[];
+  pageSize: number;
 };
-
-const PHOTOS_PER_PAGE = 5;
 
 function getStatusLabel(photo: AdminGalleryPhoto) {
   return [photo.isFeatured ? "精选" : "", photo.isVisible ? "展示中" : "已隐藏"]
@@ -26,7 +25,7 @@ function getStatusLabel(photo: AdminGalleryPhoto) {
     .join(" ");
 }
 
-export function AdminGalleryContent({ photos }: AdminGalleryContentProps) {
+export function AdminGalleryContent({ photos, pageSize }: AdminGalleryContentProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [searchValue, setSearchValue] = useState("");
@@ -56,11 +55,11 @@ export function AdminGalleryContent({ photos }: AdminGalleryContentProps) {
 
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredPhotos.length / PHOTOS_PER_PAGE),
+    Math.ceil(filteredPhotos.length / pageSize),
   );
   const pagedPhotos = filteredPhotos.slice(
-    (currentPage - 1) * PHOTOS_PER_PAGE,
-    currentPage * PHOTOS_PER_PAGE,
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
   );
 
   function handleSearchChange(value: string) {

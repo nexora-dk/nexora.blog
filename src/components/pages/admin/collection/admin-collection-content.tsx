@@ -39,9 +39,8 @@ import { AdminPagination } from "../admin-pagination";
 
 type AdminCollectionContentProps = {
   items: AdminCollectionItem[];
+  pageSize: number;
 };
-
-const COLLECTION_ITEMS_PER_PAGE = 5;
 
 const simpleIcons: Record<SimpleIconName, ComponentType<{ className?: string }>> = {
   tldraw: SiTldraw,
@@ -108,7 +107,7 @@ function AdminCollectionIcon({ icon }: { icon: CollectionIcon }) {
   );
 }
 
-export function AdminCollectionContent({ items }: AdminCollectionContentProps) {
+export function AdminCollectionContent({ items, pageSize }: AdminCollectionContentProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [searchValue, setSearchValue] = useState("");
@@ -142,11 +141,11 @@ export function AdminCollectionContent({ items }: AdminCollectionContentProps) {
 
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredItems.length / COLLECTION_ITEMS_PER_PAGE),
+    Math.ceil(filteredItems.length / pageSize),
   );
   const pagedItems = filteredItems.slice(
-    (currentPage - 1) * COLLECTION_ITEMS_PER_PAGE,
-    currentPage * COLLECTION_ITEMS_PER_PAGE,
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
   );
 
   function handleSearchChange(value: string) {

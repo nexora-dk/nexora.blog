@@ -26,6 +26,10 @@ function getCollectionGroupSlug(title: string, index: number) {
   return collectionGroupSlugs[title] ?? `collection-group-${index + 1}`;
 }
 
+function normalizeSeedLink(value: string | undefined) {
+  return value && value !== "#" ? value : null;
+}
+
 async function seedContent() {
   const [
     { db },
@@ -36,12 +40,18 @@ async function seedContent() {
       collectionGroups: collectionGroupsTable,
       collectionItems,
       galleryPhotos: galleryPhotosTable,
+      projects: projectsTable,
+      friendLinks: friendLinksTable,
+      siteSettings: siteSettingsTable,
     },
     { getArticleItemsFromMarkdown },
     { noteItems },
     { thinkingItems },
     { collectionGroups: seedCollectionGroups },
     { galleryPhotos: seedGalleryPhotos },
+    { projectItems: seedProjectItems },
+    { friendLinks: seedFriendLinks },
+    { defaultSiteSettings },
   ] = await Promise.all([
     import("./db"),
     import("./schemas/schema"),
@@ -50,6 +60,9 @@ async function seedContent() {
     import("../components/pages/thinking/thinking-data"),
     import("../components/pages/collection/collection-data"),
     import("../components/pages/gallery/gallery-data"),
+    import("../components/pages/projects/projects-data"),
+    import("../components/pages/friends/friends-data"),
+    import("../lib/site-settings-defaults"),
   ]);
   const articleItems = getArticleItemsFromMarkdown();
 
@@ -203,8 +216,59 @@ async function seedContent() {
       .onConflictDoNothing({ target: galleryPhotosTable.sourceKey });
   }
 
+  for (const [index, project] of seedProjectItems.entries()) {
+    const sourceKey = `project-${index}-${project.title}`;
+
+    await db
+      .insert(projectsTable)
+      .values({
+        title: project.title,
+        description: project.description,
+        status: project.status,
+        category: project.category,
+        tags: project.tags,
+        href: normalizeSeedLink(project.href),
+        repoHref: normalizeSeedLink(project.repoHref),
+        developmentTime: project.developmentTime,
+        coverImageUrl: null,
+        coverBlobKey: null,
+        isFeatured: index < 2,
+        isVisible: true,
+        sortOrder: index,
+        sourceKey,
+      })
+      .onConflictDoNothing({ target: projectsTable.sourceKey });
+  }
+
+  for (const [index, friendLink] of seedFriendLinks.entries()) {
+    const sourceKey = `friend-link-${index}-${friendLink.name}`;
+
+    await db
+      .insert(friendLinksTable)
+      .values({
+        name: friendLink.name,
+        description: friendLink.description,
+        avatarUrl: friendLink.avatarUrl,
+        blogUrl: friendLink.blogUrl,
+        status: "approved",
+        isVisible: true,
+        sortOrder: index,
+        sourceKey,
+      })
+      .onConflictDoNothing({ target: friendLinksTable.sourceKey });
+  }
+
+  await db
+    .insert(siteSettingsTable)
+    .values({
+      id: 1,
+      ...defaultSiteSettings,
+      updatedAt: new Date(),
+    })
+    .onConflictDoNothing({ target: siteSettingsTable.id });
+
   console.log(
-    `Seeded ${articleItems.length} writings, ${noteItems.length} notes, ${thinkingItems.length} thinking items, ${seedCollectionGroups.length} collection groups, ${seededCollectionItemCount} collection items and ${seedGalleryPhotos.length} gallery photos.`,
+    `Seeded ${articleItems.length} writings, ${noteItems.length} notes, ${thinkingItems.length} thinking items, ${seedCollectionGroups.length} collection groups, ${seededCollectionItemCount} collection items, ${seedGalleryPhotos.length} gallery photos, ${seedProjectItems.length} projects and ${seedFriendLinks.length} friend links.`,
   );
 }
 

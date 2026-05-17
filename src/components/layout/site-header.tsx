@@ -9,8 +9,6 @@ import { AuthButton } from "@/components/layout/auth-button";
 import { SiteNav } from "@/components/layout/site-nav";
 // 主题切换按钮放在头部右侧操作区。
 import { ThemeToggle } from "@/components/theme-toggle";
-// 站点配置提供品牌名称。
-import { siteConfig } from "@/lib/site";
 // Header 专用 CSS Module，承载复杂背景、边框和布局样式。
 import styles from "@/styles/page/header.module.css";
 
@@ -20,7 +18,11 @@ const HIDE_SCROLL_Y = 150;
 /**
  * 站点头部：固定在页面顶部，包含品牌入口、主导航和主题切换按钮。
  */
-export function SiteHeader() {
+type SiteHeaderProps = {
+  siteName: string;
+};
+
+export function SiteHeader({ siteName }: SiteHeaderProps) {
   // isHidden 控制头部是否向上收起并淡出。
   const [isHidden, setIsHidden] = useState(false);
   // 记录上一次滚动位置，用于判断当前是向上滚动还是向下滚动。
@@ -59,7 +61,7 @@ export function SiteHeader() {
       <div className={styles.wrapper}>
         <div className={styles.shell}>
           <Link href="/" className={styles.brand}>
-            {siteConfig.name}
+            {siteName}
           </Link>
           <SiteNav />
           <div className={styles.actions}>

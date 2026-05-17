@@ -3,7 +3,7 @@ import { Geist } from "next/font/google";
 import localFont from "next/font/local";
 
 import { ThemeProvider } from "@/components/theme-provider";
-import { siteConfig } from "@/lib/site";
+import { getSiteSettings } from "@/db/queries/site-settings.query";
 import { cn } from "@/lib/utils";
 import styles from "@/styles/page/background.module.css";
 import "./globals.css";
@@ -16,13 +16,19 @@ const dingTalk = localFont({
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
-export const metadata: Metadata = {
-  title: {
-    default: siteConfig.name,
-    template: `%s | ${siteConfig.name}`,
-  },
-  description: siteConfig.description,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+
+  return {
+    title: {
+      default: settings.siteName,
+      template: settings.seoTitleTemplate,
+    },
+    description: settings.seoDescription || settings.siteDescription,
+    keywords: settings.seoKeywords,
+    metadataBase: new URL(settings.siteUrl),
+  };
+}
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
