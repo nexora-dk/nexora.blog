@@ -31,6 +31,8 @@ export function useReadmeToc(containerRef: RefObject<HTMLDivElement | null>, toc
   const [tocLeft, setTocLeft] = useState<number | null>(null);
   // tocOffset 记录目录纵向上移距离，用于避开指定区块和容器底部。
   const [tocOffset, setTocOffset] = useState(0);
+  // progress 记录当前自述正文的阅读进度百分比。
+  const [progress, setProgress] = useState(0);
 
   // 监听滚动和窗口尺寸变化，实时更新目录高亮与位置。
   useEffect(() => {
@@ -55,13 +57,17 @@ export function useReadmeToc(containerRef: RefObject<HTMLDivElement | null>, toc
         const containerRect = container.getBoundingClientRect();
         const tocHeight = toc.offsetHeight;
         const statusSection = document.getElementById("status");
-        const fixedTop = 190;
+        const fixedTop = 220;
         const statusTop = statusSection?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
         const statusOverflow = fixedTop - statusTop;
         const bottomOverflow = fixedTop + tocHeight - containerRect.bottom;
+        const containerTop = window.scrollY + containerRect.top;
+        const readableDistance = Math.max(1, container.offsetHeight - window.innerHeight);
+        const readableProgress = ((window.scrollY - containerTop) / readableDistance) * 100;
 
-        setTocLeft(containerRect.right - 128);
+        setTocLeft(Math.min(window.innerWidth - 160, containerRect.right + 32));
         setTocOffset(Math.max(0, statusOverflow, bottomOverflow));
+        setProgress(Math.min(100, Math.max(0, Math.round(readableProgress))));
       }
     }
 
@@ -76,5 +82,5 @@ export function useReadmeToc(containerRef: RefObject<HTMLDivElement | null>, toc
   }, [containerRef, tocRef]);
 
   // 返回目录组件渲染所需的全部派生状态。
-  return { isClient, activeId, tocLeft, tocOffset };
+  return { isClient, activeId, tocLeft, tocOffset, progress };
 }

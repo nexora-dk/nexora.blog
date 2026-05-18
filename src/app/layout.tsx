@@ -1,7 +1,8 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
 import localFont from "next/font/local";
 
+import { RouteTransitionIndicator } from "@/components/layout/route-transition-indicator";
 import { ThemeProvider } from "@/components/theme-provider";
 import { getSiteSettings } from "@/db/queries/site-settings.query";
 import { cn } from "@/lib/utils";
@@ -14,7 +15,6 @@ const dingTalk = localFont({
   display: "swap",
 });
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -35,11 +35,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="zh-CN"
       suppressHydrationWarning
-      className={cn("font-sans", geist.variable, dingTalk.variable)}
+      className={cn("font-sans", dingTalk.variable)}
     >
       <body>
         <ThemeProvider>
           <div className={`${styles.siteBg} min-h-screen text-neutral-950 dark:text-neutral-50`}>
+            <Suspense fallback={null}>
+              <RouteTransitionIndicator />
+            </Suspense>
             {children}
           </div>
         </ThemeProvider>

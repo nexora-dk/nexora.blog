@@ -22,7 +22,7 @@ export async function deleteAdminCommentAction(input: {
     return { success: false, message: "评论不存在" };
   }
 
-  if (input.source !== "writing" && input.source !== "note") {
+  if (!["writing", "note", "readme"].includes(input.source)) {
     return { success: false, message: "评论来源无效" };
   }
 

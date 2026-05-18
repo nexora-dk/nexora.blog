@@ -5,6 +5,7 @@ import { db } from "../db";
 import {
   noteComments,
   notes,
+  readmeComments,
   users,
   writingComments,
   writings,
@@ -14,7 +15,7 @@ import { retryDatabaseRead } from "./retry";
 export type AdminCommentItem = {
   id: number;
   parentId: number | null;
-  source: "writing" | "note";
+  source: "writing" | "note" | "readme";
   authorId: string;
   authorName: string;
   authorEmail: string;
@@ -26,7 +27,7 @@ export type AdminCommentItem = {
 };
 
 export async function getAdminComments(): Promise<AdminCommentItem[]> {
-  const [writingRows, noteRows] = await Promise.all([
+  const [writingRows, noteRows, readmeRows] = await Promise.all([
     retryDatabaseRead(() =>
       db
         .select({
@@ -65,6 +66,22 @@ export async function getAdminComments(): Promise<AdminCommentItem[]> {
         .innerJoin(notes, eq(noteComments.noteId, notes.id))
         .orderBy(asc(noteComments.createdAt)),
     ),
+    retryDatabaseRead(() =>
+      db
+        .select({
+          id: readmeComments.id,
+          parentId: readmeComments.parentId,
+          authorId: users.id,
+          authorName: users.name,
+          authorEmail: users.email,
+          authorImage: users.image,
+          content: readmeComments.content,
+          createdAt: readmeComments.createdAt,
+        })
+        .from(readmeComments)
+        .innerJoin(users, eq(readmeComments.userId, users.id))
+        .orderBy(asc(readmeComments.createdAt)),
+    ),
   ]);
 
   const comments: AdminCommentItem[] = [
@@ -75,6 +92,12 @@ export async function getAdminComments(): Promise<AdminCommentItem[]> {
     ...noteRows.map((comment) => ({
       ...comment,
       source: "note" as const,
+    })),
+    ...readmeRows.map((comment) => ({
+      ...comment,
+      source: "readme" as const,
+      targetTitle: "自述",
+      targetSlug: "Readme",
     })),
   ];
 
@@ -88,7 +111,12 @@ export async function deleteAdminComment(input: {
   id: number;
   source: AdminCommentItem["source"];
 }) {
-  const table = input.source === "writing" ? writingComments : noteComments;
+  const table =
+    input.source === "writing"
+      ? writingComments
+      : input.source === "note"
+        ? noteComments
+        : readmeComments;
 
   const deletedRows = await db
     .delete(table)

@@ -1,8 +1,9 @@
 import { getNoteItems } from "@/db/queries/notes.query";
+import { getDatabaseErrorMessage } from "@/db/queries/retry";
 
 import { NotesContent } from "@/components/pages/notes/notes-content";
 // 手记专栏工具用于校验 URL 查询参数并读取专栏展示文案。
-import { isNoteColumn, noteColumns } from "@/components/pages/notes/notes-data";
+import { isNoteColumn, noteColumns, noteItems } from "@/components/pages/notes/notes-data";
 // PageShell 提供统一页面标题、描述和主体容器。
 import { PageShell } from "@/components/ui/page-shell";
 
@@ -32,8 +33,13 @@ export default async function NotesPage({ searchParams }: NotesPageProps) {
   const activeColumn = isNoteColumn(column) ? column : undefined;
   // 根据有效专栏查找中文专栏名，用于页面标题显示。
   const columnLabel = noteColumns.find((item) => item.value === activeColumn)?.label;
-  const notes = await getNoteItems();
+  let notes = noteItems;
 
+  try {
+    notes = await getNoteItems();
+  } catch (error) {
+    console.warn(`Failed to load note items: ${getDatabaseErrorMessage(error)}`);
+  }
 
   return (
     // 有专栏时标题显示为“专栏-xxx”，并隐藏默认页头，让专栏页更像筛选结果页。

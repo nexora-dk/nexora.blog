@@ -1,8 +1,9 @@
 import { getWritingItems } from "@/db/queries/writings.query";
+import { getDatabaseErrorMessage } from "@/db/queries/retry";
 
 import { WritingContent } from "@/components/pages/writing/writing-content";
 // 文稿分类工具用于校验 URL 查询参数并读取分类展示文案。
-import { isArticleCategory, writingCategories } from "@/components/pages/writing/writing-data";
+import { getArticleItemsFromMarkdown, isArticleCategory, writingCategories } from "@/components/pages/writing/writing-data";
 // PageShell 提供统一页面标题、描述和主体容器。
 import { PageShell } from "@/components/ui/page-shell";
 
@@ -30,8 +31,13 @@ export default async function WritingPage({ searchParams }: WritingPageProps) {
   const activeCategory = isArticleCategory(category) ? category : undefined;
   // 根据有效分类查找中文分类名，用于页面标题显示。
   const categoryLabel = writingCategories.find((item) => item.value === activeCategory)?.label;
-  const articles = await getWritingItems();
+  let articles = getArticleItemsFromMarkdown();
 
+  try {
+    articles = await getWritingItems();
+  } catch (error) {
+    console.warn(`Failed to load writing items: ${getDatabaseErrorMessage(error)}`);
+  }
 
   return (
     // 有分类时标题显示为“分类-xxx”，并隐藏默认页头，让分类页更像筛选结果页。

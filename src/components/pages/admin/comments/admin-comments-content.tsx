@@ -37,7 +37,15 @@ function getAvatar(name: string) {
 }
 
 function getSourceLabel(source: AdminCommentItem["source"]) {
-  return source === "writing" ? "文稿" : "手记";
+  if (source === "writing") {
+    return "文稿";
+  }
+
+  if (source === "note") {
+    return "手记";
+  }
+
+  return "自述";
 }
 
 type AdminCommentGroup = {
@@ -152,6 +160,9 @@ export function AdminCommentsContent({ comments, pageSize }: AdminCommentsConten
   const noteCount = comments.filter(
     (comment) => comment.source === "note",
   ).length;
+  const readmeCount = comments.filter(
+    (comment) => comment.source === "readme",
+  ).length;
   const replyCount = filteredComments.filter(
     (comment) => comment.parentId !== null,
   ).length;
@@ -203,16 +214,17 @@ export function AdminCommentsContent({ comments, pageSize }: AdminCommentsConten
     <div className="space-y-8">
       <AdminPageHeader
         title="评论"
-        description="查看文稿和手记下的用户评论与回复。"
+        description="查看文稿、手记和自述下的用户评论与回复。"
         icon={MessageSquareText}
       />
 
       <AdminContentPanel className="min-h-[72vh] p-6 sm:p-8">
-        <div className="grid gap-3 md:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-5">
           {[
             { label: "当前评论", value: filteredComments.length },
             { label: "文稿评论", value: writingCount },
             { label: "手记评论", value: noteCount },
+            { label: "自述评论", value: readmeCount },
             { label: "回复", value: replyCount },
           ].map((item) => (
             <div
@@ -235,7 +247,7 @@ export function AdminCommentsContent({ comments, pageSize }: AdminCommentsConten
               当前查看：{selectedTargetLabel}
             </p>
             <p className="mt-1 text-xs text-neutral-400">
-              每页显示 {pageSize} 条评论，可按文稿或手记筛选。
+              每页显示 {pageSize} 条评论，可按文稿、手记或自述筛选。
             </p>
           </div>
 

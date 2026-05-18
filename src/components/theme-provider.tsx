@@ -9,7 +9,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
     // attribute="class" 会把 dark 等主题类名挂到 html 上，Tailwind 的 dark: 变体依赖这个类名生效。
-    <NextThemesProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+    <NextThemesProvider attribute="class" defaultTheme="system" enableSystem>
       {/* children 是整站页面内容，包裹后即可共享主题上下文。 */}
       {children}
     </NextThemesProvider>

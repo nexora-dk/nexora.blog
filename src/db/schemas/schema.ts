@@ -3,6 +3,7 @@ export * from "./notes";
 export * from "./writing-comments";
 export * from "./note-comments";
 export * from "./guestbook-comments";
+export * from "./readme-comments";
 export * from "./thinking";
 export * from "./collections";
 export * from "./gallery";
