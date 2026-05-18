@@ -32,7 +32,7 @@ export function CommentMarkdown({ content }: CommentMarkdownProps) {
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
-        p: ({ children }) => <p className="my-0">{children}</p>,
+        p: ({ children }) => <p className="my-0 break-words">{children}</p>,
         a: ({ children, href }) => {
           const safeHref = getSafeHref(href);
 
@@ -49,7 +49,7 @@ export function CommentMarkdown({ content }: CommentMarkdownProps) {
                   ? undefined
                   : "noreferrer"
               }
-              className="font-semibold !text-blue-600 !underline decoration-blue-400 underline-offset-4 transition hover:!text-blue-500 dark:!text-sky-300 dark:decoration-sky-500/70 dark:hover:!text-sky-200"
+              className="break-all font-semibold !text-blue-600 !underline decoration-blue-400 underline-offset-4 transition hover:!text-blue-500 dark:!text-sky-300 dark:decoration-sky-500/70 dark:hover:!text-sky-200"
             >
               {children}
             </a>
@@ -57,7 +57,7 @@ export function CommentMarkdown({ content }: CommentMarkdownProps) {
         },
 
         code: ({ children }) => (
-          <code className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-[0.9em] text-zinc-800 dark:bg-white/10 dark:text-neutral-100">
+          <code className="break-words rounded-md bg-zinc-100 px-1.5 py-0.5 text-[0.9em] text-zinc-800 dark:bg-white/10 dark:text-neutral-100">
             {children}
           </code>
         ),

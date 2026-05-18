@@ -5,8 +5,10 @@ import { useEffect, useRef, useState } from "react";
 // Next.js Link 提供客户端路由跳转能力。
 import Link from "next/link";
 import { AuthButton } from "@/components/layout/auth-button";
+import { MobileSiteNav } from "@/components/layout/mobile-site-nav";
 // 主导航组件负责渲染导航菜单和悬浮面板。
 import { SiteNav } from "@/components/layout/site-nav";
+import type { NavigationPanelData } from "@/components/layout/navigation/navigation-data";
 // 主题切换按钮放在头部右侧操作区。
 import { ThemeToggle } from "@/components/theme-toggle";
 // Header 专用 CSS Module，承载复杂背景、边框和布局样式。
@@ -20,9 +22,10 @@ const HIDE_SCROLL_Y = 150;
  */
 type SiteHeaderProps = {
   siteName: string;
+  navigationData: NavigationPanelData;
 };
 
-export function SiteHeader({ siteName }: SiteHeaderProps) {
+export function SiteHeader({ siteName, navigationData }: SiteHeaderProps) {
   // isHidden 控制头部是否向上收起并淡出。
   const [isHidden, setIsHidden] = useState(false);
   // 记录上一次滚动位置，用于判断当前是向上滚动还是向下滚动。
@@ -63,9 +66,13 @@ export function SiteHeader({ siteName }: SiteHeaderProps) {
           <Link href="/" className={styles.brand}>
             {siteName}
           </Link>
-          <SiteNav />
+          <SiteNav navigationData={navigationData} />
           <div className={styles.actions}>
             <ThemeToggle />
+            <div className={styles.mobileAuthAction}>
+              <AuthButton />
+            </div>
+            <MobileSiteNav secondaryLinks={navigationData.mobileSecondaryLinks} />
           </div>
         </div>
 

@@ -2,43 +2,32 @@
 import Link from "next/link";
 // lucide 图标用于区分不同时间线类型。
 import { Heart, NotebookPen, PenTool } from "lucide-react";
+import type { TimelinePanelData } from "@/components/layout/navigation/navigation-data";
 // 时间线面板专用样式，控制标签、列表和动态类型徽标。
 import styles from "@/styles/page/timeline-panel.module.css";
 
-// 时间线筛选入口，点击后通过 type 查询参数过滤不同类型事件。
-const timelineLinks = [
-  // 文稿类型时间线入口。
-  { title: "文稿", href: "/timeline?type=writing", icon: NotebookPen },
-  // 手记类型时间线入口。
-  { title: "手记", href: "/timeline?type=notes", icon: PenTool },
-  // 回忆类型时间线入口。
-  { title: "回忆", href: "/timeline?type=memory", icon: Heart },
-];
+type TimelinePanelProps = {
+  data: TimelinePanelData;
+};
 
-// 近期动态列表，用于在导航面板中快速展示最近内容更新。
-const recentActivities = [
-  // 近期文稿动态。
-  { title: "AI 时代的重构方式：从 RFC 到五个 Plan", date: "3月9日", href: "/writing/ai-rfc-plan", typeLabel: "文稿" },
-  // 近期文稿动态。
-  { title: "把博客首页重做成一张安静的书桌", date: "1月18日", href: "/writing/quiet-desk-homepage", typeLabel: "文稿" },
-  // 近期手记动态。
-  { title: "26y: 健康、AI行业变化与自我反思", date: "4月23日", href: "/notes/26y", typeLabel: "手记" },
-  // 近期手记动态。
-  { title: "单调里的褶皱", date: "4月9日", href: "/notes/folds", typeLabel: "手记" },
-];
+const timelineIconMap = {
+  "notebook-pen": NotebookPen,
+  "pen-tool": PenTool,
+  heart: Heart,
+};
 
 /**
  * 时间线导航面板：提供时间线类型筛选入口和近期动态列表。
  */
-export function TimelinePanel() {
+export function TimelinePanel({ data }: TimelinePanelProps) {
   return (
     // 时间线面板根容器。
     <div className={styles.timelinePanel}>
       {/* 顶部筛选标签区域。 */}
       <div className={styles.timelineTabs}>
         {/* 遍历时间线类型入口，动态取出对应图标组件。 */}
-        {timelineLinks.map((link) => {
-          const Icon = link.icon;
+        {data.links.map((link) => {
+          const Icon = timelineIconMap[link.iconKey];
 
           return (
             <Link key={link.title} href={link.href} className={styles.timelineTab}>
@@ -60,7 +49,7 @@ export function TimelinePanel() {
         {/* 动态链接列表。 */}
         <div className={styles.activityList}>
           {/* 遍历近期动态数据生成对应内容链接。 */}
-          {recentActivities.map((activity) => (
+          {data.recentActivities.map((activity) => (
             <Link key={activity.href} href={activity.href} className={styles.activityLink}>
               {/* 左侧包含标题和日期。 */}
               <span className={styles.activityText}>

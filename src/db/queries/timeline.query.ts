@@ -1,17 +1,15 @@
-import { desc } from "drizzle-orm";
-
-import { db } from "../db";
-import { notes, writings } from "../schemas/schema";
 import { timelineTypeMeta, type TimelineItem, type TimelineType } from "@/components/pages/timeline/timeline-data";
+import { getNoteItems } from "./notes.query";
+import { getWritingItems } from "./writings.query";
 
 export async function getTimelineItemsFromDb(type?: TimelineType): Promise<TimelineItem[]> {
-  const [writingRows, noteRows] = await Promise.all([
-    db.select().from(writings).orderBy(desc(writings.id)),
-    db.select().from(notes).orderBy(desc(notes.id)),
+  const [writingItems, noteItems] = await Promise.all([
+    getWritingItems(),
+    getNoteItems(),
   ]);
 
   const timelineItems: TimelineItem[] = [
-    ...writingRows.map((writing) => ({
+    ...writingItems.map((writing) => ({
       title: writing.title,
       description: writing.description,
       href: writing.href,
@@ -21,7 +19,7 @@ export async function getTimelineItemsFromDb(type?: TimelineType): Promise<Timel
       meta: writing.categoryLabel,
     })),
 
-    ...noteRows.map((note) => {
+    ...noteItems.map((note) => {
       const noteType: TimelineType = note.column === "memory" ? "memory" : "notes";
 
       return {

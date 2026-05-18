@@ -10,6 +10,7 @@ import { adminNavItems } from "./admin-nav-data";
 type AdminSidebarProps = {
   isCollapsed: boolean;
   onCollapsedChange: (isCollapsed: boolean) => void;
+  onNavigate?: () => void;
 };
 
 function isActivePath(pathname: string, href: string) {
@@ -20,7 +21,7 @@ function isActivePath(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function AdminSidebar({ isCollapsed, onCollapsedChange }: AdminSidebarProps) {
+export function AdminSidebar({ isCollapsed, onCollapsedChange, onNavigate }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -30,7 +31,7 @@ export function AdminSidebar({ isCollapsed, onCollapsedChange }: AdminSidebarPro
       }`}
     >
       <div className={`flex gap-3 ${isCollapsed ? "flex-col items-center" : "items-center justify-between"}`}>
-        <Link href="/admin" className="inline-flex min-w-0 items-center gap-3">
+        <Link href="/admin" onClick={onNavigate} className="inline-flex min-w-0 items-center gap-3">
           <span className="grid size-9 shrink-0 place-items-center rounded-2xl bg-neutral-950 text-white shadow-lg shadow-neutral-950/15 dark:bg-neutral-100 dark:text-neutral-950">
             <Settings className="size-4" />
           </span>
@@ -65,6 +66,7 @@ export function AdminSidebar({ isCollapsed, onCollapsedChange }: AdminSidebarPro
               key={item.href}
               href={item.href}
               title={isCollapsed ? item.title : undefined}
+              onClick={onNavigate}
               className={`group flex items-center gap-3 rounded-2xl px-4 py-3 transition ${
                 isCollapsed ? "justify-center" : ""
               } ${
@@ -101,6 +103,7 @@ export function AdminSidebar({ isCollapsed, onCollapsedChange }: AdminSidebarPro
         <div className={`mt-3 grid gap-2 ${isCollapsed ? "grid-cols-1" : "grid-cols-2"}`}>
           <Link
             href="/"
+            onClick={onNavigate}
             className="inline-flex items-center justify-center rounded-2xl border border-neutral-200/70 bg-white/70 px-3 py-2 text-xs font-medium text-neutral-600 transition hover:text-neutral-950 dark:border-white/10 dark:bg-white/[0.04] dark:text-neutral-300 dark:hover:text-neutral-50"
             title="前台"
           >

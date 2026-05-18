@@ -64,11 +64,22 @@ export const articleMdxComponents = {
     </h3>
   ),
   // 段落、列表、引用、链接和行内代码分别覆盖排版、颜色和交互细节。
-  p: (props: React.ComponentPropsWithoutRef<"p">) => <p className={`font-[ui-sans-serif,system-ui,sans-serif] text-[15px] font-normal leading-[1.75] ${articleTextColor}`} {...props} />,
+  p: (props: React.ComponentPropsWithoutRef<"p">) => <p className={`break-words font-[ui-sans-serif,system-ui,sans-serif] text-[15px] font-normal leading-[1.75] ${articleTextColor}`} {...props} />,
   ul: (props: React.ComponentPropsWithoutRef<"ul">) => <ul className={`list-disc space-y-1.5 pl-5 font-[ui-sans-serif,system-ui,sans-serif] text-[15px] font-normal leading-[1.75] marker:text-zinc-300 dark:marker:text-neutral-600 ${articleTextColor}`} {...props} />,
   ol: (props: React.ComponentPropsWithoutRef<"ol">) => <ol className={`list-decimal space-y-1.5 pl-5 font-[ui-sans-serif,system-ui,sans-serif] text-[15px] font-normal leading-[1.75] marker:text-zinc-400 dark:marker:text-neutral-500 ${articleTextColor}`} {...props} />,
   li: (props: React.ComponentPropsWithoutRef<"li">) => <li className="pl-1 [&>figure]:my-4 [&>p]:my-0" {...props} />,
   blockquote: (props: React.ComponentPropsWithoutRef<"blockquote">) => <blockquote className={`border-l-2 border-zinc-300 pl-5 font-[ui-sans-serif,system-ui,sans-serif] text-[15px] font-normal leading-[1.75] ${articleMutedColor} dark:border-neutral-700`} {...props} />,
-  a: (props: React.ComponentPropsWithoutRef<"a">) => <a className="font-medium text-zinc-950 underline decoration-zinc-300 underline-offset-4 transition hover:decoration-zinc-950 dark:text-neutral-50 dark:decoration-neutral-600 dark:hover:decoration-neutral-50" {...props} />,
-  code: (props: React.ComponentPropsWithoutRef<"code">) => <code className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-[0.88em] text-zinc-800 dark:bg-white/10 dark:text-neutral-100" {...props} />,
+  a: (props: React.ComponentPropsWithoutRef<"a">) => <a className="break-words font-medium text-zinc-950 underline decoration-zinc-300 underline-offset-4 transition hover:decoration-zinc-950 dark:text-neutral-50 dark:decoration-neutral-600 dark:hover:decoration-neutral-50" {...props} />,
+  code: (props: React.ComponentPropsWithoutRef<"code">) => <code className="break-words rounded-md bg-zinc-100 px-1.5 py-0.5 text-[0.88em] text-zinc-800 dark:bg-white/10 dark:text-neutral-100" {...props} />,
+  img: ({ alt = "", ...props }: React.ComponentPropsWithoutRef<"img">) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img alt={alt} className="my-6 h-auto max-w-full rounded-2xl border border-zinc-200/80 shadow-sm dark:border-white/10" {...props} />
+  ),
+  table: (props: React.ComponentPropsWithoutRef<"table">) => (
+    <div className="my-6 overflow-x-auto rounded-2xl border border-zinc-200/80 dark:border-white/10">
+      <table className="min-w-full divide-y divide-zinc-200 text-left text-sm dark:divide-white/10" {...props} />
+    </div>
+  ),
+  th: (props: React.ComponentPropsWithoutRef<"th">) => <th className="whitespace-nowrap bg-zinc-50 px-4 py-3 font-semibold text-zinc-900 dark:bg-white/5 dark:text-neutral-100" {...props} />,
+  td: (props: React.ComponentPropsWithoutRef<"td">) => <td className="break-words px-4 py-3 text-zinc-700 dark:text-neutral-300" {...props} />,
 };

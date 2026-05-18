@@ -28,10 +28,10 @@ export function NoteHeader({ note }: NoteHeaderProps) {
       {/* dl 表达元数据键值关系；视觉上用图标和横向分隔线呈现。 */}
       <dl className="flex flex-wrap items-center gap-x-0 gap-y-2 font-[ui-sans-serif,system-ui,sans-serif] text-[13px] font-medium leading-none text-[#7d746b] dark:text-neutral-300/85">
         {metadataItems.map(({ label, value, icon: Icon }) => (
-          <div key={label} className="inline-flex items-center gap-1.5 border-r border-[#d9d0c7] px-2.5 first:pl-0 last:border-r-0 last:pr-0 dark:border-white/12">
+          <div key={label} className="inline-flex min-w-0 items-center gap-1.5 border-r border-[#d9d0c7] px-2.5 first:pl-0 last:border-r-0 last:pr-0 dark:border-white/12">
             <dt className="sr-only">{label}</dt>
             <Icon className="size-3.5 shrink-0 stroke-[1.7]" />
-            <dd className="whitespace-nowrap">{value}</dd>
+            <dd className="break-words">{value}</dd>
           </div>
         ))}
       </dl>

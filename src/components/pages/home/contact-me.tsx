@@ -20,12 +20,12 @@ export function ContactMe({ settings }: ContactMeProps) {
   ];
 
   return (
-    <div className="h-[251px] shrink-0 rounded-[1.35rem] border border-neutral-200/55 bg-white/60 p-7 shadow-[0_1px_18px_rgba(0,0,0,0.035)] backdrop-blur dark:border-neutral-800/55 dark:bg-neutral-950/30">
+    <div className="min-h-[251px] min-w-0 shrink-0 rounded-[1.35rem] border border-neutral-200/55 bg-white/60 p-7 shadow-[0_1px_18px_rgba(0,0,0,0.035)] backdrop-blur dark:border-neutral-800/55 dark:bg-neutral-950/30">
       <div className="flex items-center gap-3 text-base font-semibold tracking-tight">
         <Phone className="size-5" />
         联系我
       </div>
-      <div className="mt-8 grid grid-cols-2 gap-x-12 gap-y-6 text-neutral-500 dark:text-neutral-400">
+      <div className="mt-8 grid min-w-0 gap-x-8 gap-y-6 text-neutral-500 dark:text-neutral-400 min-[390px]:grid-cols-2 sm:gap-x-12">
         {socialContacts.map((contact) => {
           const Icon = contact.icon;
           const isEmail = contact.href.startsWith("mailto:");

@@ -53,15 +53,10 @@ export function ThemeToggle() {
     const rect = buttonRef.current?.getBoundingClientRect();
     const x = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
     const y = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
-    const radius = Math.hypot(
-      Math.max(x, window.innerWidth - x),
-      Math.max(y, window.innerHeight - y),
-    );
     const root = document.documentElement;
 
     root.style.setProperty("--theme-transition-x", `${x}px`);
     root.style.setProperty("--theme-transition-y", `${y}px`);
-    root.style.setProperty("--theme-transition-radius", `${radius}px`);
     root.classList.add("theme-transitioning");
 
     const transition = viewTransitionDocument.startViewTransition(() => {
@@ -73,7 +68,6 @@ export function ThemeToggle() {
       root.classList.remove("theme-transitioning");
       root.style.removeProperty("--theme-transition-x");
       root.style.removeProperty("--theme-transition-y");
-      root.style.removeProperty("--theme-transition-radius");
     });
   }
 

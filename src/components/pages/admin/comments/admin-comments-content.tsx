@@ -300,10 +300,10 @@ export function AdminCommentsContent({ comments, pageSize }: AdminCommentsConten
 
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-semibold text-neutral-950 dark:text-neutral-50">
+                    <h3 className="min-w-0 break-words font-semibold text-neutral-950 dark:text-neutral-50">
                       {comment.authorName}
                     </h3>
-                    <span className="text-sm text-neutral-400">
+                    <span className="break-all text-sm text-neutral-400">
                       {comment.authorEmail}
                     </span>
                     <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-500 dark:bg-white/10 dark:text-neutral-400">
@@ -320,7 +320,7 @@ export function AdminCommentsContent({ comments, pageSize }: AdminCommentsConten
                     )}
                   </div>
 
-                  <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-neutral-600 dark:text-neutral-300">
+                  <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-neutral-600 dark:text-neutral-300">
                     {comment.content}
                   </p>
                 </div>

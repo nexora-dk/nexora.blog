@@ -399,18 +399,24 @@ export async function deleteAdminNoteAction(slug: string): Promise<AdminNoteActi
     return { success: false, message: "手记不存在或已被删除" };
   }
 
-  let previousMarkdown: string;
+  let previousMarkdown: string | undefined;
 
   try {
     previousMarkdown = await fs.readFile(paths.filePath, "utf8");
-  } catch {
-    return { success: false, message: "Markdown 文件不存在" };
+  } catch (error) {
+    const errorCode = error && typeof error === "object" && "code" in error ? error.code : undefined;
+
+    if (errorCode !== "ENOENT") {
+      return { success: false, message: "Markdown 文件读取失败，请稍后再试" };
+    }
   }
 
-  try {
-    await fs.unlink(paths.filePath);
-  } catch {
-    return { success: false, message: "Markdown 文件删除失败，请稍后再试" };
+  if (previousMarkdown) {
+    try {
+      await fs.unlink(paths.filePath);
+    } catch {
+      return { success: false, message: "Markdown 文件删除失败，请稍后再试" };
+    }
   }
 
   try {
@@ -428,13 +434,15 @@ export async function deleteAdminNoteAction(slug: string): Promise<AdminNoteActi
 
     return { success: true, slug: deletedNote.slug };
   } catch {
-    try {
-      await fs.writeFile(paths.filePath, previousMarkdown, {
-        encoding: "utf8",
-        flag: "wx",
-      });
-    } catch {
-      return { success: false, message: "手记删除失败，且 Markdown 回滚失败，请手动恢复文件" };
+    if (previousMarkdown) {
+      try {
+        await fs.writeFile(paths.filePath, previousMarkdown, {
+          encoding: "utf8",
+          flag: "wx",
+        });
+      } catch {
+        return { success: false, message: "手记删除失败，且 Markdown 回滚失败，请手动恢复文件" };
+      }
     }
 
     return { success: false, message: "手记删除失败，请稍后再试" };

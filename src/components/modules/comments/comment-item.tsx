@@ -96,14 +96,14 @@ export function CommentItem({
   return (
     <article
       id={`comment-${comment.id}`}
-      className={`grid grid-cols-[2.75rem_minmax(0,1fr)_2rem] gap-4 ${
+      className={`grid grid-cols-[2.25rem_minmax(0,1fr)_1.75rem] gap-3 sm:grid-cols-[2.75rem_minmax(0,1fr)_2rem] sm:gap-4 ${
         isReply
-          ? "ml-14 border-l border-zinc-200/70 pl-4 dark:border-white/10"
+          ? "ml-4 border-l border-zinc-200/70 pl-3 dark:border-white/10 sm:ml-14 sm:pl-4"
           : ""
       }`}
     >
       <div className="pt-1">
-        <div className="grid size-11 place-items-center overflow-hidden rounded-full border border-zinc-200 bg-white text-sm font-semibold text-zinc-700 shadow-sm shadow-zinc-950/[0.04] ring-4 ring-white dark:border-white/10 dark:bg-neutral-900 dark:text-neutral-300 dark:ring-neutral-950">
+        <div className="grid size-9 place-items-center overflow-hidden rounded-full border border-zinc-200 bg-white text-xs font-semibold text-zinc-700 shadow-sm shadow-zinc-950/[0.04] ring-4 ring-white dark:border-white/10 dark:bg-neutral-900 dark:text-neutral-300 dark:ring-neutral-950 sm:size-11 sm:text-sm">
           {comment.authorImage ? (
             <Image
               src={comment.authorImage}
@@ -119,8 +119,8 @@ export function CommentItem({
       </div>
 
       <div className="min-w-0 space-y-2.5">
-        <div className="flex flex-wrap items-center gap-2 text-sm">
-          <h3 className="font-semibold text-zinc-950 dark:text-neutral-50">
+        <div className="flex min-w-0 flex-wrap items-center gap-2 text-sm">
+          <h3 className="min-w-0 break-words font-semibold text-zinc-950 dark:text-neutral-50">
             {comment.authorName}
           </h3>
           <span className="text-xs font-medium text-zinc-400 dark:text-neutral-500">
@@ -128,9 +128,9 @@ export function CommentItem({
           </span>
         </div>
 
-        <div className="group/comment flex max-w-full items-center gap-2">
+        <div className="group/comment flex max-w-full flex-wrap items-center gap-2">
           <div
-            className={`${isReply ? "bg-zinc-50/85 text-[0.93rem]" : "bg-white/80 text-[0.98rem]"} inline-block max-w-full rounded-2xl rounded-tl-md border border-zinc-200/75 px-4 py-2.5 leading-7 text-zinc-700 shadow-sm shadow-zinc-950/[0.035] backdrop-blur-xl transition group-hover/comment:border-zinc-300 dark:border-white/10 dark:bg-white/[0.04] dark:text-neutral-300 dark:group-hover/comment:border-white/20`}
+            className={`${isReply ? "bg-zinc-50/85 text-[0.93rem]" : "bg-white/80 text-[0.98rem]"} inline-block max-w-full break-words rounded-2xl rounded-tl-md border border-zinc-200/75 px-3 py-2.5 leading-7 text-zinc-700 shadow-sm shadow-zinc-950/[0.035] backdrop-blur-xl transition group-hover/comment:border-zinc-300 dark:border-white/10 dark:bg-white/[0.04] dark:text-neutral-300 dark:group-hover/comment:border-white/20 sm:px-4`}
           >
             <CommentMarkdown content={comment.content} />
           </div>

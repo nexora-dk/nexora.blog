@@ -45,7 +45,7 @@ export const noteMdxComponents = {
     </h3>
   ),
   // 段落使用正文色、缩进和固定行高，是手记阅读体验的基础样式。
-  p: (props: React.ComponentPropsWithoutRef<"p">) => <p className={`font-[ui-sans-serif,system-ui,sans-serif] text-[15px] font-normal leading-[1.85] [text-indent:2em] ${noteTextColor}`} {...props} />,
+  p: (props: React.ComponentPropsWithoutRef<"p">) => <p className={`break-words font-[ui-sans-serif,system-ui,sans-serif] text-[15px] font-normal leading-[1.85] [text-indent:2em] ${noteTextColor}`} {...props} />,
   // 无序列表保留项目符号，并沿用正文排版节奏。
   ul: (props: React.ComponentPropsWithoutRef<"ul">) => <ul className={`list-disc space-y-2 pl-6 font-[ui-sans-serif,system-ui,sans-serif] text-[15px] font-normal leading-[1.85] marker:text-[#d4d4d8] ${noteTextColor}`} {...props} />,
   // 有序列表使用数字标记，用于步骤、阶段总结等结构化内容。
@@ -55,7 +55,19 @@ export const noteMdxComponents = {
   // 引用块延续正文语气样式，目前只负责文字排版而不额外包卡片。
   blockquote: (props: React.ComponentPropsWithoutRef<"blockquote">) => <blockquote className={`font-[ui-sans-serif,system-ui,sans-serif] text-[15px] font-normal leading-[1.85] [text-indent:2em] ${noteTextColor}`} {...props} />,
   // 链接保持正文内联形态，用下划线和 hover 状态提示可点击。
-  a: (props: React.ComponentPropsWithoutRef<"a">) => <a className="font-medium text-[#18181b] underline decoration-[#d4d4d8] underline-offset-4 transition hover:text-[#27272a] hover:decoration-[#a1a1aa] dark:text-neutral-100 dark:decoration-neutral-600 dark:hover:text-white" {...props} />,
+  a: (props: React.ComponentPropsWithoutRef<"a">) => <a className="break-words font-medium text-[#18181b] underline decoration-[#d4d4d8] underline-offset-4 transition hover:text-[#27272a] hover:decoration-[#a1a1aa] dark:text-neutral-100 dark:decoration-neutral-600 dark:hover:text-white" {...props} />,
+  pre: (props: React.ComponentPropsWithoutRef<"pre">) => <pre className="my-5 overflow-x-auto rounded-2xl bg-[#2d2119] px-4 py-3 text-sm leading-6 text-[#fdf7ef] dark:bg-black/60" {...props} />,
   // 行内代码使用轻量背景强调，不改变 MDX 中的实际代码文本。
-  code: (props: React.ComponentPropsWithoutRef<"code">) => <code className="rounded-md bg-[#f2e7dd] px-1.5 py-0.5 text-[0.88em] text-[#5f3f2c] dark:bg-white/10 dark:text-neutral-100" {...props} />,
+  code: (props: React.ComponentPropsWithoutRef<"code">) => <code className="break-words rounded-md bg-[#f2e7dd] px-1.5 py-0.5 text-[0.88em] text-[#5f3f2c] dark:bg-white/10 dark:text-neutral-100" {...props} />,
+  img: ({ alt = "", ...props }: React.ComponentPropsWithoutRef<"img">) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img alt={alt} className="my-6 h-auto max-w-full rounded-2xl border border-[#eadfd2] shadow-sm dark:border-white/10" {...props} />
+  ),
+  table: (props: React.ComponentPropsWithoutRef<"table">) => (
+    <div className="my-6 overflow-x-auto rounded-2xl border border-[#eadfd2] dark:border-white/10">
+      <table className="min-w-full divide-y divide-[#eadfd2] text-left text-sm dark:divide-white/10" {...props} />
+    </div>
+  ),
+  th: (props: React.ComponentPropsWithoutRef<"th">) => <th className="whitespace-nowrap bg-[#f8f0e8] px-4 py-3 font-semibold text-[#2f261f] dark:bg-white/5 dark:text-neutral-100" {...props} />,
+  td: (props: React.ComponentPropsWithoutRef<"td">) => <td className="break-words px-4 py-3 text-[#473d35] dark:text-neutral-300" {...props} />,
 };

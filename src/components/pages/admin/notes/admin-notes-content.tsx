@@ -21,17 +21,26 @@ type AdminNotesContentProps = {
 export function AdminNotesContent({ notes, pageSize }: AdminNotesContentProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [deletedSlugs, setDeletedSlugs] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  const visibleNotes = useMemo(() => {
+    if (deletedSlugs.length === 0) {
+      return notes;
+    }
+
+    return notes.filter((note) => !deletedSlugs.includes(note.slug));
+  }, [notes, deletedSlugs]);
 
   const filteredNotes = useMemo(() => {
     const keyword = searchValue.trim().toLowerCase();
 
     if (!keyword) {
-      return notes;
+      return visibleNotes;
     }
 
-    return notes.filter((note) => {
+    return visibleNotes.filter((note) => {
       return [
         note.title,
         note.description,
@@ -45,7 +54,7 @@ export function AdminNotesContent({ notes, pageSize }: AdminNotesContentProps) {
         .toLowerCase()
         .includes(keyword);
     });
-  }, [notes, searchValue]);
+  }, [visibleNotes, searchValue]);
 
   const totalPages = Math.max(
     1,
@@ -78,6 +87,7 @@ export function AdminNotesContent({ notes, pageSize }: AdminNotesContentProps) {
         return;
       }
 
+      setDeletedSlugs((slugs) => [...slugs, result.slug]);
       router.refresh();
     });
   }
@@ -233,7 +243,7 @@ export function AdminNotesContent({ notes, pageSize }: AdminNotesContentProps) {
 
           {filteredNotes.length === 0 ? (
             <AdminEmptyState>
-              {notes.length === 0 ? "暂无手记" : "没有找到匹配的手记"}
+              {visibleNotes.length === 0 ? "暂无手记" : "没有找到匹配的手记"}
             </AdminEmptyState>
           ) : null}
         </div>

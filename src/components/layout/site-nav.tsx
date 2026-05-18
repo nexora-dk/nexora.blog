@@ -17,6 +17,7 @@ import { NotesPanel } from "@/components/layout/navigation/notes-panel";
 import { TimelinePanel } from "@/components/layout/navigation/timeline-panel";
 // 文稿导航悬浮面板。
 import { WritingPanel } from "@/components/layout/navigation/writing-panel";
+import type { NavigationPanelData } from "@/components/layout/navigation/navigation-data";
 // 各面板独立 CSS Module，用于匹配不同内容的尺寸和视觉样式。
 import homePanelStyles from "@/styles/page/home-panel.module.css";
 import morePanelStyles from "@/styles/page/more-panel.module.css";
@@ -76,30 +77,35 @@ function getPanelClassName(type: PanelType) {
 /**
  * 根据面板类型渲染对应内容组件。
  */
-function renderPanel(type: PanelType, href?: string, title?: string) {
+function renderPanel(
+  type: PanelType,
+  navigationData: NavigationPanelData,
+  href?: string,
+  title?: string,
+) {
   // 首页下拉面板。
   if (type === "home") {
-    return <HomePanel />;
+    return <HomePanel data={navigationData.home} />;
   }
 
   // 文稿下拉面板。
   if (type === "writing") {
-    return <WritingPanel />;
+    return <WritingPanel data={navigationData.writing} />;
   }
 
   // 手记下拉面板。
   if (type === "notes") {
-    return <NotesPanel />;
+    return <NotesPanel data={navigationData.notes} />;
   }
 
   // 时间线下拉面板。
   if (type === "timeline") {
-    return <TimelinePanel />;
+    return <TimelinePanel data={navigationData.timeline} />;
   }
 
   // 更多下拉面板。
   if (type === "more") {
-    return <MorePanel />;
+    return <MorePanel data={navigationData.more} />;
   }
 
   // 如果未来出现未显式处理但带 href/title 的面板类型，则渲染一个普通查看链接。
@@ -118,7 +124,11 @@ function renderPanel(type: PanelType, href?: string, title?: string) {
 /**
  * 站点主导航：根据 siteConfig 生成导航项，并为带 panel 的项目提供悬浮面板。
  */
-export function SiteNav() {
+type SiteNavProps = {
+  navigationData: NavigationPanelData;
+};
+
+export function SiteNav({ navigationData }: SiteNavProps) {
   // router 用于让带面板的触发器在点击时也能跳转到主页面。
   const router = useRouter();
   // viewportX 控制下拉 viewport 的水平位置，使浮层对齐当前触发器中心。
@@ -182,7 +192,7 @@ export function SiteNav() {
                   {item.title}
                 </NavigationMenuTrigger>
                 {/* 下拉内容根据 panel.type 选择样式和组件，点击内容后关闭面板。 */}
-                <NavigationMenuContent className={getPanelClassName(item.panel.type)} onClick={closePanel}>{renderPanel(item.panel.type, "href" in item ? item.href : undefined, item.title)}</NavigationMenuContent>
+                <NavigationMenuContent className={getPanelClassName(item.panel.type)} onClick={closePanel}>{renderPanel(item.panel.type, navigationData, "href" in item ? item.href : undefined, item.title)}</NavigationMenuContent>
               </>
             ) : (
               // 不带 panel 的导航项直接渲染普通链接。

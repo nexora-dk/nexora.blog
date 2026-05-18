@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { desc, eq, or, sql } from "drizzle-orm";
 
 import { db } from "../db";
@@ -31,6 +33,27 @@ type UpdateWritingInput = {
   readingTime: string;
   modifiedTime: string;
 };
+
+function writingContentExists(writing: typeof writings.$inferSelect) {
+  return existsSync(path.join(process.cwd(), "data", "writing", `${writing.slug}.md`));
+}
+
+function mapWritingItem(writing: typeof writings.$inferSelect): ArticleItem {
+  return {
+    title: writing.title,
+    slug: writing.slug,
+    description: writing.description,
+    href: writing.href,
+    date: writing.date,
+    category: writing.category as ArticleItem["category"],
+    categoryLabel: writing.categoryLabel,
+    tags: writing.tags,
+    readingTime: writing.readingTime,
+    views: String(writing.views),
+    likes: String(writing.likes),
+    modifiedTime: writing.modifiedTime,
+  };
+}
 
 export async function getWritingExistsBySlugOrHref(input: {
   slug: string;
@@ -92,43 +115,13 @@ export async function deleteWritingBySlug(slug: string) {
 export async function getWritingItems(): Promise<ArticleItem[]> {
   const rows = await retryDatabaseRead(() => db.select().from(writings).orderBy(desc(writings.id)));
 
-  return rows.map((writing) => ({
-    title: writing.title,
-    slug: writing.slug,
-    description: writing.description,
-    href: writing.href,
-    date: writing.date,
-    category: writing.category as ArticleItem["category"],
-    categoryLabel: writing.categoryLabel,
-    tags: writing.tags,
-    readingTime: writing.readingTime,
-    views: String(writing.views),
-    likes: String(writing.likes),
-    modifiedTime: writing.modifiedTime,
-  }));
+  return rows.filter(writingContentExists).map(mapWritingItem);
 }
 
 export async function getWritingItemBySlug(slug: string): Promise<ArticleItem | undefined> {
   const [writing] = await retryDatabaseRead(() => db.select().from(writings).where(eq(writings.slug, slug)).limit(1));
 
-  if (!writing) {
-    return undefined;
-  }
-
-  return {
-    title: writing.title,
-    slug: writing.slug,
-    description: writing.description,
-    href: writing.href,
-    date: writing.date,
-    category: writing.category as ArticleItem["category"],
-    categoryLabel: writing.categoryLabel,
-    tags: writing.tags,
-    readingTime: writing.readingTime,
-    views: String(writing.views),
-    likes: String(writing.likes),
-    modifiedTime: writing.modifiedTime,
-  };
+  return writing && writingContentExists(writing) ? mapWritingItem(writing) : undefined;
 }
 
 export async function incrementWritingViews(slug: string) {

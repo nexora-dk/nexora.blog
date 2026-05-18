@@ -271,29 +271,45 @@ a {
   }
 }
 
-/* 日夜模式切换动画：通过 View Transition 从按钮位置做圆形揭幕，避免整页闪烁。 */
+/* 日夜模式切换动画：使用低对比度交叉淡化，避免大面积圆形闪屏。 */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation: none;
   mix-blend-mode: normal;
 }
 
-.theme-transitioning::view-transition-new(root) {
-  animation: theme-reveal 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  clip-path: circle(0 at var(--theme-transition-x) var(--theme-transition-y));
-}
-
 .theme-transitioning::view-transition-old(root) {
-  animation: none;
+  animation: theme-fade-out 520ms ease both;
 }
 
-@keyframes theme-reveal {
+.theme-transitioning::view-transition-new(root) {
+  animation: theme-fade-in 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: var(--theme-transition-x) var(--theme-transition-y);
+}
+
+@keyframes theme-fade-out {
+  from {
+    opacity: 1;
+  }
+
   to {
-    clip-path: circle(var(--theme-transition-radius) at var(--theme-transition-x) var(--theme-transition-y));
+    opacity: 0.32;
+  }
+}
+
+@keyframes theme-fade-in {
+  from {
+    opacity: 0.18;
+    filter: brightness(0.92) saturate(0.9);
+  }
+
+  to {
+    opacity: 1;
+    filter: brightness(1) saturate(1);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .theme-transitioning::view-transition-old(root),
   .theme-transitioning::view-transition-new(root) {
     animation: none;
   }

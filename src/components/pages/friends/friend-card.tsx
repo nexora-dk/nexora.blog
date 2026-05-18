@@ -9,7 +9,7 @@ export function FriendCard({ friend }: { friend: FriendLinkItem }) {
       href={friend.blogUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex h-32 gap-4 rounded-[1.35rem] border border-neutral-200/55 bg-white/65 p-5 shadow-[0_1px_18px_rgba(0,0,0,0.035)] backdrop-blur transition hover:-translate-y-1 hover:border-neutral-300/70 hover:bg-white/80 dark:border-white/10 dark:bg-[#101010]/82 dark:shadow-[0_18px_48px_rgba(0,0,0,0.46),inset_0_1px_0_rgba(255,255,255,0.075)] dark:hover:border-white/16 dark:hover:bg-[#151515]/88"
+      className="group flex min-h-32 gap-4 rounded-[1.35rem] border border-neutral-200/55 bg-white/65 p-5 shadow-[0_1px_18px_rgba(0,0,0,0.035)] backdrop-blur transition hover:-translate-y-1 hover:border-neutral-300/70 hover:bg-white/80 dark:border-white/10 dark:bg-[#101010]/82 dark:shadow-[0_18px_48px_rgba(0,0,0,0.46),inset_0_1px_0_rgba(255,255,255,0.075)] dark:hover:border-white/16 dark:hover:bg-[#151515]/88"
     >
       <span className="relative size-14 shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-pink-200 via-orange-100 to-sky-100 shadow-inner ring-1 ring-white/70 dark:from-pink-500/25 dark:via-orange-400/15 dark:to-sky-400/20 dark:ring-white/10">
         <img

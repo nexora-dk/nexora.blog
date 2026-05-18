@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { desc, eq, or, sql } from "drizzle-orm";
 
 import { db } from "../db";
@@ -37,6 +39,10 @@ type UpdateNoteInput = {
   readingTime: string;
   insight: string;
 };
+
+function noteContentExists(note: typeof notes.$inferSelect) {
+  return existsSync(path.join(process.cwd(), "data", "notes", `${note.slug}.md`));
+}
 
 function mapNoteItem(note: typeof notes.$inferSelect): NoteItem {
   return {
@@ -119,7 +125,7 @@ export async function getNoteItems(): Promise<NoteItem[]> {
     db.select().from(notes).orderBy(desc(notes.id)),
   );
 
-  return rows.map(mapNoteItem);
+  return rows.filter(noteContentExists).map(mapNoteItem);
 }
 
 export async function getNoteItemBySlug(slug: string): Promise<NoteItem | undefined> {
@@ -127,7 +133,7 @@ export async function getNoteItemBySlug(slug: string): Promise<NoteItem | undefi
     db.select().from(notes).where(eq(notes.slug, slug)).limit(1),
   );
 
-  return note ? mapNoteItem(note) : undefined;
+  return note && noteContentExists(note) ? mapNoteItem(note) : undefined;
 }
 
 export async function incrementNoteViews(slug: string) {

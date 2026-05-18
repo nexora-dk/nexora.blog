@@ -85,9 +85,9 @@ export function GalleryLightbox({ photos }: { photos: GalleryPhoto[] }) {
       {/* 条件渲染 Portal：只有存在 activePhoto 且处于浏览器环境时才挂载全屏灯箱。 */}
       {activePhoto && typeof document !== "undefined" &&
         createPortal(
-          <div className="fixed inset-0 z-[9999] bg-neutral-950/95 text-white backdrop-blur-sm">
+          <div className="fixed inset-0 z-[9999] min-h-[100dvh] bg-neutral-950/95 text-white backdrop-blur-sm">
           {/* 左上角返回按钮与关闭逻辑一致，用于回到相册列表。 */}
-          <div className="absolute left-4 top-4 z-10 flex items-center gap-2 sm:left-6 sm:top-6">
+          <div className="absolute left-4 top-[calc(env(safe-area-inset-top)+1rem)] z-10 flex items-center gap-2 sm:left-6">
             <button type="button" onClick={close} className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition hover:bg-white/18">
               <ArrowLeft className="size-4" />
               返回相册
@@ -95,28 +95,28 @@ export function GalleryLightbox({ photos }: { photos: GalleryPhoto[] }) {
           </div>
 
           {/* 右上角关闭按钮提供仅图标的关闭入口。 */}
-          <button type="button" onClick={close} className="absolute right-4 top-4 z-10 grid size-10 place-items-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-white/18 sm:right-6 sm:top-6" aria-label="关闭预览">
+          <button type="button" onClick={close} className="absolute right-4 top-[calc(env(safe-area-inset-top)+1rem)] z-10 grid size-10 place-items-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-white/18 sm:right-6" aria-label="关闭预览">
             <X className="size-5" />
           </button>
 
           {/* 左右切换按钮调用循环切换函数，实现上一张/下一张预览。 */}
-          <button type="button" onClick={showPrevious} className="absolute left-3 top-1/2 z-10 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-white/18 sm:left-6" aria-label="上一张">
+          <button type="button" onClick={showPrevious} className="absolute left-3 top-1/2 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-white/18 sm:left-6 sm:size-11" aria-label="上一张">
             <ChevronLeft className="size-6" />
           </button>
-          <button type="button" onClick={showNext} className="absolute right-3 top-1/2 z-10 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-white/18 sm:right-6" aria-label="下一张">
+          <button type="button" onClick={showNext} className="absolute right-3 top-1/2 z-10 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-white/18 sm:right-6 sm:size-11" aria-label="下一张">
             <ChevronRight className="size-6" />
           </button>
 
           {/* 中央预览区使用 object-contain 保持图片完整显示。 */}
-          <div className="flex h-full items-center justify-center px-6 py-20 sm:px-16">
-            <div className="relative h-full max-h-[78vh] w-full max-w-6xl">
+          <div className="flex h-full min-h-[100dvh] items-center justify-center px-14 py-24 sm:px-16">
+            <div className="relative h-full max-h-[calc(100dvh-12rem)] w-full max-w-6xl sm:max-h-[78vh]">
               <GalleryFillImage src={activePhoto.imageSrc} alt={activePhoto.alt} sizes="100vw" className="object-contain" priority />
             </div>
           </div>
 
           {/* 底部信息栏展示当前图片标题、地点和在相册中的序号。 */}
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-6 py-6 text-center">
-            <p className="text-lg font-semibold tracking-tight">{activePhoto.title}</p>
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] pt-6 text-center">
+            <p className="line-clamp-2 text-base font-semibold tracking-tight sm:text-lg">{activePhoto.title}</p>
             <div className="mt-2 flex items-center justify-center gap-2 text-sm text-white/70">
               <MapPin className="size-4" />
               {activePhoto.location}

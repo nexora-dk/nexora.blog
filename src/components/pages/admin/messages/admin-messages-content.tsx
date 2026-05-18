@@ -152,10 +152,10 @@ export function AdminMessagesContent({ messages, pageSize }: AdminMessagesConten
 
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-semibold text-neutral-950 dark:text-neutral-50">
+                    <h3 className="min-w-0 break-words font-semibold text-neutral-950 dark:text-neutral-50">
                       {message.authorName}
                     </h3>
-                    <span className="text-sm text-neutral-400">
+                    <span className="break-all text-sm text-neutral-400">
                       {message.authorEmail}
                     </span>
                     {message.parentId ? (
@@ -169,7 +169,7 @@ export function AdminMessagesContent({ messages, pageSize }: AdminMessagesConten
                     )}
                   </div>
 
-                  <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-neutral-600 dark:text-neutral-300">
+                  <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-neutral-600 dark:text-neutral-300">
                     {message.content}
                   </p>
                 </div>

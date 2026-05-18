@@ -79,7 +79,7 @@ function MarqueeRow({ items, reverse = false }: { items: StackItem[]; reverse?: 
   const repeatedItems = [...items, ...items];
 
   return (
-    <div className="group relative overflow-hidden py-2 [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
+    <div className="group relative min-w-0 overflow-hidden py-2 [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
       {/* 根据 reverse 选择正向或反向动画，悬停时暂停便于查看图标。 */}
       <div className={`flex w-max gap-8 ${reverse ? "animate-[marquee-reverse_24s_linear_infinite]" : "animate-[marquee_24s_linear_infinite]"} group-hover:[animation-play-state:paused]`}>
         {repeatedItems.map((item, index) => (
@@ -94,7 +94,7 @@ function MarqueeRow({ items, reverse = false }: { items: StackItem[]; reverse?: 
 // 首页关于我区域的技术栈卡片，包含两行方向相反的图标跑马灯。
 export function StacksCard() {
   return (
-    <div className="min-h-0 flex-1 overflow-hidden rounded-[1.35rem] border border-neutral-200/55 bg-white/60 p-7 shadow-[0_1px_18px_rgba(0,0,0,0.035)] backdrop-blur dark:border-neutral-800/55 dark:bg-neutral-950/30">
+    <div className="min-h-[220px] min-w-0 overflow-hidden rounded-[1.35rem] border border-neutral-200/55 bg-white/60 p-7 shadow-[0_1px_18px_rgba(0,0,0,0.035)] backdrop-blur dark:border-neutral-800/55 dark:bg-neutral-950/30 sm:min-h-0 sm:flex-1">
       {/* 卡片标题行，用扳手图标表达工具/技术栈主题。 */}
       <div className="flex items-center gap-3 text-base font-semibold tracking-tight">
         <Wrench className="size-5" />

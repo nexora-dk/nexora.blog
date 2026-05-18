@@ -94,28 +94,28 @@ function Hero({ settings }: HeroProps) {
   }
 
   return (
-    <section className="pt-37 mb-37 space-y-2">
+    <section className="mb-24 space-y-2 pt-28 sm:mb-37 sm:pt-37">
       {/* 首屏主体左右布局：左侧文案，右侧桌面端头像。 */}
-      <div className="flex justify-between gap-6">
-        <div className="flex flex-col gap-2">
+      <div className="flex min-w-0 justify-between gap-6">
+        <div className="min-w-0 flex-1 flex flex-col gap-2">
           {/* 主标题拆成两行，方便签名图片和滚动词条混排。 */}
-          <h1 className="flex flex-col flex-wrap font-[family-name:var(--font-dingtalk)] text-xl  sm:text-3xl">
+          <h1 className="flex min-w-0 flex-col flex-wrap font-[family-name:var(--font-dingtalk)] text-xl sm:text-3xl">
             <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <span>{settings.homeHeroPrefix}</span>
               <Image src={settings.signatureUrl} alt={settings.authorName} width={142} height={52} priority className="h-[21px] w-auto dark:invert sm:h-[31px]" />
               <span>{settings.homeHeroSuffix}</span>
             </span>
-            <span className="flex flex-wrap gap-1 leading-[30px] sm:leading-[40px]">
+            <span className="flex min-w-0 flex-wrap gap-1 leading-[30px] sm:leading-[40px]">
               <span className="pt-4 ">{settings.homeShareText}</span>
               {/* 固定高度的视窗隐藏溢出内容，只露出当前滚动到的一行。 */}
-              <span className={`relative inline-block translate-y-4 overflow-hidden align-bottom [--hero-line-height:30px] sm:[--hero-line-height:40px] ${LINE_HEIGHT_CLASS}`}>
+              <span className={`relative inline-block max-w-full translate-y-4 overflow-hidden align-bottom [--hero-line-height:30px] sm:[--hero-line-height:40px] ${LINE_HEIGHT_CLASS}`}>
                 <span
                   className={`flex flex-col ${isResetting ? "transition-none" : "transition-transform duration-500 ease-out"}`}
                   style={{ transform: `translateY(calc(-${currentIndex} * var(--hero-line-height)))` }}
                 >
                   {loopTexts.map((item, index) => (
                     // 循环渲染每条滚动文案，index 参与 key 以区分首尾重复项。
-                    <span key={`${item.text}-${index}`} className={`block whitespace-nowrap ${LINE_HEIGHT_CLASS} ${item.className}`}>
+                    <span key={`${item.text}-${index}`} className={`block max-w-full overflow-hidden text-ellipsis whitespace-nowrap ${LINE_HEIGHT_CLASS} ${item.className}`}>
                       {item.text}
                     </span>
                   ))}

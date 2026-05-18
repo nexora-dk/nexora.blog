@@ -1,6 +1,6 @@
 /* 文稿导航面板外壳宽度：容纳左侧分类和右侧近期文章双栏。 */
 .panelShell {
-  width: 30rem;
+  width: min(30rem, calc(100vw - 3.5rem));
 }
 
 /* 文稿面板根容器：使用 grid 方便主体和底部分区排列。 */
@@ -82,6 +82,7 @@
 /* 单个文章链接：标题和日期上下排列。 */
 .postLink {
   display: grid;
+  min-width: 0;
   gap: 0.35rem;
   padding: 0.45rem 0.42rem;
   border-radius: 0.9rem;
@@ -98,8 +99,10 @@
 
 /* 文章标题：加粗并保持单行，适配面板宽度。 */
 .postTitle {
+  overflow: hidden;
   font-size: .875rem;
   font-weight: 600;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 

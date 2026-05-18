@@ -11,7 +11,7 @@ type ProjectCardProps = {
 function ProjectCover({ project }: ProjectCardProps) {
   const content = (
     <div className="relative flex h-full min-h-36 flex-col justify-end">
-      <h3 className="text-2xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50">
+      <h3 className="break-words text-xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 sm:text-2xl">
         {project.title}
       </h3>
       <div className="mt-3 inline-flex w-fit items-center gap-2 rounded-full bg-white/70 px-3 py-1.5 text-xs font-medium text-neutral-500 backdrop-blur dark:bg-neutral-950/45 dark:text-neutral-400">
@@ -23,7 +23,7 @@ function ProjectCover({ project }: ProjectCardProps) {
 
   if (!project.coverImageUrl) {
     return (
-      <div className="relative min-h-48 overflow-hidden rounded-[1.35rem] bg-gradient-to-br from-pink-100 via-orange-100 to-sky-200 p-6 dark:from-pink-500/20 dark:via-orange-400/10 dark:to-sky-400/20">
+      <div className="relative min-h-44 overflow-hidden rounded-[1.35rem] bg-gradient-to-br from-pink-100 via-orange-100 to-sky-200 p-5 dark:from-pink-500/20 dark:via-orange-400/10 dark:to-sky-400/20 sm:min-h-48 sm:p-6">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.85),transparent_30%),linear-gradient(to_top,rgba(0,0,0,0.2),transparent_60%)] dark:bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.16),transparent_30%),linear-gradient(to_top,rgba(0,0,0,0.38),transparent_65%)]" />
         {content}
       </div>
@@ -31,7 +31,7 @@ function ProjectCover({ project }: ProjectCardProps) {
   }
 
   return (
-    <div className="relative min-h-48 overflow-hidden rounded-[1.35rem] bg-neutral-100 p-6 dark:bg-neutral-900">
+    <div className="relative min-h-44 overflow-hidden rounded-[1.35rem] bg-neutral-100 p-5 dark:bg-neutral-900 sm:min-h-48 sm:p-6">
       <GalleryFillImage
         src={project.coverImageUrl}
         alt={project.title}
@@ -40,7 +40,7 @@ function ProjectCover({ project }: ProjectCardProps) {
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
       <div className="relative flex h-full min-h-36 flex-col justify-end text-white">
-        <h3 className="text-2xl font-semibold tracking-tight">{project.title}</h3>
+        <h3 className="break-words text-xl font-semibold tracking-tight sm:text-2xl">{project.title}</h3>
         <div className="mt-3 inline-flex w-fit items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-xs font-medium text-white/75 backdrop-blur">
           <CalendarDays className="size-3.5" />
           {project.developmentTime}

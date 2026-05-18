@@ -21,8 +21,12 @@ export function ArticleToc({ items }: ArticleTocProps) {
       return;
     }
 
+    let frameId = 0;
+
     // 逐项读取真实 DOM 位置，找到最后一个 top 小于阈值的标题。
     function updateActiveId() {
+      frameId = 0;
+      const scrollAnchor = window.scrollY + 128;
       const nextActiveId = items.reduce((currentId, item) => {
         const element = document.getElementById(item.id);
 
@@ -31,21 +35,35 @@ export function ArticleToc({ items }: ArticleTocProps) {
           return currentId;
         }
 
-        return element.getBoundingClientRect().top <= 128 ? item.id : currentId;
+        const headingTop = element.getBoundingClientRect().top + window.scrollY;
+
+        return headingTop <= scrollAnchor ? item.id : currentId;
       }, items[0].id);
 
       setActiveId(nextActiveId);
     }
 
+    function scheduleUpdateActiveId() {
+      if (frameId) {
+        return;
+      }
+
+      frameId = window.requestAnimationFrame(updateActiveId);
+    }
+
     // 首次挂载立即同步一次，随后通过 scroll/resize 保持高亮状态准确。
-    updateActiveId();
-    window.addEventListener("scroll", updateActiveId, { passive: true });
-    window.addEventListener("resize", updateActiveId);
+    scheduleUpdateActiveId();
+    window.addEventListener("scroll", scheduleUpdateActiveId, { passive: true });
+    window.addEventListener("resize", scheduleUpdateActiveId);
 
     // 清理事件监听，避免组件卸载后继续触发状态更新。
     return () => {
-      window.removeEventListener("scroll", updateActiveId);
-      window.removeEventListener("resize", updateActiveId);
+      window.removeEventListener("scroll", scheduleUpdateActiveId);
+      window.removeEventListener("resize", scheduleUpdateActiveId);
+
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+      }
     };
   }, [items]);
 
@@ -55,9 +73,9 @@ export function ArticleToc({ items }: ArticleTocProps) {
   }
 
   return (
-    <aside className="sticky top-32 ml-12 hidden w-52 self-start xl:block 2xl:ml-16">
+    <aside className="absolute bottom-0 left-[calc(100%+2.5rem)] top-0 hidden w-[13rem] min-w-0 xl:block">
       {/* nav 提供文章目录语义，桌面宽度下吸附在正文右侧。 */}
-      <nav className="border-l border-zinc-200/80 pl-4 font-[ui-sans-serif,system-ui,sans-serif] text-xs dark:border-white/10" aria-label="文章目录">
+      <nav className="sticky top-32 border-l border-zinc-200/80 pl-4 font-[ui-sans-serif,system-ui,sans-serif] text-xs dark:border-white/10" aria-label="文章目录">
         {/* 目录标题行用于标识右侧导航区域。 */}
         <div className="mb-2 flex items-center gap-2 text-[10px] font-medium tracking-[0.18em] text-zinc-300 dark:text-neutral-600">
           <span className="h-px w-4 bg-zinc-200 dark:bg-white/10" />

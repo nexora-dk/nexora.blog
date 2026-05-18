@@ -20,16 +20,16 @@ export function NoteCard({ note }: NoteCardProps) {
 
           {/* 元信息行展示专栏、发布日期、浏览量和喜欢数，保持与详情页统计口径一致。 */}
           <div className="mt-5 flex flex-wrap items-center gap-4 text-xs font-medium text-neutral-400 dark:text-neutral-500">
-            <span className="rounded-full bg-neutral-100 px-3 py-1.5 text-neutral-600 dark:bg-neutral-900 dark:text-neutral-300">{note.columnLabel}</span>
-            <span className="inline-flex items-center gap-1.5">
+            <span className="max-w-full truncate rounded-full bg-neutral-100 px-3 py-1.5 text-neutral-600 dark:bg-neutral-900 dark:text-neutral-300">{note.columnLabel}</span>
+            <span className="inline-flex min-w-0 items-center gap-1.5">
               <CalendarDays className="size-3.5" />
               发布于 {note.publishedAt}
             </span>
-            <span className="inline-flex items-center gap-1.5">
+            <span className="inline-flex min-w-0 items-center gap-1.5">
               <Eye className="size-3.5" />
               {note.views}
             </span>
-            <span className="inline-flex items-center gap-1.5">
+            <span className="inline-flex min-w-0 items-center gap-1.5">
               <Heart className="size-3.5" />
               {note.likes}
             </span>

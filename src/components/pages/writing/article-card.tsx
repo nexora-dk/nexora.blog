@@ -31,16 +31,16 @@ export function ArticleCard({ article }: ArticleCardProps) {
             </div>
 
             {/* 元信息图标与数字只做展示，不参与交互。 */}
-            <div className="flex items-center gap-3 text-xs font-medium text-neutral-400 dark:text-neutral-500">
-              <span className="inline-flex items-center gap-1.5">
+            <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 text-xs font-medium text-neutral-400 dark:text-neutral-500">
+              <span className="inline-flex min-w-0 items-center gap-1.5">
                 <CalendarDays className="size-3.5" />
                 {article.date}
               </span>
-              <span className="inline-flex items-center gap-1.5">
+              <span className="inline-flex min-w-0 items-center gap-1.5">
                 <Eye className="size-3.5" />
                 {article.views}
               </span>
-              <span className="inline-flex items-center gap-1.5">
+              <span className="inline-flex min-w-0 items-center gap-1.5">
                 <Heart className="size-3.5" />
                 {article.likes}
               </span>

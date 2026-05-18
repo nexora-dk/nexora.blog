@@ -1,6 +1,6 @@
 /* 更多导航面板外壳宽度：适配图标、标题和说明文案。 */
 .panelShell {
-  width: 13.125rem;
+  width: min(13.125rem, calc(100vw - 3.5rem));
 }
 
 /* 更多面板根容器：纵向排列入口链接。 */
@@ -42,18 +42,22 @@
 
 /* 入口标题文字。 */
 .panelLinkTitle {
+  overflow: hidden;
   color: #262626;
   font-size: 13px;
   font-weight: 600;
   line-height: 1.2;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 /* 入口说明文字，字号更小并保持单行。 */
 .panelLinkDescription {
+  overflow: hidden;
   color: rgb(115 115 115 / 0.86);
   font-size: 11px;
   line-height: 1.25;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 

@@ -22,22 +22,22 @@ export function ArticleHeader({ article }: ArticleHeaderProps) {
         <div className={`inline-flex items-center gap-1.5 ${articleTextColor}`}>
           <dt className="sr-only">发布日期</dt>
           <CalendarDays className="size-3.5" />
-          <dd>{formatArticleDate(article.date)}</dd>
+          <dd className="break-words">{formatArticleDate(article.date)}</dd>
         </div>
         <div className={`inline-flex items-center gap-1.5 ${articleTextColor}`}>
           <dt className="sr-only">阅读时间</dt>
           <Timer className="size-3.5" />
-          <dd>{article.readingTime}</dd>
+          <dd className="break-words">{article.readingTime}</dd>
         </div>
         <div className={`inline-flex items-center gap-1.5 ${articleTextColor}`}>
           <dt className="sr-only">浏览量</dt>
           <Eye className="size-3.5" />
-          <dd>{article.views}</dd>
+          <dd className="break-words">{article.views}</dd>
         </div>
         <div className={`inline-flex items-center gap-1.5 ${articleTextColor}`}>
           <dt className="sr-only">喜欢</dt>
           <Heart className="size-3.5" />
-          <dd>{article.likes}</dd>
+          <dd className="break-words">{article.likes}</dd>
         </div>
       </dl>
     </header>

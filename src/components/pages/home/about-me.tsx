@@ -41,38 +41,38 @@ export function AboutMe({ settings }: AboutMeProps) {
     <section className="space-y-10">
       <SectionTitle label="about me" title="关于我" ghost="about" />
       {/* 外层网格限制最大宽度，小屏单列，大于 450px 后左右两列排布。 */}
-      <div className="mx-auto grid max-w-[778px] gap-4 min-[450px]:h-[460px] min-[450px]:grid-cols-2">
+      <div className="mx-auto grid w-full max-w-[778px] gap-4 sm:grid-cols-2">
         {/* 左列放位置卡片和技术栈卡片，形成信息 + 技能的组合。 */}
-        <div className="flex flex-col gap-4 min-[450px]:h-full">
+        <div className="min-w-0 flex flex-col gap-4 sm:h-full">
           <LocationCard />
 
           <StacksCard />
         </div>
 
         {/* 右列放联系方式以及两个小统计卡片。 */}
-        <div className="flex flex-col gap-4 min-[450px]:h-full">
+        <div className="min-w-0 flex flex-col gap-4 sm:h-full">
           <ContactMe settings={settings} />
 
           {/* 下方网格承载“学习前端”和“常用框架”两张等高卡片。 */}
-          <div className="grid min-h-0 flex-1 gap-4 min-[450px]:grid-cols-2">
-            <div className="h-full rounded-[1.35rem] border border-neutral-200/55 bg-white/60 p-7 shadow-[0_1px_18px_rgba(0,0,0,0.035)] backdrop-blur dark:border-neutral-800/55 dark:bg-neutral-950/30">
+          <div className="grid min-h-0 min-w-0 flex-1 gap-4 sm:grid-cols-2">
+            <div className="min-h-40 rounded-[1.35rem] border border-neutral-200/55 bg-white/60 p-7 shadow-[0_1px_18px_rgba(0,0,0,0.035)] backdrop-blur dark:border-neutral-800/55 dark:bg-neutral-950/30">
               <div className="flex items-center gap-3 text-base font-semibold tracking-tight">
                 <Clock3 className="size-5" />
                 编程时间
               </div>
               {/* LearningDays 只输出数字，这里补充单位组成完整文案。 */}
-              <p className="mt-14 ml-5 text-3xl font-bold tracking-tight">
+              <p className="mt-8 ml-0 text-3xl font-bold tracking-tight sm:mt-14 sm:ml-5">
                 <LearningDays startedAt={settings.learningStartedAt} /> 天
               </p>
             </div>
 
-            <div className="h-full rounded-[1.35rem] border border-neutral-200/55 bg-white/60 p-7 shadow-[0_1px_18px_rgba(0,0,0,0.035)] backdrop-blur dark:border-neutral-800/55 dark:bg-neutral-950/30">
+            <div className="min-h-40 rounded-[1.35rem] border border-neutral-200/55 bg-white/60 p-7 shadow-[0_1px_18px_rgba(0,0,0,0.035)] backdrop-blur dark:border-neutral-800/55 dark:bg-neutral-950/30">
               <div className="flex items-center gap-3 text-base font-semibold tracking-tight">
                 <Heart className="size-5" />
                 常用框架
               </div>
               {/* 居中展示 Next.js 图标，作为常用框架的视觉表达。 */}
-              <div className="mt-11 flex justify-center">
+              <div className="mt-8 flex justify-center sm:mt-11">
                 <SiNextdotjs className="size-20"></SiNextdotjs>
               </div>
             </div>

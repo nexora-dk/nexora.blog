@@ -93,6 +93,7 @@
   position: absolute;
   top: 2.35rem;
   z-index: 100;
+  max-width: calc(100vw - 2rem);
   padding: 0.6rem;
   border: 1px solid rgb(255 255 255 / 0.7);
   border-radius: 1.75rem;
@@ -185,7 +186,7 @@
 
 /* 未单独定义样式的默认面板宽度。 */
 .defaultPanelShell {
-  width: 13.125rem;
+  width: min(13.125rem, calc(100vw - 3.5rem));
 }
 
 /* 默认面板中的普通链接样式。 */
@@ -210,8 +211,10 @@
 .panelLinkTitle {
   color: #262626;
   font-size: 13px;
+  overflow: hidden;
   font-weight: 600;
   line-height: 1.2;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 

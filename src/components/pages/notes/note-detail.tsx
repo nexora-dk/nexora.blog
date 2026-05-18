@@ -16,10 +16,10 @@ type NoteDetailProps = {
 // 手记详情页主体：组合纸张、头部、正文、点赞、目录和评论区。
 export function NoteDetail({ note, comments }: NoteDetailProps) {
   return (
-    <article className="relative -mx-5 -mt-28 px-4 pb-20 pt-36 md:-mt-32 md:px-6 md:pt-44 lg:-mx-28 lg:px-8 xl:-mx-80 xl:px-10">
-      <div className="relative mx-auto max-w-[82rem]">
+    <article className="relative -mx-4 -mt-28 px-4 pb-20 pt-36 md:-mt-32 md:pt-44">
+      <div className="mx-auto grid w-full max-w-[67rem] gap-10 xl:grid-cols-[minmax(0,820px)_13rem] xl:items-start">
         {/* 中央阅读纸张承载详情页核心内容，保持最大宽度提高可读性。 */}
-        <div className="mx-auto max-w-[820px]">
+        <div className="min-w-0">
           <NotePaper>
             <NoteHeader note={note} />
             <NoteBody content={note.content} />
@@ -27,8 +27,8 @@ export function NoteDetail({ note, comments }: NoteDetailProps) {
           </NotePaper>
         </div>
 
-        {/* 桌面宽屏时把目录固定在阅读纸张右侧，窄屏下隐藏避免挤压正文。 */}
-        <div className="absolute bottom-0 left-[calc(50%+430px)] top-[70px] hidden xl:block">
+        {/* 桌面宽屏时把目录放在阅读纸张右侧，窄屏下隐藏避免挤压正文。 */}
+        <div className="hidden min-w-0 xl:block">
           <NoteToc items={note.toc} />
         </div>
       </div>

@@ -71,6 +71,7 @@ export function AuthButton() {
   const [isDialogMounted, setIsDialogMounted] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
 
   useEffect(() => {
     if (isOpen || !isDialogMounted) {
@@ -127,6 +128,36 @@ export function AuthButton() {
     window.addEventListener("open-auth-dialog", openDialog);
     return () => window.removeEventListener("open-auth-dialog", openDialog);
   }, []);
+
+  useEffect(() => {
+    if (!isAccountMenuOpen) {
+      return;
+    }
+
+    function handlePointerDown(event: PointerEvent) {
+      const target = event.target;
+
+      if (target instanceof Element && target.closest("[data-account-menu]")) {
+        return;
+      }
+
+      setIsAccountMenuOpen(false);
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsAccountMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isAccountMenuOpen]);
 
   const closeDialog = () => setIsOpen(false);
 
@@ -222,11 +253,13 @@ export function AuthButton() {
   if (session?.user) {
     return (
       <>
-      <div className="group relative">
+      <div className="group relative" data-account-menu>
         <button
           type="button"
           className="inline-flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-neutral-200 bg-white text-neutral-700 transition hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900"
           aria-label="账户菜单"
+          aria-expanded={isAccountMenuOpen}
+          onClick={() => setIsAccountMenuOpen((open) => !open)}
         >
           {session.user.image ? (
             <Image
@@ -241,7 +274,7 @@ export function AuthButton() {
           )}
         </button>
 
-        <div className="pointer-events-none absolute right-0 top-[calc(100%+0.75rem)] z-50 w-58 translate-y-1 rounded-2xl border border-zinc-200/80 bg-white/95 p-2 opacity-0 shadow-2xl shadow-zinc-950/10 backdrop-blur-xl transition duration-150 before:absolute before:bottom-full before:left-0 before:h-3 before:w-full before:content-[''] group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 dark:border-white/10 dark:bg-neutral-950/95 dark:shadow-black/30">
+        <div className={`absolute right-0 top-[calc(100%+0.75rem)] z-50 w-58 rounded-2xl border border-zinc-200/80 bg-white/95 p-2 shadow-2xl shadow-zinc-950/10 backdrop-blur-xl transition duration-150 before:absolute before:bottom-full before:left-0 before:h-3 before:w-full before:content-[''] dark:border-white/10 dark:bg-neutral-950/95 dark:shadow-black/30 ${isAccountMenuOpen ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none translate-y-1 opacity-0 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100"}`}>
           <div className="flex items-center gap-3 px-2 py-2.5">
             <div className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-full border border-zinc-200 bg-white text-xs font-semibold text-zinc-700 dark:border-white/10 dark:bg-neutral-900 dark:text-neutral-200">
               {session.user.image ? (
@@ -260,6 +293,7 @@ export function AuthButton() {
           <button
             type="button"
             onClick={async () => {
+              setIsAccountMenuOpen(false);
               await authClient.signOut();
               window.location.reload();
             }}

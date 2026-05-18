@@ -18,18 +18,16 @@ type ArticleDetailProps = {
 // ArticleDetail 只做页面区块编排，不直接处理 Markdown 解析或客户端交互。
 export function ArticleDetail({ article, comments }: ArticleDetailProps) {
   return (
-    <article className="relative -mx-5 space-y-10 px-5 pt-2 lg:-mx-28 lg:px-28 xl:-mx-72 xl:px-72">
+    <article className="relative space-y-10 pt-2">
       {/* 顶部展示标题和文章元信息。 */}
       <ArticleHeader article={article} />
 
-      {/* 主体网格左侧为正文内容，右侧在大屏显示目录。 */}
-      <div className="mx-auto grid w-full max-w-[52rem] overflow-visible xl:grid-cols-[minmax(0,52rem)_0]">
-        <div className="min-w-0 space-y-[17.5px]">
-          {/* 正文、互动和页脚按阅读顺序纵向排列。 */}
-          <ArticleBody content={article.content} />
-          <ArticleEngagement articleSlug={article.slug} initialLikes={article.likes} />
-          <ArticleFooter modifiedTime={article.modifiedTime} />
-        </div>
+      {/* 主体保持在主容器内，目录在大屏时移到正文右侧外部。 */}
+      <div className="relative min-w-0 space-y-[17.5px]">
+        {/* 正文、互动和页脚按阅读顺序纵向排列。 */}
+        <ArticleBody content={article.content} />
+        <ArticleEngagement articleSlug={article.slug} initialLikes={article.likes} />
+        <ArticleFooter modifiedTime={article.modifiedTime} />
 
         {/* 目录使用 toc 数据生成锚点导航；无目录时组件内部返回 null。 */}
         <ArticleToc items={article.toc} />
