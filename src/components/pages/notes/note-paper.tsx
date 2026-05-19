@@ -17,7 +17,7 @@ export function NotePaper({ children }: NotePaperProps) {
         <div className="pointer-events-none absolute right-10 top-10 size-1.5 rounded-full bg-emerald-300/45 dark:bg-emerald-300/18" />
         <div className="pointer-events-none absolute bottom-10 left-10 size-1 rounded-full bg-sky-300/45 dark:bg-sky-300/18" />
         {/* 真正的详情页内容插槽，承载标题、正文和互动组件。 */}
-        <div className="relative z-10 px-4 pb-10 pt-14 sm:px-6 sm:pb-12 sm:pt-16 md:px-12 md:pb-16 md:pt-20 lg:px-16 xl:px-[4.2rem]">{children}</div>
+        <div className="relative z-10 px-4 pb-10 pt-14 sm:px-6 sm:pb-12 sm:pt-16 md:px-8 md:pb-16 md:pt-20 lg:px-10 xl:px-12">{children}</div>
       </div>
     </div>
   );

@@ -145,8 +145,18 @@ function slugifyHeading(title: string) {
     .replace(/\s+/g, "-");
 }
 
+function getUniqueHeadingId(title: string, counts: Map<string, number>) {
+  const baseId = slugifyHeading(title);
+  const nextCount = (counts.get(baseId) ?? 0) + 1;
+  counts.set(baseId, nextCount);
+
+  return nextCount === 1 ? baseId : `${baseId}-${nextCount}`;
+}
+
 // 从 Markdown 正文中收集二级/三级标题，生成详情页右侧目录数据。
 function getArticleToc(content: string): ArticleTocItem[] {
+  const headingCounts = new Map<string, number>();
+
   return content
     .split("\n")
     .map((line) => {
@@ -160,7 +170,7 @@ function getArticleToc(content: string): ArticleTocItem[] {
       const [, marks, title] = match;
 
       return {
-        id: slugifyHeading(title),
+        id: getUniqueHeadingId(title, headingCounts),
         title,
         level: marks.length as 2 | 3,
       };

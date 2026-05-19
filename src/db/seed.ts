@@ -1,4 +1,7 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { config } from "dotenv";
+import { inArray } from "drizzle-orm";
 
 config({ path: ".env.local" });
 
@@ -28,6 +31,20 @@ function getCollectionGroupSlug(title: string, index: number) {
 
 function normalizeSeedLink(value: string | undefined) {
   return value && value !== "#" ? value : null;
+}
+
+async function deleteMissingMarkdownNotes(db: typeof import("./db").db, notes: typeof import("./schemas/schema").notes) {
+  const rows = await db.select({ id: notes.id, contentPath: notes.contentPath }).from(notes);
+  const missingIds = rows
+    .filter((note) => !existsSync(path.resolve(process.cwd(), note.contentPath)))
+    .map((note) => note.id);
+
+  if (missingIds.length === 0) {
+    return 0;
+  }
+
+  await db.delete(notes).where(inArray(notes.id, missingIds));
+  return missingIds.length;
 }
 
 async function seedContent() {
@@ -65,6 +82,7 @@ async function seedContent() {
     import("../lib/site-settings-defaults"),
   ]);
   const articleItems = getArticleItemsFromMarkdown();
+  const deletedMissingNoteCount = await deleteMissingMarkdownNotes(db, notes);
 
   for (const article of articleItems) {
     const values = {
@@ -268,7 +286,7 @@ async function seedContent() {
     .onConflictDoNothing({ target: siteSettingsTable.id });
 
   console.log(
-    `Seeded ${articleItems.length} writings, ${noteItems.length} notes, ${thinkingItems.length} thinking items, ${seedCollectionGroups.length} collection groups, ${seededCollectionItemCount} collection items, ${seedGalleryPhotos.length} gallery photos, ${seedProjectItems.length} projects and ${seedFriendLinks.length} friend links.`,
+    `Seeded ${articleItems.length} writings, ${noteItems.length} notes, ${thinkingItems.length} thinking items, ${seedCollectionGroups.length} collection groups, ${seededCollectionItemCount} collection items, ${seedGalleryPhotos.length} gallery photos, ${seedProjectItems.length} projects and ${seedFriendLinks.length} friend links. Removed ${deletedMissingNoteCount} notes without Markdown files.`,
   );
 }
 

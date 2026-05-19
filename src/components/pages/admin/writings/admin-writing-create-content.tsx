@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useMemo, useState, useTransition } from "react";
-import { ArrowLeft, PenLine } from "lucide-react";
+import { type ChangeEvent, type FormEvent, useMemo, useRef, useState, useTransition } from "react";
+import { ArrowLeft, ImagePlus, PenLine } from "lucide-react";
 
+import { uploadAdminMarkdownImageAction } from "@/app/actions/admin-markdown-images";
 import {
   createAdminWritingAction,
   updateAdminWritingAction,
@@ -28,6 +29,8 @@ type AdminWritingCreateContentProps = {
 const inputClassName = "h-12 w-full rounded-2xl border border-neutral-200/70 bg-white/70 px-4 text-sm text-neutral-700 shadow-sm outline-none transition placeholder:text-neutral-300 focus:border-neutral-300 dark:border-white/10 dark:bg-white/[0.04] dark:text-neutral-200 dark:placeholder:text-neutral-600 dark:focus:border-white/20";
 const readOnlyInputClassName = `${inputClassName} cursor-not-allowed bg-neutral-100/70 text-neutral-500 dark:bg-white/[0.025] dark:text-neutral-500`;
 const textareaClassName = "w-full rounded-2xl border border-neutral-200/70 bg-white/70 px-4 py-3 text-sm leading-6 text-neutral-700 shadow-sm outline-none transition placeholder:text-neutral-300 focus:border-neutral-300 dark:border-white/10 dark:bg-white/[0.04] dark:text-neutral-200 dark:placeholder:text-neutral-600 dark:focus:border-white/20";
+const MAX_MARKDOWN_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
+const allowedMarkdownImageTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 
 function getDefaultDate() {
   const date = new Date();
@@ -49,6 +52,28 @@ function getInitialForm(category: ArticleCategory): AdminWritingFormInput {
   };
 }
 
+function getMarkdownImageAlt(fileName: string) {
+  const nameWithoutExtension = fileName
+    .replace(/\.[^.]+$/, "")
+    .replace(/[\[\]()\r\n]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return nameWithoutExtension || "图片";
+}
+
+function getMarkdownImageFileError(file: File) {
+  if (file.size > MAX_MARKDOWN_IMAGE_SIZE_BYTES) {
+    return "图片大小不能超过 5MB";
+  }
+
+  if (!allowedMarkdownImageTypes.has(file.type)) {
+    return "仅支持 JPG、PNG、WebP 或 GIF 图片";
+  }
+
+  return "";
+}
+
 export function AdminWritingCreateContent({
   categories,
   mode = "create",
@@ -62,6 +87,9 @@ export function AdminWritingCreateContent({
     [initialCategory, initialValue],
   );
   const [form, setForm] = useState<AdminWritingFormInput>(defaultForm);
+  const [isImageUploading, setIsImageUploading] = useState(false);
+  const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const isEditMode = mode === "edit";
 
   function updateField<K extends keyof AdminWritingFormInput>(
@@ -72,6 +100,62 @@ export function AdminWritingCreateContent({
       ...currentForm,
       [key]: value,
     }));
+  }
+
+  function insertMarkdownAtCursor(markdown: string) {
+    const textarea = contentTextareaRef.current;
+    const currentContent = textarea?.value ?? form.content;
+    const selectionStart = textarea?.selectionStart ?? currentContent.length;
+    const selectionEnd = textarea?.selectionEnd ?? currentContent.length;
+    const beforeSelection = currentContent.slice(0, selectionStart);
+    const afterSelection = currentContent.slice(selectionEnd);
+    const prefix = beforeSelection && !beforeSelection.endsWith("\n") ? "\n\n" : "";
+    const suffix = afterSelection && !afterSelection.startsWith("\n") ? "\n\n" : "";
+    const insertedText = `${prefix}${markdown}${suffix}`;
+    const nextContent = `${beforeSelection}${insertedText}${afterSelection}`;
+    const cursorPosition = beforeSelection.length + insertedText.length;
+
+    updateField("content", nextContent);
+
+    requestAnimationFrame(() => {
+      contentTextareaRef.current?.focus();
+      contentTextareaRef.current?.setSelectionRange(cursorPosition, cursorPosition);
+    });
+  }
+
+  async function handleMarkdownImageChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file || isImageUploading) {
+      return;
+    }
+
+    const fileError = getMarkdownImageFileError(file);
+
+    if (fileError) {
+      window.alert(fileError);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("imageFile", file);
+    setIsImageUploading(true);
+
+    try {
+      const result = await uploadAdminMarkdownImageAction(formData);
+
+      if (!result.success) {
+        window.alert(result.message);
+        return;
+      }
+
+      insertMarkdownAtCursor(`![${getMarkdownImageAlt(file.name)}](${result.url})`);
+    } catch {
+      window.alert("图片上传失败，请稍后再试");
+    } finally {
+      setIsImageUploading(false);
+    }
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -221,18 +305,39 @@ export function AdminWritingCreateContent({
             />
           </label>
 
-          <label className="block space-y-2">
-            <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
-              Markdown 正文
-            </span>
+          <div className="block space-y-2">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
+                Markdown 正文
+              </span>
+              <div className="flex items-center gap-3">
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  onChange={handleMarkdownImageChange}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  disabled={isPending || isImageUploading}
+                  onClick={() => imageInputRef.current?.click()}
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl border border-neutral-200/70 bg-white/70 px-4 text-sm font-medium text-neutral-500 shadow-sm transition hover:text-neutral-950 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/[0.04] dark:text-neutral-400 dark:hover:text-neutral-50"
+                >
+                  <ImagePlus className="size-4" />
+                  {isImageUploading ? "上传中..." : "上传图片并插入"}
+                </button>
+              </div>
+            </div>
             <textarea
+              ref={contentTextareaRef}
               value={form.content}
               onChange={(event) => updateField("content", event.target.value)}
               placeholder={"## 小标题\n\n从这里开始写正文。"}
               rows={18}
               className={`${textareaClassName} font-mono`}
             />
-          </label>
+          </div>
 
           <div className="flex flex-col gap-3 border-t border-neutral-200/70 pt-6 dark:border-white/10 sm:flex-row sm:justify-end">
             <Link

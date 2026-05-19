@@ -66,8 +66,8 @@ export function NoteToc({ items }: NoteTocProps) {
   }
 
   return (
-    <aside className="sticky top-32 w-full min-w-0 self-start">
-      <nav className="border-l border-zinc-200/80 pl-4 font-[ui-sans-serif,system-ui,sans-serif] text-xs dark:border-white/10" aria-label="手记目录">
+    <aside className="absolute bottom-0 left-[calc(100%+2.5rem)] top-0 hidden w-[13rem] min-w-0 xl:block">
+      <nav className="sticky top-32 border-l border-zinc-200/80 pl-4 font-[ui-sans-serif,system-ui,sans-serif] text-xs dark:border-white/10" aria-label="手记目录">
         {/* 目录标题区作为侧栏识别，不参与跳转。 */}
         <div className="mb-2 flex items-center gap-2 text-[10px] font-medium tracking-[0.18em] text-zinc-300 dark:text-neutral-600">
           <span className="h-px w-4 bg-zinc-200 dark:bg-white/10" />
